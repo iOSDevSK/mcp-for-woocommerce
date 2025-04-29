@@ -11,7 +11,8 @@ A WordPress plugin that implements the Model Context Protocol (MCP) to expose Wo
 
 ## Installation
 
-1. Download the plugin files
+1. Download the latest wordpress-mcp.zip
+   from https://github.com/Automattic/wordpress-mcp/releases/
 2. Upload the plugin files to the `/wp-content/plugins/wordpress-mcp` directory
 3. Activate the plugin through the 'Plugins' menu in WordPress
 4. Navigate to `Settings > WordPress MCP` and enable MCP functionality
