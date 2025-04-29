@@ -1,0 +1,140 @@
+/**
+ * WordPress MCP Settings Styles
+ */
+
+.wordpress-mcp-settings {
+	max-width: 800px;
+	margin: 20px 0;
+}
+
+.wordpress-mcp-settings .setting-row {
+	margin-bottom: 20px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.wordpress-mcp-settings .setting-row:last-child {
+	border-bottom: none;
+}
+
+.wordpress-mcp-settings .components-card {
+	margin-bottom: 20px;
+}
+
+.wordpress-mcp-settings .components-card-header {
+	padding: 16px;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.wordpress-mcp-settings .components-card-body {
+	padding: 16px;
+}
+
+.wordpress-mcp-settings .components-card-footer {
+	padding: 16px;
+	border-top: 1px solid #f0f0f1;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.wordpress-mcp-settings .components-toggle-control {
+	margin-bottom: 10px;
+}
+
+.wordpress-mcp-settings .components-notice {
+	margin-bottom: 20px;
+}
+
+.wordpress-mcp-settings .settings-saving-indicator {
+	display: flex;
+	align-items: center;
+	color: #3858e9; /* WordPress primary blue color */
+	font-style: italic;
+	font-size: 14px;
+	padding: 4px 8px;
+	border-radius: 4px;
+	background-color: rgba(56, 88, 233, 0.05);
+	animation: fade-in 0.3s ease-in-out;
+	justify-content: flex-end;
+}
+
+@keyframes fade-in {
+	0% { opacity: 0; }
+	100% { opacity: 1; }
+}
+
+.wordpress-mcp-settings .settings-saving-indicator .components-spinner {
+	margin-right: 10px;
+}
+
+/* Table Styles */
+.wordpress-mcp-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 20px;
+}
+
+.wordpress-mcp-table th,
+.wordpress-mcp-table td {
+	padding: 12px;
+	text-align: left;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.wordpress-mcp-table th {
+	font-weight: 600;
+	background-color: #f8f9fa;
+}
+
+.wordpress-mcp-table tr:hover {
+	background-color: #f8f9fa;
+}
+
+/* Loading and Error States */
+.wordpress-mcp-loading,
+.wordpress-mcp-error {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+}
+
+.wordpress-mcp-loading {
+	flex-direction: column;
+}
+
+.wordpress-mcp-error {
+	color: #d63638;
+}
+
+.wordpress-mcp-tabs .components-tab-panel__tabs {
+	margin-bottom: 5px;
+	margin-left: 5px;
+}
+
+/* Disabled Tabs */
+.wordpress-mcp-tabs .components-tab-panel__tabs-item[disabled],
+.wordpress-mcp-tabs .components-tab-panel__tabs-item[aria-disabled="true"] {
+	opacity: 0.6;
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.wordpress-mcp-disabled-tab-notice {
+	padding: 24px;
+	background-color: #f8f9fa;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	text-align: center;
+	margin-top: 20px;
+}
+
+.wordpress-mcp-disabled-tab-notice p {
+	font-size: 14px;
+	color: #757575;
+	margin: 0 0 10px 0;
+}
+
+.wordpress-mcp-disabled-tab-notice p:last-child {
+	margin-bottom: 0;
+}

@@ -1,0 +1,42 @@
+{
+    "name": "wordpress-mcp",
+    "version": "0.1.6",
+    "description": "Wordpress MCP Settings",
+    "main": "src/index.js",
+    "private": true,
+    "scripts": {
+        "build": "wp-scripts build",
+        "start": "wp-scripts start",
+        "format": "wp-scripts format",
+        "lint:css": "wp-scripts lint-style",
+        "lint:js": "wp-scripts lint-js",
+        "packages-update": "wp-scripts packages-update",
+        "plugin-zip": "wp-scripts plugin-zip",
+        "clean": "rm -rf build"
+    },
+    "keywords": [
+        "wordpress",
+        "mcp",
+        "content",
+        "management"
+    ],
+    "author": "Automattic",
+    "license": "GPL-2.0-or-later",
+    "dependencies": {
+        "@wordpress/api-fetch": "^7.22.0",
+        "@wordpress/components": "^29.8.0",
+        "@wordpress/element": "^6.22.0",
+        "@wordpress/i18n": "^5.22.0"
+    },
+    "prettier": "@wordpress/prettier-config",
+    "devDependencies": {
+        "@wordpress/dependency-extraction-webpack-plugin": "^6.22.0",
+        "@wordpress/eslint-plugin": "^22.8.0",
+        "@wordpress/prettier-config": "^4.22.0",
+        "@wordpress/scripts": "^30.15.0",
+        "eslint": "^9.25.1",
+        "eslint-import-resolver-node": "0.3.9",
+        "eslint-plugin-eslint-comments": "3.2.0",
+        "prettier": "npm:wp-prettier@3.5.3"
+    }
+}
