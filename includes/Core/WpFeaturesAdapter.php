@@ -47,7 +47,7 @@ class WpFeaturesAdapter {
 			);
 
 			if ( $feature->has_rest_alias() ) {
-				$the_feature['rest_alias']['route']  = $feature->get_the_rest_alias();
+				$the_feature['rest_alias']['route']  = $feature->get_rest_alias();
 				$the_feature['rest_alias']['method'] = $feature->get_rest_method();
 			} else {
 				$the_feature['callback'] = function ( $args ) use ( $feature ) {
