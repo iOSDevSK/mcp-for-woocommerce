@@ -37,6 +37,6 @@
         "eslint": "^9.25.1",
         "eslint-import-resolver-node": "0.3.9",
         "eslint-plugin-eslint-comments": "3.2.0",
-        "prettier": "npm:wp-prettier@3.5.3"
+        "prettier": "npm:wp-prettier@3.0.3"
     }
 }
