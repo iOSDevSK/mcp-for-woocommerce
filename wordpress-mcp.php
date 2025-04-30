@@ -2,7 +2,7 @@
 /**
  * Plugin name: WordPress MCP
  * Description: A plugin to manage content on a WordPress site.
- * Version: 1.0.5
+ * Version: 0.1.7
  * Author: Ovidiu Galatan <ovidiu.galatan@a8c.com>
  * Author URI: https://automattic.com
  * Text Domain: wordpress-mcp
@@ -18,7 +18,7 @@ use Automattic\WordpressMcp\Core\WpMcp;
 use Automattic\WordpressMcp\Core\McpProxyRoutes;
 use Automattic\WordpressMcp\Admin\Settings;
 
-define( 'WORDPRESS_MCP_VERSION', '0.1.6' );
+define( 'WORDPRESS_MCP_VERSION', '0.1.7' );
 define( 'WORDPRESS_MCP_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WORDPRESS_MCP_URL', plugin_dir_url( __FILE__ ) );
 
