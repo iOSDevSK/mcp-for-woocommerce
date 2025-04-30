@@ -62,6 +62,34 @@ const SettingsTab = ( { settings, onToggleChange, isSaving, strings } ) => {
 						disabled={ ! settings.enabled }
 					/>
 				</div>
+
+				<div className="setting-row">
+					<ToggleControl
+						label={strings.enableCreateTools || __('Enable Create Tools', 'wordpress-mcp')}
+						help={strings.enableCreateToolsDescription || __('Allow create operations via tools.', 'wordpress-mcp')}
+						checked={settings.enable_create_tools}
+						onChange={() => onToggleChange('enable_create_tools')}
+						disabled={!settings.enabled}
+					/>
+				</div>
+				<div className="setting-row">
+					<ToggleControl
+						label={strings.enableUpdateTools || __('Enable Update Tools', 'wordpress-mcp')}
+						help={strings.enableUpdateToolsDescription || __('Allow update operations via tools.', 'wordpress-mcp')}
+						checked={settings.enable_update_tools}
+						onChange={() => onToggleChange('enable_update_tools')}
+						disabled={!settings.enabled}
+					/>
+				</div>
+				<div className="setting-row">
+					<ToggleControl
+						label={strings.enableDeleteTools || __('Enable Delete Tools', 'wordpress-mcp')}
+						help={strings.enableDeleteToolsDescription || __('⚠️ CAUTION: Allow deletion operations via tools.', 'wordpress-mcp')}
+						checked={settings.enable_delete_tools}
+						onChange={() => onToggleChange('enable_delete_tools')}
+						disabled={!settings.enabled}
+					/>
+				</div>
 			</CardBody>
 			{ isSaving && (
 				<CardFooter>

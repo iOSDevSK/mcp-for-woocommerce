@@ -171,13 +171,47 @@ class WpMcp {
 	}
 
 	/**
+	 * Check if a tool type is enabled.
+	 *
+	 * @param string $type The tool type to check.
+	 * @return bool Whether the tool type is enabled.
+	 */
+	private function is_tool_type_enabled( string $type ): bool {
+		$options = get_option( 'wordpress_mcp_settings', array() );
+
+		// Read operations are always allowed if MCP is enabled.
+		if ( 'read' === $type ) {
+			return true;
+		}
+
+		// Check specific tool type settings.
+		$type_settings_map = array(
+			'create' => 'enable_create_tools',
+			'update' => 'enable_update_tools',
+			'delete' => 'enable_delete_tools',
+		);
+
+		// Check if the type exists in our mapping and is enabled.
+		if ( isset( $type_settings_map[ $type ] ) ) {
+			return isset( $options[ $type_settings_map[ $type ] ] ) && $options[ $type_settings_map[ $type ] ];
+		}
+
+		return false;
+	}
+
+	/**
 	 * Register a tool.
 	 *
 	 * @param array $args The arguments.
-	 * @throws InvalidArgumentException If the tool name is not unique.
+	 * @throws InvalidArgumentException If the tool name is not unique or if the tool type is disabled.
 	 */
 	public function register_tool( array $args ): void {
-		// the name should be unique.
+		// Check if the tool type is enabled.
+		if ( ! $this->is_tool_type_enabled( $args['type'] ) ) {
+			return; // Skip registration if tool type is disabled.
+		}
+
+		// The name should be unique.
 		if ( in_array( $args['name'], array_column( $this->tools, 'name' ), true ) ) {
 			throw new InvalidArgumentException( 'The tool name must be unique. A tool with this name already exists: ' . esc_html( $args['name'] ) );
 		}
@@ -220,7 +254,8 @@ class WpMcp {
 	/**
 	 * Register a prompt.
 	 *
-	 * @param array $prompt The prompt instance.
+	 * @param array $prompt    The prompt instance.
+	 * @param array $messages  The messages for the prompt.
 	 * @throws InvalidArgumentException If the prompt name is not unique.
 	 */
 	public function register_prompt( array $prompt, array $messages ): void {

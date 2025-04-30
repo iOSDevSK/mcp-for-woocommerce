@@ -1,5 +1,5 @@
 <?php //phpcs:ignore
-declare(strict_types=1);
+declare( strict_types=1 );
 
 namespace Automattic\WordpressMcp\Tools;
 
@@ -31,6 +31,7 @@ class McpSiteInfo {
 			array(
 				'name'                 => 'get_site_info',
 				'description'          => 'Provides detailed information about the WordPress site like site name, url, description, admin email, plugins, themes, users, and more',
+				'type'                 => 'read',
 				'inputSchema'          => array(
 					'type'       => 'object',
 					'properties' => new stdClass(),

@@ -79,22 +79,24 @@ const ToolsTab = () => {
 				) : (
 					<table className="wordpress-mcp-table">
 						<thead>
-							<tr>
-								<th>{ __( 'Name', 'wordpress-mcp' ) }</th>
-								<th>
-									{ __( 'Description', 'wordpress-mcp' ) }
-								</th>
-							</tr>
+						<tr>
+							<th>{ __( 'Name', 'wordpress-mcp' ) }</th>
+							<th>
+								{ __( 'Description', 'wordpress-mcp' ) }
+							</th>
+							<th>{ __( 'Functionality Type', 'wordpress-mcp' ) }</th>
+						</tr>
 						</thead>
 						<tbody>
-							{ tools.map( ( tool ) => (
-								<tr key={ tool.name }>
-									<td>
-										<strong>{ tool.name }</strong>
-									</td>
-									<td>{ tool.description }</td>
-								</tr>
-							) ) }
+						{ tools.map( ( tool ) => (
+							<tr key={ tool.name }>
+								<td>
+									<strong>{ tool.name }</strong>
+								</td>
+								<td>{ tool.description }</td>
+								<td>{ tool.type }</td>
+							</tr>
+						) ) }
 						</tbody>
 					</table>
 				) }

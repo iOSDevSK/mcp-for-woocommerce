@@ -151,6 +151,17 @@ class RegisterMcpTool {
 			throw new InvalidArgumentException( 'The description is required.' );
 		}
 
+		// functionality_type is required.
+		if ( ! isset( $this->args['type'] ) ) {
+			throw new InvalidArgumentException( 'The functionality type is required.' );
+		}
+
+		// validate functionality type: must be one of 'create', 'read', 'update', 'delete'.
+		$valid_types = array( 'create', 'read', 'update', 'delete' );
+		if ( ! in_array( $this->args['type'], $valid_types, true ) ) {
+			throw new InvalidArgumentException( 'The functionality type must be one of: ' . esc_html( implode( ', ', $valid_types ) ) );
+		}
+
 		// if rest_alias is provided, the rest of the arguments are not required.
 		if ( isset( $this->args['rest_alias'] ) ) {
 			$this->validate_rest_alias();
