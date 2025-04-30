@@ -100,6 +100,12 @@ class Settings {
 					'enableMcpDescription'             => __( 'Toggle to enable or disable the MCP plugin functionality.', 'wordpress-mcp' ),
 					'enableFeaturesAdapter'            => __( 'Enable WordPress Features Adapter', 'wordpress-mcp' ),
 					'enableFeaturesAdapterDescription' => __( 'Enable or disable the WordPress Features Adapter. This option only works when MCP is enabled.', 'wordpress-mcp' ),
+					'enableCreateTools'                => __( 'Enable Create Tools', 'wordpress-mcp' ),
+					'enableCreateToolsDescription'     => __( 'Allow create operations via tools.', 'wordpress-mcp' ),
+					'enableUpdateTools'                => __( 'Enable Update Tools', 'wordpress-mcp' ),
+					'enableUpdateToolsDescription'     => __( 'Allow update operations via tools.', 'wordpress-mcp' ),
+					'enableDeleteTools'                => __( 'Enable Delete Tools', 'wordpress-mcp' ),
+					'enableDeleteToolsDescription'     => __( '⚠️ CAUTION: Allow deletion operations via tools.', 'wordpress-mcp' ),
 					'saveSettings'                     => __( 'Save Settings', 'wordpress-mcp' ),
 					'settingsSaved'                    => __( 'Settings saved successfully!', 'wordpress-mcp' ),
 					'settingsError'                    => __( 'Error saving settings. Please try again.', 'wordpress-mcp' ),
@@ -148,6 +154,24 @@ class Settings {
 			$sanitized['features_adapter_enabled'] = (bool) $input['features_adapter_enabled'];
 		} else {
 			$sanitized['features_adapter_enabled'] = false;
+		}
+
+		if ( isset( $input['enable_create_tools'] ) ) {
+			$sanitized['enable_create_tools'] = (bool) $input['enable_create_tools'];
+		} else {
+			$sanitized['enable_create_tools'] = false;
+		}
+
+		if ( isset( $input['enable_update_tools'] ) ) {
+			$sanitized['enable_update_tools'] = (bool) $input['enable_update_tools'];
+		} else {
+			$sanitized['enable_update_tools'] = false;
+		}
+
+		if ( isset( $input['enable_delete_tools'] ) ) {
+			$sanitized['enable_delete_tools'] = (bool) $input['enable_delete_tools'];
+		} else {
+			$sanitized['enable_delete_tools'] = false;
 		}
 
 		return $sanitized;

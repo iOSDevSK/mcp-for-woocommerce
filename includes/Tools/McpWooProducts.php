@@ -1,5 +1,5 @@
 <?php //phpcs:ignore
-declare(strict_types=1);
+declare( strict_types=1 );
 
 namespace Automattic\WordpressMcp\Tools;
 
@@ -36,6 +36,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_products_search',
 				'description' => 'Search and filter WooCommerce products with pagination',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products',
 					'method' => 'GET',
@@ -47,6 +48,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_get_product',
 				'description' => 'Get a WooCommerce product by ID',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/(?P<id>[\d]+)',
 					'method' => 'GET',
@@ -58,6 +60,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_add_product',
 				'description' => 'Add a new WooCommerce product',
+				'type'        => 'create',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products',
 					'method' => 'POST',
@@ -69,6 +72,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_update_product',
 				'description' => 'Update a WooCommerce product by ID',
+				'type'        => 'update',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/(?P<id>[\d]+)',
 					'method' => 'PUT',
@@ -80,6 +84,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_delete_product',
 				'description' => 'Delete a WooCommerce product by ID',
+				'type'        => 'delete',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/(?P<id>[\d]+)',
 					'method' => 'DELETE',
@@ -92,6 +97,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_list_product_categories',
 				'description' => 'List all WooCommerce product categories',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/categories',
 					'method' => 'GET',
@@ -103,6 +109,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_add_product_category',
 				'description' => 'Add a new WooCommerce product category',
+				'type'        => 'create',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/categories',
 					'method' => 'POST',
@@ -114,6 +121,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_update_product_category',
 				'description' => 'Update a WooCommerce product category',
+				'type'        => 'update',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/categories/(?P<id>[\d]+)',
 					'method' => 'PUT',
@@ -125,6 +133,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_delete_product_category',
 				'description' => 'Delete a WooCommerce product category',
+				'type'        => 'delete',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/categories/(?P<id>[\d]+)',
 					'method' => 'DELETE',
@@ -137,6 +146,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_list_product_tags',
 				'description' => 'List all WooCommerce product tags',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/tags',
 					'method' => 'GET',
@@ -148,6 +158,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_add_product_tag',
 				'description' => 'Add a new WooCommerce product tag',
+				'type'        => 'create',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/tags',
 					'method' => 'POST',
@@ -159,6 +170,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_update_product_tag',
 				'description' => 'Update a WooCommerce product tag',
+				'type'        => 'update',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/tags/(?P<id>[\d]+)',
 					'method' => 'PUT',
@@ -170,6 +182,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_delete_product_tag',
 				'description' => 'Delete a WooCommerce product tag',
+				'type'        => 'delete',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/tags/(?P<id>[\d]+)',
 					'method' => 'DELETE',
@@ -182,6 +195,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_list_product_brands',
 				'description' => 'List all WooCommerce product brands',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/brands',
 					'method' => 'GET',
@@ -193,6 +207,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_add_product_brand',
 				'description' => 'Add a new WooCommerce product brand',
+				'type'        => 'create',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/brands',
 					'method' => 'POST',
@@ -204,6 +219,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_update_product_brand',
 				'description' => 'Update a WooCommerce product brand',
+				'type'        => 'update',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/brands/(?P<id>[\d]+)',
 					'method' => 'PUT',
@@ -215,6 +231,7 @@ class McpWooProducts {
 			array(
 				'name'        => 'wc_delete_product_brand',
 				'description' => 'Delete a WooCommerce product brand',
+				'type'        => 'delete',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/brands/(?P<id>[\d]+)',
 					'method' => 'DELETE',

@@ -29,8 +29,8 @@ class PluginsInfo {
 		$inactive_plugins = array_diff( array_keys( $all_plugins ), $active_plugins );
 
 		foreach ( $all_plugins as $plugin_path => $plugin_data ) {
-			$plugin_slug = explode( '/', $plugin_path )[0];
-			$plugin_info = $this->get_plugin_info( $plugin_path );
+			$plugin_slug = explode( '/', (string) $plugin_path )[0];
+			$plugin_info = $this->get_plugin_info( (string) $plugin_path );
 			$update_info = $this->get_plugin_update_info( $plugin_slug );
 
 			$plugins_data[] = array(

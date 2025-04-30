@@ -1,5 +1,5 @@
 <?php //phpcs:ignore
-declare(strict_types=1);
+declare( strict_types=1 );
 
 namespace Automattic\WordpressMcp\Tools;
 
@@ -25,6 +25,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_posts_search',
 				'description' => 'Search and filter WordPress posts with pagination',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/posts',
 					'method' => 'GET',
@@ -36,6 +37,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_get_post',
 				'description' => 'Get a WordPress post by ID',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/posts/(?P<id>[\d]+)',
 					'method' => 'GET',
@@ -47,6 +49,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_add_post',
 				'description' => 'Add a new WordPress post',
+				'type'        => 'create',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/posts',
 					'method' => 'POST',
@@ -58,6 +61,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_update_post',
 				'description' => 'Update a WordPress post by ID',
+				'type'        => 'update',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/posts/(?P<id>[\d]+)',
 					'method' => 'PUT',
@@ -69,6 +73,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_delete_post',
 				'description' => 'Delete a WordPress post by ID',
+				'type'        => 'delete',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/posts/(?P<id>[\d]+)',
 					'method' => 'DELETE',
@@ -81,6 +86,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_list_categories',
 				'description' => 'List all WordPress post categories',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/categories',
 					'method' => 'GET',
@@ -93,6 +99,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_add_category',
 				'description' => 'Add a new WordPress post category',
+				'type'        => 'create',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/categories',
 					'method' => 'POST',
@@ -105,6 +112,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_update_category',
 				'description' => 'Update a WordPress post category',
+				'type'        => 'update',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/categories/(?P<id>[\d]+)',
 					'method' => 'PUT',
@@ -117,6 +125,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_delete_category',
 				'description' => 'Delete a WordPress post category',
+				'type'        => 'delete',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/categories/(?P<id>[\d]+)',
 					'method' => 'DELETE',
@@ -129,6 +138,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_list_tags',
 				'description' => 'List all WordPress post tags',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/tags',
 					'method' => 'GET',
@@ -141,6 +151,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_add_tag',
 				'description' => 'Add a new WordPress post tag',
+				'type'        => 'create',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/tags',
 					'method' => 'POST',
@@ -153,6 +164,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_update_tag',
 				'description' => 'Update a WordPress post tag',
+				'type'        => 'update',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/tags/(?P<id>[\d]+)',
 					'method' => 'PUT',
@@ -165,6 +177,7 @@ class McpPostsTools {
 			array(
 				'name'        => 'wp_delete_tag',
 				'description' => 'Delete a WordPress post tag',
+				'type'        => 'delete',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/tags/(?P<id>[\d]+)',
 					'method' => 'DELETE',

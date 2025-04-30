@@ -1,5 +1,5 @@
 <?php //phpcs:ignore
-declare(strict_types=1);
+declare( strict_types=1 );
 
 namespace Automattic\WordpressMcp\Tools;
 
@@ -25,6 +25,7 @@ class McpUsersTools {
 			array(
 				'name'        => 'wp_users_search',
 				'description' => 'Search and filter WordPress users with pagination',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/users',
 					'method' => 'GET',
@@ -36,6 +37,7 @@ class McpUsersTools {
 			array(
 				'name'        => 'wp_get_user',
 				'description' => 'Get a WordPress user by ID',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/users/(?P<id>[\d]+)',
 					'method' => 'GET',
@@ -47,6 +49,7 @@ class McpUsersTools {
 			array(
 				'name'        => 'wp_add_user',
 				'description' => 'Add a new WordPress user',
+				'type'        => 'create',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/users',
 					'method' => 'POST',
@@ -58,6 +61,7 @@ class McpUsersTools {
 			array(
 				'name'        => 'wp_update_user',
 				'description' => 'Update a WordPress user by ID',
+				'type'        => 'update',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/users/(?P<id>[\d]+)',
 					'method' => 'PUT',
@@ -69,6 +73,7 @@ class McpUsersTools {
 			array(
 				'name'        => 'wp_delete_user',
 				'description' => 'Delete a WordPress user by ID',
+				'type'        => 'delete',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/users/(?P<id>[\d]+)',
 					'method' => 'DELETE',
@@ -76,11 +81,12 @@ class McpUsersTools {
 			)
 		);
 
-		// Get current user
+		// Get current user.
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wp_get_current_user',
 				'description' => 'Get the current logged-in user',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/users/me',
 					'method' => 'GET',
@@ -88,11 +94,12 @@ class McpUsersTools {
 			)
 		);
 
-		// Update current user
+		// Update current user.
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wp_update_current_user',
 				'description' => 'Update the current logged-in user',
+				'type'        => 'update',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/users/me',
 					'method' => 'PUT',

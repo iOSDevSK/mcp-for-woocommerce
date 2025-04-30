@@ -1,5 +1,5 @@
 <?php //phpcs:ignore
-declare(strict_types=1);
+declare( strict_types=1 );
 
 namespace Automattic\WordpressMcp\Tools;
 
@@ -36,6 +36,7 @@ class McpWooOrders {
 			array(
 				'name'        => 'wc_orders_search',
 				'description' => 'Get a list of WooCommerce orders',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/orders',
 					'method' => 'GET',
@@ -43,11 +44,12 @@ class McpWooOrders {
 			)
 		);
 
-		// Reports tools
+		// Reports tools.
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wc_reports_coupons_totals',
 				'description' => 'Get WooCommerce coupons totals report',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/reports/coupons/totals',
 					'method' => 'GET',
@@ -59,6 +61,7 @@ class McpWooOrders {
 			array(
 				'name'        => 'wc_reports_customers_totals',
 				'description' => 'Get WooCommerce customers totals report',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/reports/customers/totals',
 					'method' => 'GET',
@@ -70,6 +73,7 @@ class McpWooOrders {
 			array(
 				'name'        => 'wc_reports_orders_totals',
 				'description' => 'Get WooCommerce orders totals report',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/reports/orders/totals',
 					'method' => 'GET',
@@ -81,6 +85,7 @@ class McpWooOrders {
 			array(
 				'name'        => 'wc_reports_products_totals',
 				'description' => 'Get WooCommerce products totals report',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/reports/products/totals',
 					'method' => 'GET',
@@ -92,6 +97,7 @@ class McpWooOrders {
 			array(
 				'name'        => 'wc_reports_reviews_totals',
 				'description' => 'Get WooCommerce reviews totals report',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/reports/reviews/totals',
 					'method' => 'GET',
@@ -103,6 +109,7 @@ class McpWooOrders {
 			array(
 				'name'        => 'wc_reports_sales',
 				'description' => 'Get WooCommerce sales report',
+				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/reports/sales',
 					'method' => 'GET',
