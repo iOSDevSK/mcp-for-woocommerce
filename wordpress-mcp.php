@@ -2,7 +2,7 @@
 /**
  * Plugin name: WordPress MCP
  * Description: A plugin to manage content on a WordPress site.
- * Version: 0.1.7
+ * Version: 0.1.8
  * Author: Ovidiu Galatan <ovidiu.galatan@a8c.com>
  * Author URI: https://automattic.com
  * Text Domain: wordpress-mcp
