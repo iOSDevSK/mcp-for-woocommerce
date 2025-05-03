@@ -54,9 +54,6 @@ class Settings {
 	/**
 	 * Checks if WordPress Feature API is available.
 	 *
-	 * This checks multiple signals to determine if the WordPress Feature API
-	 * plugin is installed and activated.
-	 *
 	 * @return bool True if WP Feature API is available, false otherwise.
 	 */
 	private function is_feature_api_available(): bool {
