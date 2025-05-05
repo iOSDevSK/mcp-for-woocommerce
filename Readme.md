@@ -1,5 +1,7 @@
 # WordPress MCP
 
+[![Latest Release](https://img.shields.io/github/v/release/Automattic/wordpress-mcp)](https://github.com/Automattic/wordpress-mcp/releases)
+
 A WordPress plugin that implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) to expose WordPress functionality through a standardized interface. This plugin enables AI models and other applications to interact with WordPress sites in a structured and secure way.
 
 ## Features
@@ -9,6 +11,7 @@ A WordPress plugin that implements the [Model Context Protocol (MCP)](https://mo
 - 🏗️ Extensible architecture for custom tools, resources and prompts
 - 🔌 Adapter for [WordPress Feature API](https://github.com/Automattic/wp-feature-api)
 - ⚡ High-performance implementation
+
 
 ## Installation
 
@@ -52,5 +55,5 @@ We welcome contributions!
 
 For support, please:
 
-- Open an issue on GitHub
-- Contact the maintainers
+-   Open an issue on GitHub
+-   Contact the maintainers
