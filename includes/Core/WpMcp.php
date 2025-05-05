@@ -153,7 +153,7 @@ class WpMcp {
 		$options          = get_option( 'wordpress_mcp_settings', array() );
 		$features_enabled = isset( $options['features_adapter_enabled'] ) && $options['features_adapter_enabled'];
 
-		if ( ! $features_enabled ) {
+		if ( $features_enabled ) {
 			new WpFeaturesAdapter();
 		}
 	}
