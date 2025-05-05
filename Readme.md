@@ -53,6 +53,8 @@ We welcome contributions!
 
 ## Support
 
+WordPress MCP has extensive documentation, please refer to the [docs](docs/README.md) for more information.
+
 For support, please:
 
 -   Open an issue on GitHub

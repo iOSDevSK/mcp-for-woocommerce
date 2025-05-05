@@ -20,7 +20,6 @@ Detailed documentation for developers:
 -   [Registered Tools](docs/registered-tools.md) - List of default available tools
 -   [Registered Resources](docs/registered-resources.md) - List of default available resources
 -   [Registered Prompts](docs/registered-prompts.md) - List of default available prompts
--   _(Consider adding a link to connection setup guide if it's complex)_
 
 ## Getting Started
 
@@ -45,9 +44,3 @@ To interact with your WordPress site via MCP, you need an MCP client application
 -   **Trust:** Only connect trusted MCP clients to your WordPress site.
 
 ## Support
-
-For issues, questions, or feature requests, please use the [GitHub Issues tracker](https://github.com/Automattic/wordpress-mcp/issues).
-
-## Contributing
-
-We welcome contributions!
