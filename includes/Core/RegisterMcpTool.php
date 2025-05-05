@@ -81,8 +81,12 @@ class RegisterMcpTool {
 		);
 
 		foreach ( $rest_api['args'] as $arg_name => $arg_schema ) {
+			$type = $arg_schema['type'];
+			if ( is_array( $type ) ) {
+				$type = reset( $type );
+			}
 			$input_schema['properties'][ $arg_name ] = array(
-				'type'        => $arg_schema['type'],
+				'type'        => $type,
 				'description' => $arg_schema['description'],
 			);
 
@@ -118,6 +122,12 @@ class RegisterMcpTool {
 			if ( isset( $arg_schema['required'] ) && true === $arg_schema['required'] ) {
 				$input_schema['required'][] = $arg_name;
 			}
+		}
+
+		// Apply modifications if provided in rest_alias['modifications'] .
+		if ( isset( $this->args['rest_alias']['inputSchemaReplacements'] ) ) {
+			$modifications = $this->args['rest_alias']['inputSchemaReplacements'];
+			$input_schema  = $this->apply_modifications( $input_schema, $modifications );
 		}
 
 		// Update the args with the converted schema.
@@ -267,5 +277,37 @@ class RegisterMcpTool {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Recursively remove all null values from an array.
+	 *
+	 * @param array $array The array to clean.
+	 * @return array The cleaned array.
+	 */
+	private function remove_null_recursive( array $array ): array {
+		foreach ( $array as $key => &$value ) {
+			if ( is_array( $value ) ) {
+				$value = $this->remove_null_recursive( $value );
+			} elseif ( is_null( $value ) ) {
+				unset( $array[ $key ] );
+			}
+		}
+		unset( $value ); // break reference.
+		return $array;
+	}
+
+	/**
+	 * Apply modifications to the input schema.
+	 *
+	 * @param array $input_schema The input schema.
+	 * @param array $modifications The modifications to apply.
+	 * @return array The modified input schema.
+	 */
+	private function apply_modifications( array $input_schema, array $modifications ): array {
+
+		$modifications = array_replace_recursive( $input_schema, $modifications );
+
+		return $this->remove_null_recursive( $modifications );
 	}
 }

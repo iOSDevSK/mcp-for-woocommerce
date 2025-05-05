@@ -2,14 +2,16 @@
 
 [![Latest Release](https://img.shields.io/github/v/release/Automattic/wordpress-mcp)](https://github.com/Automattic/wordpress-mcp/releases)
 
-A WordPress plugin that implements the Model Context Protocol (MCP) to expose WordPress functionality through a standardized interface. This plugin enables AI models and other applications to interact with WordPress sites in a structured and secure way.
+A WordPress plugin that implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) to expose WordPress functionality through a standardized interface. This plugin enables AI models and other applications to interact with WordPress sites in a structured and secure way.
 
 ## Features
 
--   🔒 Secure and standardized interface for WordPress interactions
--   🤖 AI-friendly API endpoints
--   🏗️ Extensible architecture for custom tools, resources and prompts
--   ⚡ High-performance implementation
+- 🔒 Secure and standardized interface for WordPress interactions
+- 🤖 AI-friendly API endpoints
+- 🏗️ Extensible architecture for custom tools, resources and prompts
+- 🔌 Adapter for [WordPress Feature API](https://github.com/Automattic/wp-feature-api)
+- ⚡ High-performance implementation
+
 
 ## Installation
 
@@ -17,11 +19,11 @@ A WordPress plugin that implements the Model Context Protocol (MCP) to expose Wo
    from https://github.com/Automattic/wordpress-mcp/releases/
 2. Upload the plugin files to the `/wp-content/plugins/wordpress-mcp` directory
 3. Activate the plugin through the 'Plugins' menu in WordPress
-4. Navigate to `Settings > WordPress MCP` and enable MCP functionality and features
+4. Navigate to `Settings > MCP` and enable MCP functionality and features
 
 ## Usage
 
-This plugin is designed to work with [wp-wordpress-remote](https://github.com/Automattic/mcp-wordpress-remote), which provides the client-side implementation for interacting with the MCP interface. Please check the [usage instructions](https://github.com/Automattic/mcp-wordpress-remote?tab=readme-ov-file#usage)
+This plugin is designed to work with [wp-wordpress-remote](https://github.com/Automattic/mcp-wordpress-remote), which provides the client-side implementation for interacting with the MCP interface. Please check the [usage instructions](https://github.com/Automattic/mcp-wordpress-remote?tab=readme-ov-file#usage).
 
 ## Development
 
@@ -40,6 +42,10 @@ Check the resources define on `wp-content/plugins/wordpress-mcp/includes/Resourc
 #### Adding Prompts
 
 Check the prompts defined on `wp-content/plugins/wordpress-mcp/includes/Prompts/` for axamples
+
+#### Using the WordPress Feature API
+
+Check the [WordPress Feature API](https://github.com/Automattic/wp-feature-api) - a system for exposing WordPress functionality in a standardized, discoverable way for both server and client-side use. When enabled, this plugin will convert Features into MCP tools and resources.
 
 ## Contributing
 

@@ -10,11 +10,39 @@ import {
 	Spinner,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Settings Tab Component
  */
 const SettingsTab = ( { settings, onToggleChange, isSaving, strings } ) => {
+	// Check if WordPress Features API is available
+	// When passing from PHP to JS via wp_localize_script, booleans become strings
+	const isFeatureApiAvailable = 
+		window.wordpressMcpSettings?.featureApiAvailable === true || 
+		window.wordpressMcpSettings?.featureApiAvailable === '1';
+	
+	// Add debugging - can be removed after fixing the issue
+	useEffect(() => {
+		console.log('[DEBUG] Feature API available:', isFeatureApiAvailable);
+		console.log('[DEBUG] MCP Settings object:', window.wordpressMcpSettings);
+	}, [isFeatureApiAvailable]);
+	
+	// Determine if the feature toggle should be disabled
+	const isFeatureToggleDisabled = !settings.enabled || !isFeatureApiAvailable;
+	
+	// Create the help text with link for Feature API
+	const featureApiHelpText = isFeatureApiAvailable
+		? (strings.enableFeaturesAdapterDescription || 
+		   __('Enable or disable the WordPress Features Adapter. This option only works when MCP is enabled.', 'wordpress-mcp'))
+		: createInterpolateElement(
+			__('WordPress Feature API is not available. Please <a>install</a> and activate the WordPress Feature API plugin.', 'wordpress-mcp'),
+			{
+				a: <a href="https://github.com/Automattic/wp-feature-api" target="_blank" rel="noopener noreferrer" />
+			}
+		);
+	
 	return (
 		<Card>
 			<CardHeader>
@@ -48,18 +76,14 @@ const SettingsTab = ( { settings, onToggleChange, isSaving, strings } ) => {
 								'wordpress-mcp'
 							)
 						}
-						help={
-							strings.enableFeaturesAdapterDescription ||
-							__(
-								'Enable or disable the WordPress Features Adapter. This option only works when MCP is enabled.',
-								'wordpress-mcp'
-							)
-						}
-						checked={ settings.features_adapter_enabled }
-						onChange={ () =>
-							onToggleChange( 'features_adapter_enabled' )
-						}
-						disabled={ ! settings.enabled }
+						help={ featureApiHelpText }
+						checked={ isFeatureApiAvailable ? settings.features_adapter_enabled : false }
+						onChange={ () => {
+							if (isFeatureApiAvailable && settings.enabled) {
+								onToggleChange('features_adapter_enabled');
+							}
+						}}
+						disabled={ isFeatureToggleDisabled }
 					/>
 				</div>
 

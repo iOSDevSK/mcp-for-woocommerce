@@ -27,8 +27,16 @@ class McpUsersTools {
 				'description' => 'Search and filter WordPress users with pagination',
 				'type'        => 'read',
 				'rest_alias'  => array(
-					'route'  => '/wp/v2/users',
-					'method' => 'GET',
+					'route'                   => '/wp/v2/users',
+					'method'                  => 'GET',
+					'inputSchemaReplacements' => array(
+						'properties' => array(
+							'has_published_posts' => array(
+								'items'   => null, // this will remove the array from the schema.
+								'default' => false,
+							),
+						),
+					),
 				),
 			)
 		);

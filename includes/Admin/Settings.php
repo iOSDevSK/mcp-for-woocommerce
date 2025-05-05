@@ -21,6 +21,7 @@ class Settings {
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_ajax_wordpress_mcp_save_settings', array( $this, 'ajax_save_settings' ) );
+		add_filter( 'plugin_action_links_' . plugin_basename( WORDPRESS_MCP_PATH . 'wordpress-mcp.php' ), array( $this, 'plugin_action_links' ) );
 	}
 
 	/**
@@ -28,8 +29,8 @@ class Settings {
 	 */
 	public function add_settings_page(): void {
 		add_options_page(
-			__( 'MCP Settings', 'wordpress-mcp' ),
-			__( 'MCP Settings', 'wordpress-mcp' ),
+			__( 'MCP', 'wordpress-mcp' ),
+			__( 'MCP', 'wordpress-mcp' ),
 			'manage_options',
 			'wordpress-mcp-settings',
 			array( $this, 'render_settings_page' )
@@ -48,6 +49,15 @@ class Settings {
 				'sanitize_callback' => array( $this, 'sanitize_settings' ),
 			)
 		);
+	}
+
+	/**
+	 * Checks if WordPress Feature API is available.
+	 *
+	 * @return bool True if WP Feature API is available, false otherwise.
+	 */
+	private function is_feature_api_available(): bool {
+		return defined( 'WP_FEATURE_API_VERSION' );
 	}
 
 	/**
@@ -92,10 +102,11 @@ class Settings {
 			'wordpress-mcp-settings',
 			'wordpressMcpSettings',
 			array(
-				'apiUrl'   => rest_url( 'wordpress-mcp/v1/settings' ),
-				'nonce'    => wp_create_nonce( 'wordpress_mcp_settings' ),
-				'settings' => get_option( self::OPTION_NAME, array() ),
-				'strings'  => array(
+				'apiUrl'              => rest_url( 'wordpress-mcp/v1/settings' ),
+				'nonce'               => wp_create_nonce( 'wordpress_mcp_settings' ),
+				'settings'            => get_option( self::OPTION_NAME, array() ),
+				'featureApiAvailable' => $this->is_feature_api_available(),
+				'strings'             => array(
 					'enableMcp'                        => __( 'Enable MCP functionality', 'wordpress-mcp' ),
 					'enableMcpDescription'             => __( 'Toggle to enable or disable the MCP plugin functionality.', 'wordpress-mcp' ),
 					'enableFeaturesAdapter'            => __( 'Enable WordPress Features Adapter', 'wordpress-mcp' ),
@@ -190,5 +201,17 @@ class Settings {
 			<div id="wordpress-mcp-settings-app"></div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Add settings link to plugin actions.
+	 *
+	 * @param array $actions An array of plugin action links.
+	 * @return array
+	 */
+	public function plugin_action_links( array $actions ): array {
+		$settings_link = '<a href="' . admin_url( 'options-general.php?page=wordpress-mcp-settings' ) . '">' . __( 'Settings', 'wordpress-mcp' ) . '</a>';
+		array_unshift( $actions, $settings_link );
+		return $actions;
 	}
 }

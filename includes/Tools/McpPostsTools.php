@@ -51,10 +51,28 @@ class McpPostsTools {
 				'description' => 'Add a new WordPress post',
 				'type'        => 'create',
 				'rest_alias'  => array(
-					'route'  => '/wp/v2/posts',
-					'method' => 'POST',
+					'route'                   => '/wp/v2/posts',
+					'method'                  => 'POST',
+					'inputSchemaReplacements' => array( // this will replace the defined elements in the default input schema with the new ones.
+						'properties' => array(
+							'title'   => array(
+								'type' => 'string',
+							),
+							'content' => array(
+								'type'        => 'string',
+								'description' => 'The content of the post in a valid Guttenberg block format',
+							),
+							'excerpt' => array(
+								'type' => 'string',
+							),
+						),
+						'required'   => array(
+							'title',
+							'content',
+						),
+					),
 				),
-			)
+			),
 		);
 
 		new RegisterMcpTool(
