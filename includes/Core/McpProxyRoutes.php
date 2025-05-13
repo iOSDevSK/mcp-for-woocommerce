@@ -210,15 +210,27 @@ class McpProxyRoutes {
 		// Implement a tool calling logic here.
 		$result = HandleToolsCall::run( $params );
 
-		return rest_ensure_response(
-			array(
-				'content' => array(
-					array(
-						'type' => 'text',
-						'text' => wp_json_encode( $result ),
-					),
+		$response = array(
+			'content' => array(
+				array(
+					'type' => 'text',
 				),
-			)
+			),
+		);
+
+		// @todo: add support for EmbeddedResource schema.ts:619.
+		if ( isset( $result['type'] ) && 'image' === $result['type'] ) {
+			$response['content'][0]['type'] = 'image';
+			$response['content'][0]['data'] = base64_encode( $result['results'] ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+
+			// @todo: improve this ?!.
+			$response['content'][0]['mimeType'] = $result['mimeType'] ?? 'image/png';
+		} else {
+			$response['content'][0]['text'] = wp_json_encode( $result );
+		}
+
+		return rest_ensure_response(
+			$response
 		);
 	}
 
