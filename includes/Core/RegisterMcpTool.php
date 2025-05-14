@@ -125,8 +125,12 @@ class RegisterMcpTool {
 		}
 
 		// Convert required array to object.
-		$input_schema['properties'] = (object) $input_schema['properties'];
-		$input_schema['required']   = (object) $input_schema['required'];
+		if ( empty( $input_schema['properties'] ) ) {
+			unset( $input_schema['properties'] );
+		}
+		if ( empty( $input_schema['required'] ) ) {
+			unset( $input_schema['required'] );
+		}
 
 		// Apply modifications if provided in rest_alias['modifications'] .
 		if ( isset( $this->args['rest_alias']['inputSchemaReplacements'] ) ) {
