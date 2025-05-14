@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Automattic\WordpressMcp\Core;
 
+use Automattic\WordpressMcp\Tools\McpCustomPostTypesTools;
 use Automattic\WordpressMcp\Tools\McpPostsTools;
 use Automattic\WordpressMcp\Resources\McpGeneralSiteInfo;
 use Automattic\WordpressMcp\Tools\McpSiteInfo;
@@ -142,6 +143,7 @@ class WpMcp {
 		new McpPagesTools();
 		new McpSettingsTools();
 		new McpMediaTools();
+		new McpCustomPostTypesTools();
 	}
 
 	/**
