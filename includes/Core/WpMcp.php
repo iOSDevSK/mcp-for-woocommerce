@@ -3,12 +3,16 @@ declare(strict_types=1);
 
 namespace Automattic\WordpressMcp\Core;
 
+use Automattic\WordpressMcp\Tools\McpCustomPostTypesTools;
 use Automattic\WordpressMcp\Tools\McpPostsTools;
 use Automattic\WordpressMcp\Resources\McpGeneralSiteInfo;
 use Automattic\WordpressMcp\Tools\McpSiteInfo;
 use Automattic\WordpressMcp\Tools\McpUsersTools;
 use Automattic\WordpressMcp\Tools\McpWooOrders;
 use Automattic\WordpressMcp\Tools\McpWooProducts;
+use Automattic\WordpressMcp\Tools\McpPagesTools;
+use Automattic\WordpressMcp\Tools\McpSettingsTools;
+use Automattic\WordpressMcp\Tools\McpMediaTools;
 use Automattic\WordpressMcp\Prompts\McpGetSiteInfo as McpGetSiteInfoPrompt;
 use Automattic\WordpressMcp\Prompts\McpAnalyzeSales;
 use Automattic\WordpressMcp\Resources\McpPluginInfoResource;
@@ -136,6 +140,10 @@ class WpMcp {
 		new McpUsersTools();
 		new McpWooProducts();
 		new McpWooOrders();
+		new McpPagesTools();
+		new McpSettingsTools();
+		new McpMediaTools();
+		new McpCustomPostTypesTools();
 	}
 
 	/**

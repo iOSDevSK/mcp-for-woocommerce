@@ -36,6 +36,11 @@ class McpUsersTools {
 								'default' => false,
 							),
 						),
+						'required'   => array(
+							'context',
+							'id',
+							'who',
+						),
 					),
 				),
 			)

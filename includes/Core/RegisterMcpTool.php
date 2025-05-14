@@ -53,11 +53,11 @@ class RegisterMcpTool {
 
 		// get a list of all registered rest routes.
 		$routes = rest_get_server()->get_routes();
-		// maybe use:  rest_get_server()->get_route_options( $route ) );
+		// maybe use:  rest_get_server()->get_route_options( $route ) );.
 		$rest_route = $routes[ $route ] ?? null;
 		if ( ! $rest_route ) {
 			// translators: %s: Route.
-			throw new InvalidArgumentException( sprintf( esc_html__( 'The route %s does not exist.', 'wordpress-mcp' ), esc_html( $route ) ) );
+			throw new InvalidArgumentException( sprintf( esc_html__( 'The route %1$s with method %2$s does not exist.', 'wordpress-mcp' ), $route, $method ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 
 		$rest_api = null;
@@ -123,6 +123,10 @@ class RegisterMcpTool {
 				$input_schema['required'][] = $arg_name;
 			}
 		}
+
+		// Convert required array to object.
+		$input_schema['properties'] = (object) $input_schema['properties'];
+		$input_schema['required']   = (object) $input_schema['required'];
 
 		// Apply modifications if provided in rest_alias['modifications'] .
 		if ( isset( $this->args['rest_alias']['inputSchemaReplacements'] ) ) {
