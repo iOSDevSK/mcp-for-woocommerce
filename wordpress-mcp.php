@@ -2,7 +2,7 @@
 /**
  * Plugin name: WordPress MCP
  * Description: A plugin to integrate WordPress with Model Context Protocol (MCP), providing AI-accessible interfaces to WordPress data and functionality through standardized tools, resources, and prompts. Enables AI assistants to interact with posts, users, site settings, and WooCommerce data.
- * Version: 0.1.10
+ * Version: 0.1.11
  * Author: Automattic AI, Ovidiu Galatan <ovidiu.galatan@a8c.com>
  * Author URI: https://automattic.ai
  * Text Domain: wordpress-mcp

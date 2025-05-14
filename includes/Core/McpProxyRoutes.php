@@ -185,8 +185,7 @@ class McpProxyRoutes {
 
 		return rest_ensure_response(
 			array(
-				'tools'      => $tools,
-				'nextCursor' => '',
+				'tools' => $tools,
 			)
 		);
 	}
