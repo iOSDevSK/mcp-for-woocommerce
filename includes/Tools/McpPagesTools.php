@@ -30,6 +30,11 @@ class McpPagesTools {
 					'route'  => '/wp/v2/pages',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'Search Pages',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -41,6 +46,11 @@ class McpPagesTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/pages/(?P<id>[\d]+)',
 					'method' => 'GET',
+				),
+				'annotations' => array(
+					'title'         => 'Get Page',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
 				),
 			)
 		);
@@ -80,6 +90,13 @@ class McpPagesTools {
 						),
 					),
 				),
+				'annotations' => array(
+					'title'           => 'Add Page',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => false,
+					'openWorldHint'   => false,
+				),
 			),
 		);
 
@@ -92,6 +109,13 @@ class McpPagesTools {
 					'route'  => '/wp/v2/pages/(?P<id>[\d]+)',
 					'method' => 'PUT',
 				),
+				'annotations' => array(
+					'title'           => 'Update Page',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -103,6 +127,13 @@ class McpPagesTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/pages/(?P<id>[\d]+)',
 					'method' => 'DELETE',
+				),
+				'annotations' => array(
+					'title'           => 'Delete Page',
+					'readOnlyHint'    => false,
+					'destructiveHint' => true,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);

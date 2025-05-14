@@ -30,6 +30,11 @@ class McpSettingsTools {
 					'route'  => '/wp/v2/settings',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'Get General Settings',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -97,6 +102,13 @@ class McpSettingsTools {
 							),
 						),
 					),
+				),
+				'annotations' => array(
+					'title'           => 'Update General Settings',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);

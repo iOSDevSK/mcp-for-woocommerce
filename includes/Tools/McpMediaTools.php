@@ -30,6 +30,11 @@ class McpMediaTools {
 					'route'  => '/wp/v2/media',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'List Media',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -47,6 +52,11 @@ class McpMediaTools {
 							'context',
 						),
 					),
+				),
+				'annotations' => array(
+					'title'         => 'Get Media',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
 				),
 			)
 		);
@@ -73,6 +83,11 @@ class McpMediaTools {
 					'required'   => array(
 						'id',
 					),
+				),
+				'annotations'          => array(
+					'title'         => 'Get Media File',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
 				),
 			)
 		);
@@ -114,6 +129,13 @@ class McpMediaTools {
 					),
 					'preCallback'             => array( $this, 'wp_upload_media_pre_callback' ),
 				),
+				'annotations' => array(
+					'title'           => 'Upload Media',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => false,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -146,6 +168,13 @@ class McpMediaTools {
 						),
 					),
 				),
+				'annotations' => array(
+					'title'           => 'Update Media',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -157,6 +186,13 @@ class McpMediaTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/media/(?P<id>[\d]+)',
 					'method' => 'DELETE',
+				),
+				'annotations' => array(
+					'title'           => 'Delete Media',
+					'readOnlyHint'    => false,
+					'destructiveHint' => true,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -193,6 +229,11 @@ class McpMediaTools {
 							),
 						),
 					),
+				),
+				'annotations' => array(
+					'title'         => 'Search Media',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
 				),
 			)
 		);

@@ -40,6 +40,11 @@ class McpCustomPostTypesTools {
 					'route'  => '/wp/v2/types',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'List Post Types',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -83,6 +88,11 @@ class McpCustomPostTypesTools {
 						'post_type',
 					),
 				),
+				'annotations' => array(
+					'title'         => 'Search Custom Post Types',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -108,6 +118,11 @@ class McpCustomPostTypesTools {
 						'post_type',
 						'id',
 					),
+				),
+				'annotations' => array(
+					'title'         => 'Get Custom Post Type',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
 				),
 			)
 		);
@@ -147,6 +162,13 @@ class McpCustomPostTypesTools {
 						'title',
 						'content',
 					),
+				),
+				'annotations' => array(
+					'title'           => 'Add Custom Post Type',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => false,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -190,6 +212,13 @@ class McpCustomPostTypesTools {
 						'id',
 					),
 				),
+				'annotations' => array(
+					'title'           => 'Update Custom Post Type',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -215,6 +244,13 @@ class McpCustomPostTypesTools {
 						'post_type',
 						'id',
 					),
+				),
+				'annotations' => array(
+					'title'           => 'Delete Custom Post Type',
+					'readOnlyHint'    => false,
+					'destructiveHint' => true,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);
