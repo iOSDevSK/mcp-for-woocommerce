@@ -101,7 +101,7 @@ class RegisterMcpTool {
 			}
 
 			// Handle default values if present.
-			if ( isset( $arg_schema['default'] ) ) {
+			if ( isset( $arg_schema['default'] ) && ! empty( $arg_schema['default'] ) ) {
 				$input_schema['properties'][ $arg_name ]['default'] = $arg_schema['default'];
 			}
 
