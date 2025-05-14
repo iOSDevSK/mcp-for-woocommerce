@@ -38,8 +38,6 @@ class McpUsersTools {
 						),
 						'required'   => array(
 							'context',
-							'id',
-							'who',
 						),
 					),
 				),
@@ -64,8 +62,16 @@ class McpUsersTools {
 				'description' => 'Add a new WordPress user',
 				'type'        => 'create',
 				'rest_alias'  => array(
-					'route'  => '/wp/v2/users',
-					'method' => 'POST',
+					'route'                   => '/wp/v2/users',
+					'method'                  => 'POST',
+					'inputSchemaReplacements' => array(
+						'properties' => array(
+							'locale' => null,
+						),
+						'required'   => array(
+							'context',
+						),
+					),
 				),
 			)
 		);
