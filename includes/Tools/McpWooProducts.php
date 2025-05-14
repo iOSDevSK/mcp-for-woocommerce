@@ -41,6 +41,11 @@ class McpWooProducts {
 					'route'  => '/wc/v3/products',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'Search Products',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -52,6 +57,11 @@ class McpWooProducts {
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/(?P<id>[\d]+)',
 					'method' => 'GET',
+				),
+				'annotations' => array(
+					'title'         => 'Get Product',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
 				),
 			)
 		);
@@ -65,6 +75,13 @@ class McpWooProducts {
 					'route'  => '/wc/v3/products',
 					'method' => 'POST',
 				),
+				'annotations' => array(
+					'title'           => 'Add Product',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => false,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -77,6 +94,13 @@ class McpWooProducts {
 					'route'  => '/wc/v3/products/(?P<id>[\d]+)',
 					'method' => 'PUT',
 				),
+				'annotations' => array(
+					'title'           => 'Update Product',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -88,6 +112,13 @@ class McpWooProducts {
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/(?P<id>[\d]+)',
 					'method' => 'DELETE',
+				),
+				'annotations' => array(
+					'title'           => 'Delete Product',
+					'readOnlyHint'    => false,
+					'destructiveHint' => true,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -102,6 +133,11 @@ class McpWooProducts {
 					'route'  => '/wc/v3/products/categories',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'List Product Categories',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -113,6 +149,13 @@ class McpWooProducts {
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/categories',
 					'method' => 'POST',
+				),
+				'annotations' => array(
+					'title'           => 'Add Product Category',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => false,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -126,6 +169,13 @@ class McpWooProducts {
 					'route'  => '/wc/v3/products/categories/(?P<id>[\d]+)',
 					'method' => 'PUT',
 				),
+				'annotations' => array(
+					'title'           => 'Update Product Category',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -137,6 +187,13 @@ class McpWooProducts {
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/categories/(?P<id>[\d]+)',
 					'method' => 'DELETE',
+				),
+				'annotations' => array(
+					'title'           => 'Delete Product Category',
+					'readOnlyHint'    => false,
+					'destructiveHint' => true,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -151,6 +208,11 @@ class McpWooProducts {
 					'route'  => '/wc/v3/products/tags',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'List Product Tags',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -162,6 +224,13 @@ class McpWooProducts {
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/tags',
 					'method' => 'POST',
+				),
+				'annotations' => array(
+					'title'           => 'Add Product Tag',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => false,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -175,6 +244,13 @@ class McpWooProducts {
 					'route'  => '/wc/v3/products/tags/(?P<id>[\d]+)',
 					'method' => 'PUT',
 				),
+				'annotations' => array(
+					'title'           => 'Update Product Tag',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -186,6 +262,13 @@ class McpWooProducts {
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/tags/(?P<id>[\d]+)',
 					'method' => 'DELETE',
+				),
+				'annotations' => array(
+					'title'           => 'Delete Product Tag',
+					'readOnlyHint'    => false,
+					'destructiveHint' => true,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -200,6 +283,11 @@ class McpWooProducts {
 					'route'  => '/wc/v3/products/brands',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'List Product Brands',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -211,6 +299,13 @@ class McpWooProducts {
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/brands',
 					'method' => 'POST',
+				),
+				'annotations' => array(
+					'title'           => 'Add Product Brand',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => false,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -224,6 +319,13 @@ class McpWooProducts {
 					'route'  => '/wc/v3/products/brands/(?P<id>[\d]+)',
 					'method' => 'PUT',
 				),
+				'annotations' => array(
+					'title'           => 'Update Product Brand',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -235,6 +337,13 @@ class McpWooProducts {
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/brands/(?P<id>[\d]+)',
 					'method' => 'DELETE',
+				),
+				'annotations' => array(
+					'title'           => 'Delete Product Brand',
+					'readOnlyHint'    => false,
+					'destructiveHint' => true,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);

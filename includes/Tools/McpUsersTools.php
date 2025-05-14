@@ -41,6 +41,11 @@ class McpUsersTools {
 						),
 					),
 				),
+				'annotations' => array(
+					'title'         => 'Search Users',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -52,6 +57,11 @@ class McpUsersTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/users/(?P<id>[\d]+)',
 					'method' => 'GET',
+				),
+				'annotations' => array(
+					'title'         => 'Get User',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
 				),
 			)
 		);
@@ -73,6 +83,13 @@ class McpUsersTools {
 						),
 					),
 				),
+				'annotations' => array(
+					'title'           => 'Add User',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => false,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -85,6 +102,13 @@ class McpUsersTools {
 					'route'  => '/wp/v2/users/(?P<id>[\d]+)',
 					'method' => 'PUT',
 				),
+				'annotations' => array(
+					'title'           => 'Update User',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -96,6 +120,13 @@ class McpUsersTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/users/(?P<id>[\d]+)',
 					'method' => 'DELETE',
+				),
+				'annotations' => array(
+					'title'           => 'Delete User',
+					'readOnlyHint'    => false,
+					'destructiveHint' => true,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -110,6 +141,11 @@ class McpUsersTools {
 					'route'  => '/wp/v2/users/me',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'Get Current User',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -122,6 +158,13 @@ class McpUsersTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/users/me',
 					'method' => 'PUT',
+				),
+				'annotations' => array(
+					'title'           => 'Update Current User',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);

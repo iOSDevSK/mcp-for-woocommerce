@@ -39,6 +39,11 @@ class McpSiteInfo {
 				),
 				'callback'             => array( $this, 'get_site_info' ),
 				'permissions_callback' => array( $this, 'permissions_callback' ),
+				'annotations'          => array(
+					'title'         => 'Get Site Info',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 	}

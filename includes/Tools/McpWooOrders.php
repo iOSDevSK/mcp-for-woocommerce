@@ -41,6 +41,11 @@ class McpWooOrders {
 					'route'  => '/wc/v3/orders',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'Search Orders',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -54,6 +59,11 @@ class McpWooOrders {
 					'route'  => '/wc/v3/reports/coupons/totals',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'Get Coupons Report',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -65,6 +75,11 @@ class McpWooOrders {
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/reports/customers/totals',
 					'method' => 'GET',
+				),
+				'annotations' => array(
+					'title'         => 'Get Customers Report',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
 				),
 			)
 		);
@@ -78,6 +93,11 @@ class McpWooOrders {
 					'route'  => '/wc/v3/reports/orders/totals',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'Get Orders Report',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -89,6 +109,11 @@ class McpWooOrders {
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/reports/products/totals',
 					'method' => 'GET',
+				),
+				'annotations' => array(
+					'title'         => 'Get Products Report',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
 				),
 			)
 		);
@@ -102,6 +127,11 @@ class McpWooOrders {
 					'route'  => '/wc/v3/reports/reviews/totals',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'Get Reviews Report',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -113,6 +143,11 @@ class McpWooOrders {
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/reports/sales',
 					'method' => 'GET',
+				),
+				'annotations' => array(
+					'title'         => 'Get Sales Report',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
 				),
 			)
 		);

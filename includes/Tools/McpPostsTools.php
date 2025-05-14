@@ -30,6 +30,11 @@ class McpPostsTools {
 					'route'  => '/wp/v2/posts',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'Search Posts',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -41,6 +46,11 @@ class McpPostsTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/posts/(?P<id>[\d]+)',
 					'method' => 'GET',
+				),
+				'annotations' => array(
+					'title'         => 'Get Post',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
 				),
 			)
 		);
@@ -72,6 +82,13 @@ class McpPostsTools {
 						),
 					),
 				),
+				'annotations' => array(
+					'title'           => 'Add Post',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => false,
+					'openWorldHint'   => false,
+				),
 			),
 		);
 
@@ -84,6 +101,13 @@ class McpPostsTools {
 					'route'  => '/wp/v2/posts/(?P<id>[\d]+)',
 					'method' => 'PUT',
 				),
+				'annotations' => array(
+					'title'           => 'Update Post',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -95,6 +119,13 @@ class McpPostsTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/posts/(?P<id>[\d]+)',
 					'method' => 'DELETE',
+				),
+				'annotations' => array(
+					'title'           => 'Delete Post',
+					'readOnlyHint'    => false,
+					'destructiveHint' => true,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -109,6 +140,11 @@ class McpPostsTools {
 					'route'  => '/wp/v2/categories',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'List Categories',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -121,6 +157,13 @@ class McpPostsTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/categories',
 					'method' => 'POST',
+				),
+				'annotations' => array(
+					'title'           => 'Add Category',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => false,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -135,6 +178,13 @@ class McpPostsTools {
 					'route'  => '/wp/v2/categories/(?P<id>[\d]+)',
 					'method' => 'PUT',
 				),
+				'annotations' => array(
+					'title'           => 'Update Category',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -147,6 +197,13 @@ class McpPostsTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/categories/(?P<id>[\d]+)',
 					'method' => 'DELETE',
+				),
+				'annotations' => array(
+					'title'           => 'Delete Category',
+					'readOnlyHint'    => false,
+					'destructiveHint' => true,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -161,6 +218,11 @@ class McpPostsTools {
 					'route'  => '/wp/v2/tags',
 					'method' => 'GET',
 				),
+				'annotations' => array(
+					'title'         => 'List Tags',
+					'readOnlyHint'  => true,
+					'openWorldHint' => false,
+				),
 			)
 		);
 
@@ -173,6 +235,13 @@ class McpPostsTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/tags',
 					'method' => 'POST',
+				),
+				'annotations' => array(
+					'title'           => 'Add Tag',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => false,
+					'openWorldHint'   => false,
 				),
 			)
 		);
@@ -187,6 +256,13 @@ class McpPostsTools {
 					'route'  => '/wp/v2/tags/(?P<id>[\d]+)',
 					'method' => 'PUT',
 				),
+				'annotations' => array(
+					'title'           => 'Update Tag',
+					'readOnlyHint'    => false,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
+				),
 			)
 		);
 
@@ -199,6 +275,13 @@ class McpPostsTools {
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/tags/(?P<id>[\d]+)',
 					'method' => 'DELETE',
+				),
+				'annotations' => array(
+					'title'           => 'Delete Tag',
+					'readOnlyHint'    => false,
+					'destructiveHint' => true,
+					'idempotentHint'  => true,
+					'openWorldHint'   => false,
 				),
 			)
 		);
