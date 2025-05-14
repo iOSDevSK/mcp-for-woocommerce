@@ -232,6 +232,7 @@ class WpMcp {
 
 		unset( $args['callback'] );
 		unset( $args['permissions_callback'] );
+		unset( $args['rest_alias'] );
 		$this->tools[] = $args;
 	}
 
