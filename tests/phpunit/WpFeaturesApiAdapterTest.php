@@ -66,40 +66,40 @@ class WpFeaturesApiAdapterTest extends WP_UnitTestCase {
 	 */
 	public function test_features_registered_as_mcp_tools(): void {
 
-		// add_action(
-		// 'wp_feature_api_init',
-		// function () {
-		// wp_register_feature(
-		// array(
-		// 'id'                  => 'test-feature',
-		// 'name'                => 'Test Feature',
-		// 'description'         => 'A test feature for unit testing',
-		// 'type'                => 'resource',
-		// 'categories'          => array( 'test' ),
-		// 'callback'            => function ( $args ) {
-		// return array(
-		// 'message' => 'Hello ' . ( $args['name'] ?? 'World' ),
-		// );
-		// },
-		// 'input_schema'        => array(
-		// 'type'       => 'object',
-		// 'properties' => array(
-		// 'name' => array( 'type' => 'string' ),
-		// ),
-		// ),
-		// 'output_schema'       => array(
-		// 'type'       => 'object',
-		// 'properties' => array(
-		// 'message' => array( 'type' => 'string' ),
-		// ),
-		// ),
-		// 'permission_callback' => function () {
-		// return current_user_can( 'manage_options' );
-		// },
-		// )
-		// );
-		// }
-		// );
+		add_action(
+			'wp_feature_api_init',
+			function () {
+				wp_register_feature(
+					array(
+						'id'                  => 'test-feature',
+						'name'                => 'Test Feature',
+						'description'         => 'A test feature for unit testing',
+						'type'                => 'resource',
+						'categories'          => array( 'test' ),
+						'callback'            => function ( $args ) {
+							return array(
+								'message' => 'Hello ' . ( $args['name'] ?? 'World' ),
+							);
+						},
+						'input_schema'        => array(
+							'type'       => 'object',
+							'properties' => array(
+								'name' => array( 'type' => 'string' ),
+							),
+						),
+						'output_schema'       => array(
+							'type'       => 'object',
+							'properties' => array(
+								'message' => array( 'type' => 'string' ),
+							),
+						),
+						'permission_callback' => function () {
+							return current_user_can( 'manage_options' );
+						},
+					)
+				);
+			}
+		);
 
 		// Initialize the adapter.
 		do_action( 'wordpress_mcp_init' );
@@ -120,6 +120,8 @@ class WpFeaturesApiAdapterTest extends WP_UnitTestCase {
 
 		// Dispatch the request.
 		$response = rest_do_request( $request );
+
+		// error_log( 'response: ' . print_r( $response->get_data(), true ) );
 
 		// Check the response.
 		$this->assertEquals( 200, $response->get_status() );
