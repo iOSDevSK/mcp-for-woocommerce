@@ -122,7 +122,7 @@ class WpMcp {
 				$this->init_default_prompts();
 				$this->init_features_as_tools();
 				// Register the MCP assets at the end of rest_api_init (required for rest_alias tools).
-				add_action( 'init', array( $this, 'wordpress_mcp_init' ), PHP_INT_MAX );
+				add_action( 'rest_api_init', array( $this, 'wordpress_mcp_init' ), PHP_INT_MAX );
 
 				self::$initialized = true;
 			}
