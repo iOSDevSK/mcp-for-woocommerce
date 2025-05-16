@@ -86,10 +86,18 @@ class WpMcp {
 	private static ?WpMcp $instance = null;
 
 	/**
+	 * The MCP settings.
+	 *
+	 * @var array
+	 */
+	private array $mcp_settings = array();
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'wordpress_mcp_init' ), PHP_INT_MAX );
+
+		$this->mcp_settings = get_option( 'wordpress_mcp_settings', array() );
 
 		// Only initialize components if MCP is enabled.
 		if ( $this->is_mcp_enabled() ) {
@@ -98,13 +106,15 @@ class WpMcp {
 			$this->init_default_prompts();
 			$this->init_features_as_tools();
 		}
+		// Register the MCP assets at the end of rest_api_init (required for rest_alias tools).
+		add_action( 'rest_api_init', array( $this, 'wordpress_mcp_init' ), PHP_INT_MAX );
 	}
 
 	/**
 	 * Initialize the plugin.
 	 */
 	public function wordpress_mcp_init(): void {
-		// Only trigger the init action if MCP is enabled.
+		// Only trigger the wordpress_mcp_init action if MCP is enabled.
 		if ( $this->is_mcp_enabled() ) {
 			do_action( 'wordpress_mcp_init', $this );
 		}
@@ -116,8 +126,7 @@ class WpMcp {
 	 * @return bool Whether MCP is enabled.
 	 */
 	private function is_mcp_enabled(): bool {
-		$options = get_option( 'wordpress_mcp_settings', array() );
-		return isset( $options['enabled'] ) && $options['enabled'];
+		return isset( $this->mcp_settings['enabled'] ) && $this->mcp_settings['enabled'];
 	}
 
 	/**
@@ -158,8 +167,7 @@ class WpMcp {
 	 * Initialize the features as tools.
 	 */
 	private function init_features_as_tools(): void {
-		$options          = get_option( 'wordpress_mcp_settings', array() );
-		$features_enabled = isset( $options['features_adapter_enabled'] ) && $options['features_adapter_enabled'];
+		$features_enabled = isset( $this->mcp_settings['features_adapter_enabled'] ) && $this->mcp_settings['features_adapter_enabled'];
 
 		if ( $features_enabled ) {
 			new WpFeaturesAdapter();
@@ -185,7 +193,6 @@ class WpMcp {
 	 * @return bool Whether the tool type is enabled.
 	 */
 	private function is_tool_type_enabled( string $type ): bool {
-		$options = get_option( 'wordpress_mcp_settings', array() );
 
 		// Read operations are always allowed if MCP is enabled.
 		if ( 'read' === $type ) {
@@ -201,7 +208,7 @@ class WpMcp {
 
 		// Check if the type exists in our mapping and is enabled.
 		if ( isset( $type_settings_map[ $type ] ) ) {
-			return isset( $options[ $type_settings_map[ $type ] ] ) && $options[ $type_settings_map[ $type ] ];
+			return isset( $this->mcp_settings[ $type_settings_map[ $type ] ] ) && $this->mcp_settings[ $type_settings_map[ $type ] ];
 		}
 
 		return false;
@@ -367,5 +374,14 @@ class WpMcp {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Get the MCP settings.
+	 *
+	 * @return array
+	 */
+	public function get_mcp_settings(): array {
+		return $this->mcp_settings;
 	}
 }
