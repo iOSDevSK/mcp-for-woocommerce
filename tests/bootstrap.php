@@ -33,10 +33,11 @@ function _manually_load_plugin() {
 	update_option(
 		'wordpress_mcp_settings',
 		array(
-			'enabled'             => true,
-			'enable_create_tools' => true,
-			'enable_update_tools' => true,
-			'enable_delete_tools' => true,
+			'enabled'                  => true,
+			'enable_create_tools'      => true,
+			'enable_update_tools'      => true,
+			'enable_delete_tools'      => true,
+			'features_adapter_enabled' => true,
 		)
 	);
 
@@ -48,17 +49,17 @@ function _manually_load_plugin() {
 	$woocommerce_path = dirname( dirname( __DIR__ ) ) . '/woocommerce/woocommerce.php';
 
 	if ( file_exists( $woocommerce_path ) ) {
-		// require_once $woocommerce_path;
 		// Activate WooCommerce.
+		require_once $woocommerce_path;
 	}
 
 	// Load FeaturesAPI plugin if it exists.
-	$features_api_path = dirname( dirname( __DIR__ ) ) . '/wp-feature-api/wp-feature-api.php';
+	// $features_api_path = dirname( dirname( __DIR__ ) ) . '/wp-feature-api/wp-feature-api.php';
 
-	if ( file_exists( $features_api_path ) ) {
-		require_once $features_api_path;
-		// Activate FeaturesAPI.
-	}
+	// if ( file_exists( $features_api_path ) ) {
+	// Activate FeaturesAPI.
+	// require_once $features_api_path;
+	// }
 
 	// Load the plugin.
 	require_once dirname( __DIR__ ) . '/wordpress-mcp.php';
