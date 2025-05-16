@@ -86,6 +86,13 @@ class WpMcp {
 	private static ?WpMcp $instance = null;
 
 	/**
+	 * The initialized flag.
+	 *
+	 * @var bool
+	 */
+	private static bool $initialized = false;
+
+	/**
 	 * The MCP settings.
 	 *
 	 * @var array
@@ -93,30 +100,43 @@ class WpMcp {
 	private array $mcp_settings = array();
 
 	/**
+	 * The has triggered init flag.
+	 *
+	 * @var bool
+	 */
+	private bool $has_triggered_init = false;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 
-		$this->mcp_settings = get_option( 'wordpress_mcp_settings', array() );
+		// Only initialize if not already initialized.
+		if ( ! self::$initialized ) {
+			$this->mcp_settings = get_option( 'wordpress_mcp_settings', array() );
 
-		// Only initialize components if MCP is enabled.
-		if ( $this->is_mcp_enabled() ) {
-			$this->init_default_resources();
-			$this->init_default_tools();
-			$this->init_default_prompts();
-			$this->init_features_as_tools();
+			// Only initialize components if MCP is enabled.
+			if ( $this->is_mcp_enabled() ) {
+				$this->init_default_resources();
+				$this->init_default_tools();
+				$this->init_default_prompts();
+				$this->init_features_as_tools();
+				// Register the MCP assets at the end of rest_api_init (required for rest_alias tools).
+				add_action( 'init', array( $this, 'wordpress_mcp_init' ), PHP_INT_MAX );
+
+				self::$initialized = true;
+			}
 		}
-		// Register the MCP assets at the end of rest_api_init (required for rest_alias tools).
-		add_action( 'rest_api_init', array( $this, 'wordpress_mcp_init' ), PHP_INT_MAX );
 	}
 
 	/**
 	 * Initialize the plugin.
 	 */
 	public function wordpress_mcp_init(): void {
-		// Only trigger the wordpress_mcp_init action if MCP is enabled.
-		if ( $this->is_mcp_enabled() ) {
+		// Only trigger the wordpress_mcp_init action if MCP is enabled and hasn't been triggered before.
+		if ( $this->is_mcp_enabled() && ! $this->has_triggered_init ) {
 			do_action( 'wordpress_mcp_init', $this );
+			$this->has_triggered_init = true;
 		}
 	}
 
