@@ -116,8 +116,6 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 			)
 		);
 
-		error_log( 'Post ID: ' . $post_id );
-
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
 
