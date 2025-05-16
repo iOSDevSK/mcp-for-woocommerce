@@ -22,8 +22,13 @@ class RegisterMcpTool {
 	 *
 	 * @param array $args The arguments to register the MCP tool.
 	 * @throws InvalidArgumentException When the arguments are invalid.
+	 * @throws \RuntimeException When the tool is registered outside of wordpress_mcp_init action.
 	 */
 	public function __construct( array $args ) {
+		if ( ! doing_action( 'wordpress_mcp_init' ) ) {
+			throw new \RuntimeException( 'RegisterMcpTool can only be used within the wordpress_mcp_init action.' );
+		}
+
 		$this->args = $args;
 
 		// Backward compatibility for permissions_callback.

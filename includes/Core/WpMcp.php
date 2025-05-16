@@ -86,17 +86,48 @@ class WpMcp {
 	private static ?WpMcp $instance = null;
 
 	/**
+	 * The initialized flag.
+	 *
+	 * @var bool
+	 */
+	private static bool $initialized = false;
+
+	/**
+	 * The MCP settings.
+	 *
+	 * @var array
+	 */
+	private array $mcp_settings = array();
+
+	/**
+	 * The has triggered init flag.
+	 *
+	 * @var bool
+	 */
+	private bool $has_triggered_init = false;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'wordpress_mcp_init' ), PHP_INT_MAX );
 
-		// Only initialize components if MCP is enabled.
-		if ( $this->is_mcp_enabled() ) {
-			$this->init_default_resources();
-			$this->init_default_tools();
-			$this->init_default_prompts();
-			$this->init_features_as_tools();
+		// Only initialize if not already initialized.
+		if ( ! self::$initialized ) {
+			$this->mcp_settings = get_option( 'wordpress_mcp_settings', array() );
+
+			// Only initialize components if MCP is enabled.
+			if ( $this->is_mcp_enabled() ) {
+				$this->init_default_resources();
+				$this->init_default_tools();
+				$this->init_default_prompts();
+				$this->init_features_as_tools();
+				// Register the MCP assets late in the rest_api_init hook (required for rest_alias tools).
+				// This is to ensure that the rest_api_init hook is not called too early.
+				// We use a priority of 20000 to ensure that the rest_api_init hook is called after the rest_api_init hook of the FeaturesAPI plugin.
+				add_action( 'rest_api_init', array( $this, 'wordpress_mcp_init' ), 20000 );
+
+				self::$initialized = true;
+			}
 		}
 	}
 
@@ -104,9 +135,10 @@ class WpMcp {
 	 * Initialize the plugin.
 	 */
 	public function wordpress_mcp_init(): void {
-		// Only trigger the init action if MCP is enabled.
-		if ( $this->is_mcp_enabled() ) {
+		// Only trigger the wordpress_mcp_init action if MCP is enabled and hasn't been triggered before.
+		if ( $this->is_mcp_enabled() && ! $this->has_triggered_init ) {
 			do_action( 'wordpress_mcp_init', $this );
+			$this->has_triggered_init = true;
 		}
 	}
 
@@ -116,8 +148,7 @@ class WpMcp {
 	 * @return bool Whether MCP is enabled.
 	 */
 	private function is_mcp_enabled(): bool {
-		$options = get_option( 'wordpress_mcp_settings', array() );
-		return isset( $options['enabled'] ) && $options['enabled'];
+		return isset( $this->mcp_settings['enabled'] ) && $this->mcp_settings['enabled'];
 	}
 
 	/**
@@ -158,8 +189,7 @@ class WpMcp {
 	 * Initialize the features as tools.
 	 */
 	private function init_features_as_tools(): void {
-		$options          = get_option( 'wordpress_mcp_settings', array() );
-		$features_enabled = isset( $options['features_adapter_enabled'] ) && $options['features_adapter_enabled'];
+		$features_enabled = isset( $this->mcp_settings['features_adapter_enabled'] ) && $this->mcp_settings['features_adapter_enabled'];
 
 		if ( $features_enabled ) {
 			new WpFeaturesAdapter();
@@ -185,7 +215,6 @@ class WpMcp {
 	 * @return bool Whether the tool type is enabled.
 	 */
 	private function is_tool_type_enabled( string $type ): bool {
-		$options = get_option( 'wordpress_mcp_settings', array() );
 
 		// Read operations are always allowed if MCP is enabled.
 		if ( 'read' === $type ) {
@@ -201,7 +230,7 @@ class WpMcp {
 
 		// Check if the type exists in our mapping and is enabled.
 		if ( isset( $type_settings_map[ $type ] ) ) {
-			return isset( $options[ $type_settings_map[ $type ] ] ) && $options[ $type_settings_map[ $type ] ];
+			return isset( $this->mcp_settings[ $type_settings_map[ $type ] ] ) && $this->mcp_settings[ $type_settings_map[ $type ] ];
 		}
 
 		return false;
@@ -221,7 +250,15 @@ class WpMcp {
 
 		// The name should be unique.
 		if ( in_array( $args['name'], array_column( $this->tools, 'name' ), true ) ) {
-			throw new InvalidArgumentException( 'The tool name must be unique. A tool with this name already exists: ' . esc_html( $args['name'] ) );
+			$this->tools_callbacks[ $args['name'] ] = array();
+
+			// Search the tools array for the tool with the same name.
+			foreach ( $this->tools as $tool ) {
+				if ( $tool['name'] === $args['name'] ) {
+					unset( $this->tools[ $tool['name'] ] );
+					break;
+				}
+			}
 		}
 
 		$this->tools_callbacks[ $args['name'] ] = array(
@@ -245,7 +282,7 @@ class WpMcp {
 	public function register_resource( array $args ): void {
 		// the name and uri should be unique.
 		if ( in_array( $args['name'], array_column( $this->resources, 'name' ), true ) || in_array( $args['uri'], array_column( $this->resources, 'uri' ), true ) ) {
-			throw new InvalidArgumentException( 'The resource name and uri must be unique. A resource with this name or uri already exists: ' . esc_html( $args['name'] ) . ' ' . esc_html( $args['uri'] ) );
+			$this->resources[ $args['uri'] ] = array();
 		}
 		$this->resources[ $args['uri'] ] = $args;
 	}
@@ -272,11 +309,11 @@ class WpMcp {
 
 		// Check if the prompt name is unique.
 		if ( isset( $this->prompts[ $name ] ) ) {
-			throw new InvalidArgumentException( 'The prompt name must be unique. A prompt with this name already exists: ' . esc_html( $name ) );
+			$this->prompts[ $name ]          = array();
+			$this->prompts_messages[ $name ] = array();
 		}
 
-		$this->prompts[ $name ] = $prompt;
-
+		$this->prompts[ $name ]          = $prompt;
 		$this->prompts_messages[ $name ] = $messages;
 	}
 
@@ -367,5 +404,14 @@ class WpMcp {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Get the MCP settings.
+	 *
+	 * @return array
+	 */
+	public function get_mcp_settings(): array {
+		return $this->mcp_settings;
 	}
 }

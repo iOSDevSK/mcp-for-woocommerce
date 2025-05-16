@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Automattic\WordpressMcp\Core;
 
+use Automattic\WordpressMcp\Utils\InputSchema;
+
 /**
  * Class WpFeaturesAdapter
  * Exposes WordPress features as MCP tools.
@@ -58,11 +60,10 @@ class WpFeaturesAdapter {
 		$features = \wp_feature_registry()->get();
 
 		foreach ( $features as $feature ) {
-			$input_schema  = $feature->get_input_schema();
-			$output_schema = $feature->get_output_schema();
+			$input_schema = $feature->get_input_schema();
 
-			if ( empty( $input_schema ) && empty( $output_schema ) ) {
-				continue;
+			if ( empty( $input_schema ) ) {
+				$input_schema = null;
 			}
 
 			// Determine MCP functionality type.
@@ -70,75 +71,45 @@ class WpFeaturesAdapter {
 			$feature_type = $feature->get_type();
 			$mcp_type     = $this->map_functionality_type( $rest_method, $feature_type );
 
-			$permission_callback = null;
+			$permission_callback = '__return_true';
 			if ( method_exists( $feature, 'get_permission_callback' ) ) {
 				$permission_callback = function ( $args ) use ( $feature ) {
-					// Get the callback function from the feature
+					// Get the callback function from the feature.
 					$callback = $feature->get_permission_callback();
 					return $callback( $args );
 				};
 			}
 
+			$callback = function ( $args ) use ( $feature ) {
+				// Convert array to WP_REST_Request object if needed.
+				if ( is_array( $args ) ) {
+					$request = new \WP_REST_Request();
+					foreach ( $args as $key => $value ) {
+						$request->set_param( $key, $value );
+					}
+					$args = $request;
+				}
+
+				// Get the callback function from the feature.
+				$callback = $feature->get_callback();
+				$result   = $callback( $args );
+
+				// Convert WP_REST_Response to array if needed.
+				if ( $result instanceof \WP_REST_Response ) {
+					return $result->get_data();
+				}
+
+				return $result;
+			};
+
 			$the_feature = array(
 				'name'                => 'wp_feature_' . sanitize_title( $feature->get_name() ),
 				'description'         => $feature->get_description(),
 				'type'                => $mcp_type,
-				'inputSchema'         => $input_schema,
-				'outputSchema'        => $output_schema,
+				'inputSchema'         => InputSchema::clean( $input_schema ),
 				'permission_callback' => $permission_callback,
+				'callback'            => $callback,
 			);
-
-			if ( $feature->has_rest_alias() ) {
-				// Check if get_rest_alias returns a string or possibly an array/object
-				$rest_alias = null;
-				if ( method_exists( $feature, 'get_rest_alias' ) ) {
-					$rest_alias = $feature->get_rest_alias();
-
-					// Handle potential WP_Error or array return
-					if ( is_string( $rest_alias ) ) {
-						$route = $rest_alias;
-					} elseif ( is_wp_error( $rest_alias ) || is_array( $rest_alias ) ) {
-						// If it's an error or complex structure, skip this feature
-						continue;
-					} else {
-						// If it's the REST alias is stored in the feature itself
-						$rest_alias_prop = $feature->rest_alias ?? null;
-						$route           = is_string( $rest_alias_prop ) ? $rest_alias_prop : null;
-
-						if ( null === $route ) {
-							continue;
-						}
-					}
-				} else {
-					// As a fallback, try accessing the property directly
-					$rest_alias_prop = $feature->rest_alias ?? null;
-					$route           = is_string( $rest_alias_prop ) ? $rest_alias_prop : null;
-
-					if ( null === $route ) {
-						continue;
-					}
-				}
-
-				$the_feature['rest_alias'] = array(
-					'route'  => $route,
-					'method' => $rest_method,
-				);
-			} else {
-				// Non REST-alias features fall back to executing the feature callback directly.
-				$callback = null;
-				if ( method_exists( $feature, 'get_callback' ) ) {
-					$callback = $feature->get_callback();
-				}
-
-				if ( is_callable( $callback ) ) {
-					$the_feature['callback'] = function ( $args ) use ( $feature, $callback ) {
-						return call_user_func( $callback, $args );
-					};
-				} else {
-					// Skip this feature if no valid callback
-					continue;
-				}
-			}
 
 			new RegisterMcpTool( $the_feature );
 		}

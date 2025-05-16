@@ -59,7 +59,7 @@ class McpWooProducts {
 					'method' => 'GET',
 				),
 				'annotations' => array(
-					'title'         => 'Get Product',
+					'title'         => 'Get WooCommerce Product',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 				),
@@ -76,7 +76,7 @@ class McpWooProducts {
 					'method' => 'POST',
 				),
 				'annotations' => array(
-					'title'           => 'Add Product',
+					'title'           => 'Add WooCommerce Product',
 					'readOnlyHint'    => false,
 					'destructiveHint' => false,
 					'idempotentHint'  => false,
@@ -95,7 +95,7 @@ class McpWooProducts {
 					'method' => 'PUT',
 				),
 				'annotations' => array(
-					'title'           => 'Update Product',
+					'title'           => 'Update WooCommerce Product',
 					'readOnlyHint'    => false,
 					'destructiveHint' => false,
 					'idempotentHint'  => true,
@@ -114,7 +114,7 @@ class McpWooProducts {
 					'method' => 'DELETE',
 				),
 				'annotations' => array(
-					'title'           => 'Delete Product',
+					'title'           => 'Delete WooCommerce Product',
 					'readOnlyHint'    => false,
 					'destructiveHint' => true,
 					'idempotentHint'  => true,
@@ -134,7 +134,7 @@ class McpWooProducts {
 					'method' => 'GET',
 				),
 				'annotations' => array(
-					'title'         => 'List Product Categories',
+					'title'         => 'List WooCommerce Product Categories',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 				),
@@ -151,7 +151,7 @@ class McpWooProducts {
 					'method' => 'POST',
 				),
 				'annotations' => array(
-					'title'           => 'Add Product Category',
+					'title'           => 'Add WooCommerce Product Category',
 					'readOnlyHint'    => false,
 					'destructiveHint' => false,
 					'idempotentHint'  => false,
@@ -170,7 +170,7 @@ class McpWooProducts {
 					'method' => 'PUT',
 				),
 				'annotations' => array(
-					'title'           => 'Update Product Category',
+					'title'           => 'Update WooCommerce Product Category',
 					'readOnlyHint'    => false,
 					'destructiveHint' => false,
 					'idempotentHint'  => true,
@@ -189,7 +189,7 @@ class McpWooProducts {
 					'method' => 'DELETE',
 				),
 				'annotations' => array(
-					'title'           => 'Delete Product Category',
+					'title'           => 'Delete WooCommerce Product Category',
 					'readOnlyHint'    => false,
 					'destructiveHint' => true,
 					'idempotentHint'  => true,
@@ -209,7 +209,7 @@ class McpWooProducts {
 					'method' => 'GET',
 				),
 				'annotations' => array(
-					'title'         => 'List Product Tags',
+					'title'         => 'List WooCommerce Product Tags',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 				),
@@ -226,7 +226,7 @@ class McpWooProducts {
 					'method' => 'POST',
 				),
 				'annotations' => array(
-					'title'           => 'Add Product Tag',
+					'title'           => 'Add WooCommerce Product Tag',
 					'readOnlyHint'    => false,
 					'destructiveHint' => false,
 					'idempotentHint'  => false,
@@ -245,7 +245,7 @@ class McpWooProducts {
 					'method' => 'PUT',
 				),
 				'annotations' => array(
-					'title'           => 'Update Product Tag',
+					'title'           => 'Update WooCommerce Product Tag',
 					'readOnlyHint'    => false,
 					'destructiveHint' => false,
 					'idempotentHint'  => true,
@@ -264,7 +264,7 @@ class McpWooProducts {
 					'method' => 'DELETE',
 				),
 				'annotations' => array(
-					'title'           => 'Delete Product Tag',
+					'title'           => 'Delete WooCommerce Product Tag',
 					'readOnlyHint'    => false,
 					'destructiveHint' => true,
 					'idempotentHint'  => true,
@@ -284,7 +284,7 @@ class McpWooProducts {
 					'method' => 'GET',
 				),
 				'annotations' => array(
-					'title'         => 'List Product Brands',
+					'title'         => 'List WooCommerce Product Brands',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 				),
@@ -301,7 +301,7 @@ class McpWooProducts {
 					'method' => 'POST',
 				),
 				'annotations' => array(
-					'title'           => 'Add Product Brand',
+					'title'           => 'Add WooCommerce Product Brand',
 					'readOnlyHint'    => false,
 					'destructiveHint' => false,
 					'idempotentHint'  => false,
@@ -320,7 +320,7 @@ class McpWooProducts {
 					'method' => 'PUT',
 				),
 				'annotations' => array(
-					'title'           => 'Update Product Brand',
+					'title'           => 'Update WooCommerce Product Brand',
 					'readOnlyHint'    => false,
 					'destructiveHint' => false,
 					'idempotentHint'  => true,
@@ -339,7 +339,7 @@ class McpWooProducts {
 					'method' => 'DELETE',
 				),
 				'annotations' => array(
-					'title'           => 'Delete Product Brand',
+					'title'           => 'Delete WooCommerce Product Brand',
 					'readOnlyHint'    => false,
 					'destructiveHint' => true,
 					'idempotentHint'  => true,

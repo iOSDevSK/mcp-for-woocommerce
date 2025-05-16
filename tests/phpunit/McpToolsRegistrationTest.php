@@ -1,15 +1,21 @@
 <?php
+/**
+ * Tests for the RegisterMcpTool class.
+ *
+ * @package WordPressMcp
+ * @subpackage Tests
+ */
 
 namespace Automattic\WordpressMcp\Tests;
 
-use Automattic\WordpressMcp\Core\WpMcp;
 use Automattic\WordpressMcp\Core\RegisterMcpTool;
 use WP_UnitTestCase;
+use Automattic\WordpressMcp\Core\WpMcp;
 use WP_REST_Request;
 use WP_User;
 
 /**
- * Test class for McpToolsRegistrationTest
+ * Test cases for the RegisterMcpTool class.
  */
 class McpToolsRegistrationTest extends WP_UnitTestCase {
 
@@ -31,7 +37,7 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 	 * Set up the test.
 	 */
 	public function setUp(): void {
-		parent::setUp();
+		parent::set_up();
 
 		// Create an admin user.
 		$this->admin_user = $this->factory->user->create_and_get(
@@ -40,19 +46,10 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 			)
 		);
 
-		// Enable MCP in settings.
-		update_option(
-			'wordpress_mcp_settings',
-			array(
-				'enabled' => true,
-			)
-		);
-
 		// Get the MCP instance.
-		$this->mcp = WpMcp::instance();
+		$this->mcp = WPMCP();
 
-		// Initialize the REST API.
-		do_action( 'init' );
+		// Initialize the REST API and MCP.
 		do_action( 'rest_api_init' );
 	}
 
@@ -61,7 +58,7 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 	 */
 	public function test_list_tools_endpoint(): void {
 		// Create a REST request.
-		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
+		$request = new \WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
 
 		// Set the request body as JSON.
 		$request->set_body(
@@ -88,29 +85,96 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test the tools/call endpoint with a valid tool.
+	 * Test that RegisterMcpTool throws an exception when created outside wordpress_mcp_init hook.
 	 */
-	public function test_call_tool_endpoint_with_valid_tool(): void {
-		// Register a test tool.
+	public function test_register_mcp_tool_throws_exception_outside_hook() {
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'RegisterMcpTool can only be used within the wordpress_mcp_init action.' );
+
 		new RegisterMcpTool(
 			array(
 				'name'                => 'test_tool',
-				'description'         => 'A test tool',
+				'description'         => 'Test tool description',
 				'type'                => 'read',
-				'callback'            => function () {
-					return array( 'success' => true );
-				},
+				'callback'            => function () {},
 				'permission_callback' => function () {
-					return current_user_can( 'manage_options' );
-				},
+					return true; },
 				'inputSchema'         => array(
 					'type'       => 'object',
-					'properties' => array(
-						'param1' => array( 'type' => 'string' ),
-					),
+					'properties' => array(),
 				),
 			)
 		);
+	}
+
+	/**
+	 * Test that RegisterMcpTool can be created within wordpress_mcp_init hook.
+	 */
+	public function test_register_mcp_tool_works_inside_hook() {
+		$tool_created = false;
+
+		add_action(
+			'wordpress_mcp_init',
+			function () use ( &$tool_created ) {
+				try {
+					new RegisterMcpTool(
+						array(
+							'name'                => 'test_tool',
+							'description'         => 'Test tool description',
+							'type'                => 'read',
+							'callback'            => function () {},
+							'permission_callback' => function () {
+								return true; },
+							'inputSchema'         => array(
+								'type'       => 'object',
+								'properties' => array(),
+							),
+						)
+					);
+					$tool_created = true;
+				} catch ( \Exception $e ) {
+					$this->fail( 'RegisterMcpTool should not throw an exception when created within wordpress_mcp_init hook' );
+				}
+			}
+		);
+
+		do_action( 'wordpress_mcp_init' );
+
+		$this->assertTrue( $tool_created, 'Tool should be created successfully within the hook' );
+	}
+
+
+		/**
+		 * Test the tools/call endpoint with a valid tool.
+		 */
+	public function test_call_tool_endpoint_with_valid_tool(): void {
+		// Register a test tool within the wordpress_mcp_init action.
+		add_action(
+			'wordpress_mcp_init',
+			function () {
+				new RegisterMcpTool(
+					array(
+						'name'                => 'test_tool',
+						'description'         => 'A test tool',
+						'type'                => 'read',
+						'callback'            => function () {
+							return array( 'success' => true );
+						},
+						'permission_callback' => function () {
+							return current_user_can( 'manage_options' );
+						},
+						'inputSchema'         => array(
+							'type'       => 'object',
+							'properties' => array(
+								'param1' => array( 'type' => 'string' ),
+							),
+						),
+					)
+				);
+			}
+		);
+
+		do_action( 'wordpress_mcp_init' );
 
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
@@ -172,26 +236,33 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 	 * Test the tools/call endpoint with a tool that requires permissions.
 	 */
 	public function test_call_tool_endpoint_with_permissions(): void {
-		// Register a test tool with permissions.
-		new RegisterMcpTool(
-			array(
-				'name'                => 'permission_tool',
-				'description'         => 'A tool that requires permissions',
-				'type'                => 'read',
-				'callback'            => function () {
-					return array( 'success' => true );
-				},
-				'permission_callback' => function () {
-					return current_user_can( 'manage_options' );
-				},
-				'inputSchema'         => array(
-					'type'       => 'object',
-					'properties' => array(
-						'param1' => array( 'type' => 'string' ),
-					),
-				),
-			)
+		add_action(
+			'wordpress_mcp_init',
+			function () {
+				// Register a test tool with permissions.
+				new RegisterMcpTool(
+					array(
+						'name'                => 'permission_tool',
+						'description'         => 'A tool that requires permissions',
+						'type'                => 'read',
+						'callback'            => function () {
+							return array( 'success' => true );
+						},
+						'permission_callback' => function () {
+							return current_user_can( 'manage_options' );
+						},
+						'inputSchema'         => array(
+							'type'       => 'object',
+							'properties' => array(
+								'param1' => array( 'type' => 'string' ),
+							),
+						),
+					)
+				);
+			}
 		);
+
+		do_action( 'wordpress_mcp_init' );
 
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
@@ -223,30 +294,38 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 	 * Test the tools/call endpoint with a tool that returns an image.
 	 */
 	public function test_call_tool_endpoint_with_image_response(): void {
-		// Register a test tool that returns an image.
-		new RegisterMcpTool(
-			array(
-				'name'                => 'image_tool',
-				'description'         => 'A tool that returns an image',
-				'type'                => 'read',
-				'callback'            => function () {
-					return array(
-						'type'     => 'image',
-						'results'  => 'fake_image_data',
-						'mimeType' => 'image/png',
-					);
-				},
-				'permission_callback' => function () {
-					return current_user_can( 'manage_options' );
-				},
-				'inputSchema'         => array(
-					'type'       => 'object',
-					'properties' => array(
-						'param1' => array( 'type' => 'string' ),
-					),
-				),
-			)
+
+		add_action(
+			'wordpress_mcp_init',
+			function () {
+				// Register a test tool that returns an image.
+				new RegisterMcpTool(
+					array(
+						'name'                => 'image_tool',
+						'description'         => 'A tool that returns an image',
+						'type'                => 'read',
+						'callback'            => function () {
+							return array(
+								'type'     => 'image',
+								'results'  => 'fake_image_data',
+								'mimeType' => 'image/png',
+							);
+						},
+						'permission_callback' => function () {
+							return current_user_can( 'manage_options' );
+						},
+						'inputSchema'         => array(
+							'type'       => 'object',
+							'properties' => array(
+								'param1' => array( 'type' => 'string' ),
+							),
+						),
+					)
+				);
+			}
 		);
+
+		do_action( 'wordpress_mcp_init' );
 
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
@@ -285,17 +364,24 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 	 */
 	public function test_call_tool_endpoint_with_rest_alias(): void {
 		// Register a test tool with a REST API alias.
-		new RegisterMcpTool(
-			array(
-				'name'        => 'rest_alias_tool',
-				'description' => 'A tool with a REST API alias',
-				'type'        => 'read',
-				'rest_alias'  => array(
-					'method' => 'GET',
-					'route'  => '/wp/v2/posts',
-				),
-			)
+		add_action(
+			'wordpress_mcp_init',
+			function () {
+				new RegisterMcpTool(
+					array(
+						'name'        => 'rest_alias_tool',
+						'description' => 'A tool with a REST API alias',
+						'type'        => 'read',
+						'rest_alias'  => array(
+							'method' => 'GET',
+							'route'  => '/wp/v2/posts',
+						),
+					)
+				);
+			}
 		);
+
+		do_action( 'wordpress_mcp_init' );
 
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
@@ -332,36 +418,43 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 	 */
 	public function test_call_tool_endpoint_with_input_parameters(): void {
 		// Register a test tool with input parameters.
-		new RegisterMcpTool(
-			array(
-				'name'                => 'input_tool',
-				'description'         => 'A tool with input parameters',
-				'type'                => 'read',
-				'callback'            => function ( $params ) {
-					return array(
-						'success' => true,
-						'params'  => $params,
-					);
-				},
-				'permission_callback' => function () {
-					return current_user_can( 'manage_options' );
-				},
-				'inputSchema'         => array(
-					'type'       => 'object',
-					'properties' => array(
-						'param1' => array(
-							'type'        => 'string',
-							'description' => 'First parameter',
+		add_action(
+			'wordpress_mcp_init',
+			function () {
+				new RegisterMcpTool(
+					array(
+						'name'                => 'input_tool',
+						'description'         => 'A tool with input parameters',
+						'type'                => 'read',
+						'callback'            => function ( $params ) {
+							return array(
+								'success' => true,
+								'params'  => $params,
+							);
+						},
+						'permission_callback' => function () {
+							return current_user_can( 'manage_options' );
+						},
+						'inputSchema'         => array(
+							'type'       => 'object',
+							'properties' => array(
+								'param1' => array(
+									'type'        => 'string',
+									'description' => 'First parameter',
+								),
+								'param2' => array(
+									'type'        => 'integer',
+									'description' => 'Second parameter',
+								),
+							),
+							'required'   => array( 'param1' ),
 						),
-						'param2' => array(
-							'type'        => 'integer',
-							'description' => 'Second parameter',
-						),
-					),
-					'required'   => array( 'param1' ),
-				),
-			)
+					)
+				);
+			}
 		);
+
+		do_action( 'wordpress_mcp_init' );
 
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
@@ -403,37 +496,45 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 	 * Test the tools/call endpoint with a tool that has required input parameters.
 	 */
 	public function test_call_tool_endpoint_with_required_input_parameters(): void {
-		// Register a test tool with required input parameters.
-		new RegisterMcpTool(
-			array(
-				'name'                => 'required_input_tool',
-				'description'         => 'A tool with required input parameters',
-				'type'                => 'read',
-				'callback'            => function ( $params ) {
-					return array(
-						'success' => true,
-						'params'  => $params,
-					);
-				},
-				'permission_callback' => function () {
-					return current_user_can( 'manage_options' );
-				},
-				'inputSchema'         => array(
-					'type'       => 'object',
-					'properties' => array(
-						'param1' => array(
-							'type'        => 'string',
-							'description' => 'First parameter',
+
+		add_action(
+			'wordpress_mcp_init',
+			function () {
+				// Register a test tool with required input parameters.
+				new RegisterMcpTool(
+					array(
+						'name'                => 'required_input_tool',
+						'description'         => 'A tool with required input parameters',
+						'type'                => 'read',
+						'callback'            => function ( $params ) {
+							return array(
+								'success' => true,
+								'params'  => $params,
+							);
+						},
+						'permission_callback' => function () {
+							return current_user_can( 'manage_options' );
+						},
+						'inputSchema'         => array(
+							'type'       => 'object',
+							'properties' => array(
+								'param1' => array(
+									'type'        => 'string',
+									'description' => 'First parameter',
+								),
+								'param2' => array(
+									'type'        => 'integer',
+									'description' => 'Second parameter',
+								),
+							),
+							'required'   => array( 'param1', 'param2' ),
 						),
-						'param2' => array(
-							'type'        => 'integer',
-							'description' => 'Second parameter',
-						),
-					),
-					'required'   => array( 'param1', 'param2' ),
-				),
-			)
+					)
+				);
+			}
 		);
+
+		do_action( 'wordpress_mcp_init' );
 
 		// Create a REST request with missing required parameter.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
@@ -473,26 +574,33 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 			)
 		);
 
-		// Register a test tool with a disabled type.
-		new RegisterMcpTool(
-			array(
-				'name'                => 'create_tool',
-				'description'         => 'A tool with a disabled type',
-				'type'                => 'create',
-				'callback'            => function () {
-					return array( 'success' => true );
-				},
-				'permission_callback' => function () {
-					return current_user_can( 'manage_options' );
-				},
-				'inputSchema'         => array(
-					'type'       => 'object',
-					'properties' => array(
-						'param1' => array( 'type' => 'string' ),
-					),
-				),
-			)
+		add_action(
+			'wordpress_mcp_init',
+			function () {
+				// Register a test tool with a disabled type.
+				new RegisterMcpTool(
+					array(
+						'name'                => 'create_tool',
+						'description'         => 'A tool with a disabled type',
+						'type'                => 'create',
+						'callback'            => function () {
+							return array( 'success' => true );
+						},
+						'permission_callback' => function () {
+							return current_user_can( 'manage_options' );
+						},
+						'inputSchema'         => array(
+							'type'       => 'object',
+							'properties' => array(
+								'param1' => array( 'type' => 'string' ),
+							),
+						),
+					)
+				);
+			}
 		);
+
+		do_action( 'wordpress_mcp_init' );
 
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
@@ -523,17 +631,24 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 		$this->expectException( \InvalidArgumentException::class );
 		$this->expectExceptionMessage( 'The route /wp/v2/non_existent_route with method GET does not exist.' );
 
-		new RegisterMcpTool(
-			array(
-				'name'        => 'non_existent_route_tool',
-				'description' => 'A tool with a non-existent REST API route',
-				'type'        => 'read',
-				'rest_alias'  => array(
-					'method' => 'GET',
-					'route'  => '/wp/v2/non_existent_route',
-				),
-			)
+		add_action(
+			'wordpress_mcp_init',
+			function () {
+				new RegisterMcpTool(
+					array(
+						'name'        => 'non_existent_route_tool',
+						'description' => 'A tool with a non-existent REST API route',
+						'type'        => 'read',
+						'rest_alias'  => array(
+							'method' => 'GET',
+							'route'  => '/wp/v2/non_existent_route',
+						),
+					)
+				);
+			}
 		);
+
+		do_action( 'wordpress_mcp_init' );
 	}
 
 	/**
@@ -544,16 +659,23 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 		$this->expectException( \InvalidArgumentException::class );
 		$this->expectExceptionMessage( 'The method must be one of the following: GET, POST, PUT, PATCH, DELETE.' );
 
-		new RegisterMcpTool(
-			array(
-				'name'        => 'non_existent_method_tool',
-				'description' => 'A tool with a non-existent REST API method',
-				'type'        => 'read',
-				'rest_alias'  => array(
-					'method' => 'NON_EXISTENT_METHOD',
-					'route'  => '/wp/v2/posts',
-				),
-			)
+		add_action(
+			'wordpress_mcp_init',
+			function () {
+				new RegisterMcpTool(
+					array(
+						'name'        => 'non_existent_method_tool',
+						'description' => 'A tool with a non-existent REST API method',
+						'type'        => 'read',
+						'rest_alias'  => array(
+							'method' => 'NON_EXISTENT_METHOD',
+							'route'  => '/wp/v2/posts',
+						),
+					)
+				);
+			}
 		);
+
+		do_action( 'wordpress_mcp_init' );
 	}
 }
