@@ -6,10 +6,10 @@ The RegisterMcpTools API allows you to register and manage tools that can be use
 
 Tools are actions that can be performed by AI models. They are registered using the `RegisterMcpTool` class and can be of different types:
 
-- `read`: For retrieving data
-- `create`: For creating new content
-- `update`: For modifying existing content
-- `delete`: For removing content
+-   `read`: For retrieving data
+-   `create`: For creating new content
+-   `update`: For modifying existing content
+-   `delete`: For removing content
 
 ## Basic Usage
 
@@ -25,7 +25,7 @@ new RegisterMcpTool([
         // Tool implementation
         return ['data' => 'example'];
     },
-    'permissions_callback' => function() {
+    'permission_callback' => function() {
         return current_user_can('manage_options');
     }
 ]);
@@ -33,14 +33,14 @@ new RegisterMcpTool([
 
 ## Tool Registration Parameters
 
-| Parameter            | Type     | Required | Description                                               |
-| -------------------- | -------- | -------- | --------------------------------------------------------- |
-| name                 | string   | Yes      | Unique identifier for the tool                            |
-| description          | string   | Yes      | Human-readable description of the tool's purpose          |
-| type                 | string   | Yes      | Type of tool: 'read', 'create', 'update', or 'delete'     |
-| callback             | callable | Yes      | Function that implements the tool's logic                 |
-| permissions_callback | callable | Yes      | Function that checks if the current user can use the tool |
-| rest_alias           | array    | No       | Optional REST API endpoint configuration                  |
+| Parameter           | Type     | Required | Description                                               |
+| ------------------- | -------- | -------- | --------------------------------------------------------- |
+| name                | string   | Yes      | Unique identifier for the tool                            |
+| description         | string   | Yes      | Human-readable description of the tool's purpose          |
+| type                | string   | Yes      | Type of tool: 'read', 'create', 'update', or 'delete'     |
+| callback            | callable | Yes      | Function that implements the tool's logic                 |
+| permission_callback | callable | Yes      | Function that checks if the current user can use the tool |
+| rest_alias          | array    | No       | Optional REST API endpoint configuration                  |
 
 ## REST API Integration
 
@@ -64,26 +64,26 @@ Different tool types have different permission requirements:
 
 1. **Read Tools**
 
-   - Always allowed if MCP is enabled
-   - Used for retrieving data
-   - Example: `wp_posts_search`, `wp_get_post`
+    - Always allowed if MCP is enabled
+    - Used for retrieving data
+    - Example: `wp_posts_search`, `wp_get_post`
 
 2. **Create Tools**
 
-   - Requires `enable_create_tools` setting
-   - Used for creating new content
-   - Example: `wp_add_post`, `wp_add_user`
+    - Requires `enable_create_tools` setting
+    - Used for creating new content
+    - Example: `wp_add_post`, `wp_add_user`
 
 3. **Update Tools**
 
-   - Requires `enable_update_tools` setting
-   - Used for modifying existing content
-   - Example: `wp_update_post`, `wp_update_user`
+    - Requires `enable_update_tools` setting
+    - Used for modifying existing content
+    - Example: `wp_update_post`, `wp_update_user`
 
 4. **Delete Tools**
-   - Requires `enable_delete_tools` setting
-   - Used for removing content
-   - Example: `wp_delete_post`, `wp_delete_user`
+    - Requires `enable_delete_tools` setting
+    - Used for removing content
+    - Example: `wp_delete_post`, `wp_delete_user`
 
 ## Error Handling
 
@@ -105,7 +105,7 @@ new RegisterMcpTool([
             ];
         }
     },
-    'permissions_callback' => function() {
+    'permission_callback' => function() {
         return current_user_can('manage_options');
     }
 ]);
@@ -136,7 +136,7 @@ class MyCustomTool {
             'description' => 'A custom tool for managing custom data',
             'type'        => 'read',
             'callback'    => [$this, 'tool_callback'],
-            'permissions_callback' => [$this, 'check_permissions'],
+            'permission_callback' => [$this, 'check_permissions'],
             'rest_alias'  => [
                 'route'  => '/wp/v2/my-custom-endpoint',
                 'method' => 'GET',

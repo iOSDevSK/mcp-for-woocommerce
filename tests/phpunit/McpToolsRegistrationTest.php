@@ -94,16 +94,16 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 		// Register a test tool.
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'test_tool',
-				'description'          => 'A test tool',
-				'type'                 => 'read',
-				'callback'             => function () {
+				'name'                => 'test_tool',
+				'description'         => 'A test tool',
+				'type'                => 'read',
+				'callback'            => function () {
 					return array( 'success' => true );
 				},
-				'permissions_callback' => function () {
+				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
-				'inputSchema'          => array(
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'param1' => array( 'type' => 'string' ),
@@ -175,16 +175,16 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 		// Register a test tool with permissions.
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'permission_tool',
-				'description'          => 'A tool that requires permissions',
-				'type'                 => 'read',
-				'callback'             => function () {
+				'name'                => 'permission_tool',
+				'description'         => 'A tool that requires permissions',
+				'type'                => 'read',
+				'callback'            => function () {
 					return array( 'success' => true );
 				},
-				'permissions_callback' => function () {
+				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
-				'inputSchema'          => array(
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'param1' => array( 'type' => 'string' ),
@@ -226,20 +226,20 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 		// Register a test tool that returns an image.
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'image_tool',
-				'description'          => 'A tool that returns an image',
-				'type'                 => 'read',
-				'callback'             => function () {
+				'name'                => 'image_tool',
+				'description'         => 'A tool that returns an image',
+				'type'                => 'read',
+				'callback'            => function () {
 					return array(
 						'type'     => 'image',
 						'results'  => 'fake_image_data',
 						'mimeType' => 'image/png',
 					);
 				},
-				'permissions_callback' => function () {
+				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
-				'inputSchema'          => array(
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'param1' => array( 'type' => 'string' ),
@@ -334,19 +334,19 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 		// Register a test tool with input parameters.
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'input_tool',
-				'description'          => 'A tool with input parameters',
-				'type'                 => 'read',
-				'callback'             => function ( $params ) {
+				'name'                => 'input_tool',
+				'description'         => 'A tool with input parameters',
+				'type'                => 'read',
+				'callback'            => function ( $params ) {
 					return array(
 						'success' => true,
 						'params'  => $params,
 					);
 				},
-				'permissions_callback' => function () {
+				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
-				'inputSchema'          => array(
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'param1' => array(
@@ -406,19 +406,19 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 		// Register a test tool with required input parameters.
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'required_input_tool',
-				'description'          => 'A tool with required input parameters',
-				'type'                 => 'read',
-				'callback'             => function ( $params ) {
+				'name'                => 'required_input_tool',
+				'description'         => 'A tool with required input parameters',
+				'type'                => 'read',
+				'callback'            => function ( $params ) {
 					return array(
 						'success' => true,
 						'params'  => $params,
 					);
 				},
-				'permissions_callback' => function () {
+				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
-				'inputSchema'          => array(
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'param1' => array(
@@ -476,16 +476,16 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 		// Register a test tool with a disabled type.
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'create_tool',
-				'description'          => 'A tool with a disabled type',
-				'type'                 => 'create',
-				'callback'             => function () {
+				'name'                => 'create_tool',
+				'description'         => 'A tool with a disabled type',
+				'type'                => 'create',
+				'callback'            => function () {
 					return array( 'success' => true );
 				},
-				'permissions_callback' => function () {
+				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
-				'inputSchema'          => array(
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'param1' => array( 'type' => 'string' ),

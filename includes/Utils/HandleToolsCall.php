@@ -81,8 +81,8 @@ class HandleToolsCall {
 					$request->set_param( $key, $value );
 				}
 
-				if ( isset( $tool_callback['permissions_callback'] ) && is_callable( $tool_callback['permissions_callback'] ) ) {
-					$permission_result = call_user_func( $tool_callback['permissions_callback'], $request );
+				if ( isset( $tool_callback['permission_callback'] ) && is_callable( $tool_callback['permission_callback'] ) ) {
+					$permission_result = call_user_func( $tool_callback['permission_callback'], $request );
 
 					if ( ! $permission_result ) {
 						return array(
@@ -116,8 +116,8 @@ class HandleToolsCall {
 				);
 			}
 		} else {
-			if ( isset( $tool_callback['permissions_callback'] ) && is_callable( $tool_callback['permissions_callback'] ) ) {
-				$permission_result = call_user_func( $tool_callback['permissions_callback'], $args );
+			if ( isset( $tool_callback['permission_callback'] ) && is_callable( $tool_callback['permission_callback'] ) ) {
+				$permission_result = call_user_func( $tool_callback['permission_callback'], $args );
 				if ( ! $permission_result ) {
 					return array(
 						'error' => array(

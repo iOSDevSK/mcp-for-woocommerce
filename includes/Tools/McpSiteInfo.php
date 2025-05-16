@@ -29,17 +29,17 @@ class McpSiteInfo {
 	public function register_tools(): void {
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'get_site_info',
-				'description'          => 'Provides detailed information about the WordPress site like site name, url, description, admin email, plugins, themes, users, and more',
-				'type'                 => 'read',
-				'inputSchema'          => array(
+				'name'                => 'get_site_info',
+				'description'         => 'Provides detailed information about the WordPress site like site name, url, description, admin email, plugins, themes, users, and more',
+				'type'                => 'read',
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => new stdClass(),
 					'required'   => new stdClass(),
 				),
-				'callback'             => array( $this, 'get_site_info' ),
-				'permissions_callback' => array( $this, 'permissions_callback' ),
-				'annotations'          => array(
+				'callback'            => array( $this, 'get_site_info' ),
+				'permission_callback' => array( $this, 'permission_callback' ),
+				'annotations'         => array(
 					'title'         => 'Get Site Info',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
@@ -74,7 +74,7 @@ class McpSiteInfo {
 	 *
 	 * @return bool
 	 */
-	public function permissions_callback(): bool {
+	public function permission_callback(): bool {
 		return current_user_can( 'manage_options' );
 	}
 }
