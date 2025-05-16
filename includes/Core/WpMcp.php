@@ -250,7 +250,15 @@ class WpMcp {
 
 		// The name should be unique.
 		if ( in_array( $args['name'], array_column( $this->tools, 'name' ), true ) ) {
-			throw new InvalidArgumentException( 'The tool name must be unique. A tool with this name already exists: ' . esc_html( $args['name'] ) );
+			$this->tools_callbacks[ $args['name'] ] = array();
+
+			// Search the tools array for the tool with the same name.
+			foreach ( $this->tools as $tool ) {
+				if ( $tool['name'] === $args['name'] ) {
+					unset( $this->tools[ $tool['name'] ] );
+					break;
+				}
+			}
 		}
 
 		$this->tools_callbacks[ $args['name'] ] = array(
@@ -274,7 +282,7 @@ class WpMcp {
 	public function register_resource( array $args ): void {
 		// the name and uri should be unique.
 		if ( in_array( $args['name'], array_column( $this->resources, 'name' ), true ) || in_array( $args['uri'], array_column( $this->resources, 'uri' ), true ) ) {
-			throw new InvalidArgumentException( 'The resource name and uri must be unique. A resource with this name or uri already exists: ' . esc_html( $args['name'] ) . ' ' . esc_html( $args['uri'] ) );
+			$this->resources[ $args['uri'] ] = array();
 		}
 		$this->resources[ $args['uri'] ] = $args;
 	}
@@ -301,11 +309,11 @@ class WpMcp {
 
 		// Check if the prompt name is unique.
 		if ( isset( $this->prompts[ $name ] ) ) {
-			throw new InvalidArgumentException( 'The prompt name must be unique. A prompt with this name already exists: ' . esc_html( $name ) );
+			$this->prompts[ $name ]          = array();
+			$this->prompts_messages[ $name ] = array();
 		}
 
-		$this->prompts[ $name ] = $prompt;
-
+		$this->prompts[ $name ]          = $prompt;
 		$this->prompts_messages[ $name ] = $messages;
 	}
 
