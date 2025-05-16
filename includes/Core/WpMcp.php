@@ -224,6 +224,14 @@ class WpMcp {
 			throw new InvalidArgumentException( 'The tool name must be unique. A tool with this name already exists: ' . esc_html( $args['name'] ) );
 		}
 
+		if ( empty( $args['permissions_callback'] ) ) {
+			throw new InvalidArgumentException( 'The permissions callback is required for tool registration.' );
+		}
+
+		if ( empty( $args['callback'] ) ) {
+			throw new InvalidArgumentException( 'The callback is required for tool registration.' );
+		}
+
 		$this->tools_callbacks[ $args['name'] ] = array(
 			'callback'             => $args['callback'],
 			'permissions_callback' => $args['permissions_callback'],
@@ -352,5 +360,20 @@ class WpMcp {
 	 */
 	public function get_namespace(): string {
 		return $this->namespace;
+	}
+
+	/**
+	 * Get a tool by name.
+	 *
+	 * @param string $name The tool name.
+	 * @return array|null
+	 */
+	public function get_tool_by_name( string $name ): ?array {
+		foreach ( $this->tools as $tool ) {
+			if ( $tool['name'] === $name ) {
+				return $tool;
+			}
+		}
+		return null;
 	}
 }
