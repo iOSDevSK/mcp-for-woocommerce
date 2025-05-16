@@ -38,8 +38,14 @@ class RegisterMcpResource {
 	 * Constructor.
 	 *
 	 * @param array $args The arguments.
+	 * @throws InvalidArgumentException When validation fails.
+	 * @throws \RuntimeException When the resource is registered outside of wordpress_mcp_init action.
 	 */
 	public function __construct( array $args, callable $resource_content_callback ) {
+		if ( ! doing_action( 'wordpress_mcp_init' ) ) {
+			throw new \RuntimeException( 'RegisterMcpResource can only be used within the wordpress_mcp_init action.' );
+		}
+
 		$this->args                      = $args;
 		$this->resource_content_callback = $resource_content_callback;
 		$this->validate_arguments();
