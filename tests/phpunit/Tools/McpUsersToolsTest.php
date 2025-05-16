@@ -1,6 +1,6 @@
 <?php
 /**
- * Test class for McpPostsTools
+ * Test class for McpUsersTools
  *
  * @package Automattic\WordpressMcp\Tests\Tools
  */
@@ -8,15 +8,15 @@
 namespace Automattic\WordpressMcp\Tests\Tools;
 
 use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Tools\McpPostsTools;
+use Automattic\WordpressMcp\Tools\McpUsersTools;
 use WP_UnitTestCase;
 use WP_REST_Request;
 use WP_User;
 
 /**
- * Test class for McpPostsTools
+ * Test class for McpUsersTools
  */
-final class McpPostsToolsTest extends WP_UnitTestCase {
+final class McpUsersToolsTest extends WP_UnitTestCase {
 
 	/**
 	 * The MCP instance.
@@ -53,15 +53,15 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test the wp_posts_search tool.
+	 * Test the wp_users_search tool.
 	 */
-	public function test_wp_posts_search_tool(): void {
-
-		$this->factory->post->create(
+	public function test_wp_users_search_tool(): void {
+		// Create a test user.
+		$this->factory->user->create(
 			array(
-				'post_title'   => 'Test Post',
-				'post_content' => 'Test Content',
-				'post_status'  => 'publish',
+				'user_login' => 'testuser',
+				'user_email' => 'test@example.com',
+				'role'       => 'subscriber',
 			)
 		);
 
@@ -73,7 +73,7 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 			wp_json_encode(
 				array(
 					'method' => 'tools/call',
-					'name'   => 'wp_posts_search',
+					'name'   => 'wp_users_search',
 				)
 			)
 		);
@@ -92,31 +92,28 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'content', $response->get_data() );
 		$this->assertIsArray( $response->get_data()['content'] );
 
-		// Get the first post from the response
-		$posts = json_decode( $response->get_data()['content'][0]['text'], true );
-		$post  = $posts[0];
+		// Get the users from the response.
+		$users = json_decode( $response->get_data()['content'][0]['text'], true );
 
-		// Assert post data
-		$this->assertEquals( 'Test Post', $post['title']['rendered'] );
-		$this->assertEquals( '<p>Test Content</p>', trim( $post['content']['rendered'] ) );
-		$this->assertEquals( 'publish', $post['status'] );
-		$this->assertEquals( 'post', $post['type'] );
+		// Assert user data.
+		$this->assertNotEmpty( $users );
+		$this->assertArrayHasKey( 'id', $users[0] );
+		$this->assertArrayHasKey( 'name', $users[0] );
+		$this->assertArrayHasKey( 'slug', $users[0] );
 	}
 
 	/**
-	 * Test the wp_get_post tool.
+	 * Test the wp_get_user tool.
 	 */
-	public function test_wp_get_post_tool(): void {
-		// Create a test post.
-		$post_id = $this->factory->post->create(
+	public function test_wp_get_user_tool(): void {
+		// Create a test user.
+		$user_id = $this->factory->user->create(
 			array(
-				'post_title'   => 'Test Post',
-				'post_content' => 'Test Content',
-				'post_status'  => 'publish',
+				'user_login' => 'testuser',
+				'user_email' => 'test@example.com',
+				'role'       => 'subscriber',
 			)
 		);
-
-		error_log( 'Post ID: ' . $post_id );
 
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
@@ -126,50 +123,9 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 			wp_json_encode(
 				array(
 					'method'    => 'tools/call',
-					'name'      => 'wp_get_post',
+					'name'      => 'wp_get_user',
 					'arguments' => array(
-						'id' => $post_id,
-					),
-				)
-			)
-		);
-
-		// Set content type header.
-		$request->add_header( 'Content-Type', 'application/json' );
-
-		// Set the current user.
-		wp_set_current_user( $this->admin_user->ID );
-
-		// Dispatch the request.
-		$response = rest_do_request( $request );
-
-		// error_log( 'Response: ' . print_r( $response, true ) );
-
-		// Check the response.
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'content', $response->get_data() );
-		$this->assertIsArray( $response->get_data()['content'] );
-		$this->assertCount( 1, $response->get_data()['content'] );
-		$this->assertEquals( 'text', $response->get_data()['content'][0]['type'] );
-		$this->assertStringContainsString( 'Test Post', $response->get_data()['content'][0]['text'] );
-	}
-
-	/**
-	 * Test the wp_add_post tool.
-	 */
-	public function test_wp_add_post_tool(): void {
-		// Create a REST request.
-		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
-
-		// Set the request body as JSON.
-		$request->set_body(
-			wp_json_encode(
-				array(
-					'method'    => 'tools/call',
-					'name'      => 'wp_add_post',
-					'arguments' => array(
-						'title'   => 'New Test Post',
-						'content' => '<!-- wp:paragraph --><p>New Test Content</p><!-- /wp:paragraph -->',
+						'id' => $user_id,
 					),
 				)
 			)
@@ -190,22 +146,13 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 		$this->assertIsArray( $response->get_data()['content'] );
 		$this->assertCount( 1, $response->get_data()['content'] );
 		$this->assertEquals( 'text', $response->get_data()['content'][0]['type'] );
-		$this->assertStringContainsString( 'New Test Post', $response->get_data()['content'][0]['text'] );
+		$this->assertStringContainsString( 'testuser', $response->get_data()['content'][0]['text'] );
 	}
 
 	/**
-	 * Test the wp_update_post tool.
+	 * Test the wp_add_user tool.
 	 */
-	public function test_wp_update_post_tool(): void {
-		// Create a test post.
-		$post_id = $this->factory->post->create(
-			array(
-				'post_title'   => 'Original Title',
-				'post_content' => 'Original Content',
-				'post_status'  => 'publish',
-			)
-		);
-
+	public function test_wp_add_user_tool(): void {
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
 
@@ -214,11 +161,12 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 			wp_json_encode(
 				array(
 					'method'    => 'tools/call',
-					'name'      => 'wp_update_post',
+					'name'      => 'wp_add_user',
 					'arguments' => array(
-						'id'      => $post_id,
-						'title'   => 'Updated Title',
-						'content' => '<!-- wp:paragraph --><p>Updated Content</p><!-- /wp:paragraph -->',
+						'username' => 'newuser',
+						'email'    => 'newuser@example.com',
+						'password' => 'password123',
+						'roles'    => array( 'subscriber' ),
 					),
 				)
 			)
@@ -239,19 +187,19 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 		$this->assertIsArray( $response->get_data()['content'] );
 		$this->assertCount( 1, $response->get_data()['content'] );
 		$this->assertEquals( 'text', $response->get_data()['content'][0]['type'] );
-		$this->assertStringContainsString( 'Updated Title', $response->get_data()['content'][0]['text'] );
+		$this->assertStringContainsString( 'newuser', $response->get_data()['content'][0]['text'] );
 	}
 
 	/**
-	 * Test the wp_delete_post tool.
+	 * Test the wp_update_user tool.
 	 */
-	public function test_wp_delete_post_tool(): void {
-		// Create a test post.
-		$post_id = $this->factory->post->create(
+	public function test_wp_update_user_tool(): void {
+		// Create a test user.
+		$user_id = $this->factory->user->create(
 			array(
-				'post_title'   => 'Post to Delete',
-				'post_content' => 'Content to Delete',
-				'post_status'  => 'publish',
+				'user_login' => 'testuser',
+				'user_email' => 'test@example.com',
+				'role'       => 'subscriber',
 			)
 		);
 
@@ -263,9 +211,60 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 			wp_json_encode(
 				array(
 					'method'    => 'tools/call',
-					'name'      => 'wp_delete_post',
+					'name'      => 'wp_update_user',
 					'arguments' => array(
-						'id' => $post_id,
+						'id'    => $user_id,
+						'email' => 'updated@example.com',
+						'roles' => array( 'editor' ),
+					),
+				)
+			)
+		);
+
+		// Set content type header.
+		$request->add_header( 'Content-Type', 'application/json' );
+
+		// Set the current user.
+		wp_set_current_user( $this->admin_user->ID );
+
+		// Dispatch the request.
+		$response = rest_do_request( $request );
+
+		// Check the response.
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertArrayHasKey( 'content', $response->get_data() );
+		$this->assertIsArray( $response->get_data()['content'] );
+		$this->assertCount( 1, $response->get_data()['content'] );
+		$this->assertEquals( 'text', $response->get_data()['content'][0]['type'] );
+		$this->assertStringContainsString( 'updated@example.com', $response->get_data()['content'][0]['text'] );
+	}
+
+	/**
+	 * Test the wp_delete_user tool.
+	 */
+	public function test_wp_delete_user_tool(): void {
+		// Create a test user.
+		$user_id = $this->factory->user->create(
+			array(
+				'user_login' => 'testuser',
+				'user_email' => 'test@example.com',
+				'role'       => 'subscriber',
+			)
+		);
+
+		// Create a REST request.
+		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
+
+		// Set the request body as JSON.
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'method'    => 'tools/call',
+					'name'      => 'wp_delete_user',
+					'arguments' => array(
+						'id'       => $user_id,
+						'force'    => true,
+						'reassign' => $this->admin_user->ID,
 					),
 				)
 			)
@@ -287,23 +286,15 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 		$this->assertCount( 1, $response->get_data()['content'] );
 		$this->assertEquals( 'text', $response->get_data()['content'][0]['type'] );
 
-		// Verify the post is deleted.
-		$post = get_post( $post_id );
-		$this->assertNotNull( $post );
-		$this->assertEquals( 'trash', $post->post_status );
+		// Verify the user is deleted.
+		$user = get_user_by( 'id', $user_id );
+		$this->assertFalse( $user );
 	}
 
 	/**
-	 * Test the wp_list_categories tool.
+	 * Test the wp_get_current_user tool.
 	 */
-	public function test_wp_list_categories_tool(): void {
-		// Create a test category.
-		$this->factory->category->create(
-			array(
-				'name' => 'Test Category',
-			)
-		);
-
+	public function test_wp_get_current_user_tool(): void {
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
 
@@ -312,7 +303,7 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 			wp_json_encode(
 				array(
 					'method' => 'tools/call',
-					'name'   => 'wp_list_categories',
+					'name'   => 'wp_get_current_user',
 				)
 			)
 		);
@@ -332,13 +323,13 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 		$this->assertIsArray( $response->get_data()['content'] );
 		$this->assertCount( 1, $response->get_data()['content'] );
 		$this->assertEquals( 'text', $response->get_data()['content'][0]['type'] );
-		$this->assertStringContainsString( 'Test Category', $response->get_data()['content'][0]['text'] );
+		$this->assertStringContainsString( $this->admin_user->user_login, $response->get_data()['content'][0]['text'] );
 	}
 
 	/**
-	 * Test the wp_add_category tool.
+	 * Test the wp_update_current_user tool.
 	 */
-	public function test_wp_add_category_tool(): void {
+	public function test_wp_update_current_user_tool(): void {
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
 
@@ -347,9 +338,9 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 			wp_json_encode(
 				array(
 					'method'    => 'tools/call',
-					'name'      => 'wp_add_category',
+					'name'      => 'wp_update_current_user',
 					'arguments' => array(
-						'name' => 'New Test Category',
+						'email' => 'updated_admin@example.com',
 					),
 				)
 			)
@@ -370,86 +361,6 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 		$this->assertIsArray( $response->get_data()['content'] );
 		$this->assertCount( 1, $response->get_data()['content'] );
 		$this->assertEquals( 'text', $response->get_data()['content'][0]['type'] );
-		$this->assertStringContainsString( 'New Test Category', $response->get_data()['content'][0]['text'] );
-	}
-
-	/**
-	 * Test the wp_list_tags tool.
-	 */
-	public function test_wp_list_tags_tool(): void {
-		// Create a test tag.
-		$this->factory->tag->create(
-			array(
-				'name' => 'Test Tag',
-			)
-		);
-
-		// Create a REST request.
-		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
-
-		// Set the request body as JSON.
-		$request->set_body(
-			wp_json_encode(
-				array(
-					'method' => 'tools/call',
-					'name'   => 'wp_list_tags',
-				)
-			)
-		);
-
-		// Set content type header.
-		$request->add_header( 'Content-Type', 'application/json' );
-
-		// Set the current user.
-		wp_set_current_user( $this->admin_user->ID );
-
-		// Dispatch the request.
-		$response = rest_do_request( $request );
-
-		// Check the response.
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'content', $response->get_data() );
-		$this->assertIsArray( $response->get_data()['content'] );
-		$this->assertCount( 1, $response->get_data()['content'] );
-		$this->assertEquals( 'text', $response->get_data()['content'][0]['type'] );
-		$this->assertStringContainsString( 'Test Tag', $response->get_data()['content'][0]['text'] );
-	}
-
-	/**
-	 * Test the wp_add_tag tool.
-	 */
-	public function test_wp_add_tag_tool(): void {
-		// Create a REST request.
-		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
-
-		// Set the request body as JSON.
-		$request->set_body(
-			wp_json_encode(
-				array(
-					'method'    => 'tools/call',
-					'name'      => 'wp_add_tag',
-					'arguments' => array(
-						'name' => 'New Test Tag',
-					),
-				)
-			)
-		);
-
-		// Set content type header.
-		$request->add_header( 'Content-Type', 'application/json' );
-
-		// Set the current user.
-		wp_set_current_user( $this->admin_user->ID );
-
-		// Dispatch the request.
-		$response = rest_do_request( $request );
-
-		// Check the response.
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'content', $response->get_data() );
-		$this->assertIsArray( $response->get_data()['content'] );
-		$this->assertCount( 1, $response->get_data()['content'] );
-		$this->assertEquals( 'text', $response->get_data()['content'][0]['type'] );
-		$this->assertStringContainsString( 'New Test Tag', $response->get_data()['content'][0]['text'] );
+		$this->assertStringContainsString( 'updated_admin@example.com', $response->get_data()['content'][0]['text'] );
 	}
 }

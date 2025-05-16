@@ -29,7 +29,39 @@ require_once "{$_tests_dir}/includes/functions.php";
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( __DIR__ ) . '/wordpress-mcp.php';
+	// enable MCP in settings.
+	update_option(
+		'wordpress_mcp_settings',
+		array(
+			'enabled'             => true,
+			'enable_create_tools' => true,
+			'enable_update_tools' => true,
+			'enable_delete_tools' => true,
+		)
+	);
+
+	// Enable WooCommerce if it exists.
+	if ( file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) ) {
+		activate_plugin( 'woocommerce/woocommerce.php' );
+	}
+
+	$woocommerce_path = dirname( dirname( __DIR__ ) ) . '/woocommerce/woocommerce.php';
+
+	if ( file_exists( $woocommerce_path ) ) {
+		// require_once $woocommerce_path;
+		// Activate WooCommerce.
+	}
+
+	// Load FeaturesAPI plugin if it exists.
+	$features_api_path = dirname( dirname( __DIR__ ) ) . '/wp-feature-api/wp-feature-api.php';
+
+	if ( file_exists( $features_api_path ) ) {
+		require_once $features_api_path;
+		// Activate FeaturesAPI.
+	}
+
+	// Load the plugin.
+	require_once dirname( __DIR__ ) . '/wordpress-mcp.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );

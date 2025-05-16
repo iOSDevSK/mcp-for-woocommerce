@@ -31,7 +31,7 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 	 * Set up the test.
 	 */
 	public function setUp(): void {
-		parent::setUp();
+		parent::set_up();
 
 		// Create an admin user.
 		$this->admin_user = $this->factory->user->create_and_get(
@@ -40,19 +40,10 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 			)
 		);
 
-		// Enable MCP in settings.
-		update_option(
-			'wordpress_mcp_settings',
-			array(
-				'enabled' => true,
-			)
-		);
-
 		// Get the MCP instance.
-		$this->mcp = WpMcp::instance();
+		$this->mcp = WPMCP();
 
-		// Initialize the REST API.
-		do_action( 'init' );
+		// Initialize the REST API and MCP.
 		do_action( 'rest_api_init' );
 	}
 
