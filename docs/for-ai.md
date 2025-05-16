@@ -6,9 +6,9 @@ Copy-paste this file into any AI chat or share it with a human developer. It is 
 
 The WordPress MCP plugin implements the [Model Context Protocol](https://modelcontextprotocol.io) to enable AI systems to interact with WordPress sites through a standardized interface. The plugin provides three main extension points:
 
-- **Tools:** Actions AI can request the site to perform (e.g., creating posts, getting user info)
-- **Resources:** Data AI can request from the site (e.g., site settings, plugin information)
-- **Prompts:** Pre-defined templates for common AI tasks related to WordPress
+-   **Tools:** Actions AI can request the site to perform (e.g., creating posts, getting user info)
+-   **Resources:** Data AI can request from the site (e.g., site settings, plugin information)
+-   **Prompts:** Pre-defined templates for common AI tasks related to WordPress
 
 This plugin serves as a bridge between AI models and WordPress, allowing secure, structured interactions with your site's content and functionality.
 
@@ -16,12 +16,12 @@ This plugin serves as a bridge between AI models and WordPress, allowing secure,
 
 WordPress MCP follows a modular architecture with these key components:
 
-- **Core:** Central classes managing registration and initialization
-- **Tools:** Interfaces for performing actions in WordPress
-- **Resources:** Data providers for site information
-- **Prompts:** Structured interaction templates
-- **Admin Interface:** Settings page for enabling/disabling features
-- **REST API Endpoints:** Communication channels for MCP clients
+-   **Core:** Central classes managing registration and initialization
+-   **Tools:** Interfaces for performing actions in WordPress
+-   **Resources:** Data providers for site information
+-   **Prompts:** Structured interaction templates
+-   **Admin Interface:** Settings page for enabling/disabling features
+-   **REST API Endpoints:** Communication channels for MCP clients
 
 The plugin exposes a REST API endpoint at `/wp/v2/wpmcp` that handles all MCP operations using JSON-RPC style requests.
 
@@ -45,19 +45,20 @@ $prompts = $mcp->get_prompts();
 
 Three main classes handle registration of components:
 
-- `RegisterMcpTool`: Registers tools that perform actions
-- `RegisterMcpResource`: Registers resources that provide data
-- `RegisterMcpPrompt`: Registers prompts for structured interactions
+-   `RegisterMcpTool`: Registers tools that perform actions
+-   `RegisterMcpResource`: Registers resources that provide data
+-   `RegisterMcpPrompt`: Registers prompts for structured interactions
 
 ## Extending the Plugin
 
 ### Adding New Tools
 
 Tools are actions AI can perform in WordPress. There are four types:
-- `read`: For retrieving data (always allowed)
-- `create`: For creating new content (requires enabling in settings)
-- `update`: For modifying existing content (requires enabling in settings)
-- `delete`: For removing content (requires enabling in settings)
+
+-   `read`: For retrieving data (always allowed)
+-   `create`: For creating new content (requires enabling in settings)
+-   `update`: For modifying existing content (requires enabling in settings)
+-   `delete`: For removing content (requires enabling in settings)
 
 **Example: Creating a Custom Tool**
 
@@ -85,7 +86,7 @@ class MyCustomTool {
                 'required'   => ['param1'],
             ],
             'callback'    => [$this, 'tool_callback'],
-            'permissions_callback' => [$this, 'permissions_callback'],
+            'permission_callback' => [$this, 'permission_callback'],
         ]);
     }
 
@@ -97,7 +98,7 @@ class MyCustomTool {
         ];
     }
 
-    public function permissions_callback() {
+    public function permission_callback() {
         // Check if the user has permission to use this tool
         return current_user_can('manage_options');
     }
@@ -292,7 +293,7 @@ if (class_exists('WooCommerce')) {
             'method' => 'GET',
         ],
     ]);
-    
+
     // Register a tool to analyze sales data
     new RegisterMcpTool([
         'name'                 => 'analyze_wc_sales',
@@ -301,24 +302,24 @@ if (class_exists('WooCommerce')) {
         'callback'             => function($args) {
             // Get sales data for the specified period
             $period = $args['period'] ?? 'last_30_days';
-            
+
             // Get sales data from WooCommerce
             $orders = wc_get_orders([
                 'limit'   => -1,
                 'date_created' => '>' . strtotime('-30 days'),
                 'status'  => ['completed', 'processing'],
             ]);
-            
+
             // Calculate sales metrics
             $total_sales = 0;
             $order_count = count($orders);
-            
+
             foreach ($orders as $order) {
                 $total_sales += $order->get_total();
             }
-            
+
             $average_order_value = $order_count > 0 ? $total_sales / $order_count : 0;
-            
+
             return [
                 'period'               => $period,
                 'total_sales'          => $total_sales,
@@ -326,7 +327,7 @@ if (class_exists('WooCommerce')) {
                 'average_order_value'  => $average_order_value,
             ];
         },
-        'permissions_callback' => function() {
+        'permission_callback' => function() {
             return current_user_can('manage_woocommerce');
         },
         'inputSchema'          => [
@@ -352,61 +353,65 @@ if (class_exists('WooCommerce')) {
 Main plugin class that manages registration and initialization.
 
 **Methods:**
-- `instance()`: Returns the singleton instance
-- `register_tool($args)`: Registers a tool
-- `register_resource($args)`: Registers a resource
-- `register_resource_callback($uri, $callback)`: Registers a resource callback
-- `register_prompt($prompt, $messages)`: Registers a prompt
-- `get_tools()`: Returns all registered tools
-- `get_resources()`: Returns all registered resources
-- `get_prompts()`: Returns all registered prompts
+
+-   `instance()`: Returns the singleton instance
+-   `register_tool($args)`: Registers a tool
+-   `register_resource($args)`: Registers a resource
+-   `register_resource_callback($uri, $callback)`: Registers a resource callback
+-   `register_prompt($prompt, $messages)`: Registers a prompt
+-   `get_tools()`: Returns all registered tools
+-   `get_resources()`: Returns all registered resources
+-   `get_prompts()`: Returns all registered prompts
 
 #### RegisterMcpTool
 
 Registers an MCP tool with the system.
 
 **Constructor Parameters:**
-- `$args`: Array of tool arguments including:
-  - `name`: Unique identifier for the tool
-  - `description`: Human-readable description
-  - `type`: Tool type ('read', 'create', 'update', 'delete')
-  - `callback`: Function that implements the tool's logic
-  - `permissions_callback`: Function that checks user permissions
-  - `inputSchema`: JSON Schema describing the tool's input parameters
-  - `rest_alias`: Optional mapping to a WordPress REST API endpoint
+
+-   `$args`: Array of tool arguments including:
+    -   `name`: Unique identifier for the tool
+    -   `description`: Human-readable description
+    -   `type`: Tool type ('read', 'create', 'update', 'delete')
+    -   `callback`: Function that implements the tool's logic
+    -   `permission_callback`: Function that checks user permissions
+    -   `inputSchema`: JSON Schema describing the tool's input parameters
+    -   `rest_alias`: Optional mapping to a WordPress REST API endpoint
 
 #### RegisterMcpResource
 
 Registers an MCP resource with the system.
 
 **Constructor Parameters:**
-- `$args`: Array of resource arguments including:
-  - `uri`: Unique URI identifier for the resource
-  - `name`: Human-readable name
-  - `description`: Description of the resource's purpose
-  - `mimeType`: MIME type of the resource content
-- `$resource_content_callback`: Function that provides the resource data
+
+-   `$args`: Array of resource arguments including:
+    -   `uri`: Unique URI identifier for the resource
+    -   `name`: Human-readable name
+    -   `description`: Description of the resource's purpose
+    -   `mimeType`: MIME type of the resource content
+-   `$resource_content_callback`: Function that provides the resource data
 
 #### RegisterMcpPrompt
 
 Registers an MCP prompt with the system.
 
 **Constructor Parameters:**
-- `$prompt`: Array of prompt arguments including:
-  - `name`: Unique identifier for the prompt
-  - `description`: Description of the prompt's purpose
-  - `arguments`: Array of argument definitions
-- `$messages`: Array of message templates
+
+-   `$prompt`: Array of prompt arguments including:
+    -   `name`: Unique identifier for the prompt
+    -   `description`: Description of the prompt's purpose
+    -   `arguments`: Array of argument definitions
+-   `$messages`: Array of message templates
 
 ## Settings & Configuration
 
 The plugin's settings page is accessible at `Settings > MCP` in the WordPress admin dashboard. It provides options to enable/disable:
 
-- MCP functionality
-- WordPress Features Adapter
-- Create tools
-- Update tools
-- Delete tools
+-   MCP functionality
+-   WordPress Features Adapter
+-   Create tools
+-   Update tools
+-   Delete tools
 
 You can programmatically access these settings:
 
@@ -421,12 +426,13 @@ $create_tools_enabled = isset($options['enable_create_tools']) && $options['enab
 The plugin can optionally integrate with the [WordPress Feature API](https://github.com/Automattic/wp-feature-api) to expose registered features as MCP tools. This is handled by the `WpFeaturesAdapter` class.
 
 To use this feature:
+
 1. Install and activate the WordPress Feature API plugin
 2. Enable "WordPress Features Adapter" in the MCP settings
 
 ## Notes for Developers
 
-1. **Permissions**: All MCP operations require administrator privileges by default. Use the `permissions_callback` when registering tools to set custom permission requirements.
+1. **Permissions**: All MCP operations require administrator privileges by default. Use the `permission_callback` when registering tools to set custom permission requirements.
 
 2. **Security**: Be careful when enabling create/update/delete tools as they can modify your WordPress site content.
 
@@ -453,7 +459,7 @@ function my_theme_register_mcp_extensions() {
     if (!function_exists('WPMCP')) {
         return;
     }
-    
+
     // Register your custom tools, resources, and prompts
     add_action('wordpress_mcp_init', 'my_theme_register_mcp_tools');
     add_action('wordpress_mcp_init', 'my_theme_register_mcp_resources');
@@ -471,7 +477,7 @@ function my_theme_register_mcp_tools() {
         'description' => 'A custom tool from my theme',
         'type'        => 'read',
         'callback'    => 'my_theme_custom_tool_callback',
-        'permissions_callback' => function() {
+        'permission_callback' => function() {
             return current_user_can('edit_posts');
         },
         'inputSchema' => [

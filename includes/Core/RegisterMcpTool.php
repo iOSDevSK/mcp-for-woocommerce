@@ -25,6 +25,12 @@ class RegisterMcpTool {
 	 */
 	public function __construct( array $args ) {
 		$this->args = $args;
+
+		// Backward compatibility for permissions_callback.
+		if ( isset( $this->args['permissions_callback'] ) ) {
+			$this->args['permission_callback'] = $this->args['permissions_callback'];
+			unset( $this->args['permissions_callback'] );
+		}
 		$this->validate_arguments();
 		$this->register_tool();
 	}
@@ -139,9 +145,9 @@ class RegisterMcpTool {
 		}
 
 		// Update the args with the converted schema.
-		$this->args['inputSchema']          = $input_schema;
-		$this->args['callback']             = $rest_api['callback'];
-		$this->args['permissions_callback'] = $rest_api['permission_callback'];
+		$this->args['inputSchema']         = $input_schema;
+		$this->args['callback']            = $rest_api['callback'];
+		$this->args['permission_callback'] = $rest_api['permission_callback'];
 
 		// Register the tool with the converted schema.
 		WPMCP()->register_tool( $this->args );
@@ -196,9 +202,14 @@ class RegisterMcpTool {
 			throw new InvalidArgumentException( 'The callback must be a callable.' );
 		}
 
-		// permissions_callback must be callable.
-		if ( isset( $this->args['permissions_callback'] ) && ! is_callable( $this->args['permissions_callback'] ) ) {
-			throw new InvalidArgumentException( 'The permissions callback must be a callable.' );
+		// permission_callback must be callable.
+		if ( empty( $this->args['permission_callback'] ) ) {
+			throw new InvalidArgumentException( 'The permission callback is required.' );
+		}
+
+		// permission_callback must be callable.
+		if ( ! is_callable( $this->args['permission_callback'] ) ) {
+			throw new InvalidArgumentException( 'The permission callback must be a callable.' );
 		}
 
 		// validate the input schema.

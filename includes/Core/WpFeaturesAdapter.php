@@ -66,13 +66,13 @@ class WpFeaturesAdapter {
 			}
 
 			// Determine MCP functionality type.
-			$rest_method   = $feature->get_rest_method();
-			$feature_type  = $feature->get_type();
-			$mcp_type      = $this->map_functionality_type( $rest_method, $feature_type );
+			$rest_method  = $feature->get_rest_method();
+			$feature_type = $feature->get_type();
+			$mcp_type     = $this->map_functionality_type( $rest_method, $feature_type );
 
-			$permissions_callback = null;
+			$permission_callback = null;
 			if ( method_exists( $feature, 'get_permission_callback' ) ) {
-				$permissions_callback = function ( $args ) use ( $feature ) {
+				$permission_callback = function ( $args ) use ( $feature ) {
 					// Get the callback function from the feature
 					$callback = $feature->get_permission_callback();
 					return $callback( $args );
@@ -80,12 +80,12 @@ class WpFeaturesAdapter {
 			}
 
 			$the_feature = array(
-				'name'                 => 'wp_feature_' . sanitize_title( $feature->get_name() ),
-				'description'          => $feature->get_description(),
-				'type'                 => $mcp_type,
-				'inputSchema'          => $input_schema,
-				'outputSchema'         => $output_schema,
-				'permissions_callback' => $permissions_callback,
+				'name'                => 'wp_feature_' . sanitize_title( $feature->get_name() ),
+				'description'         => $feature->get_description(),
+				'type'                => $mcp_type,
+				'inputSchema'         => $input_schema,
+				'outputSchema'        => $output_schema,
+				'permission_callback' => $permission_callback,
 			);
 
 			if ( $feature->has_rest_alias() ) {
@@ -93,7 +93,7 @@ class WpFeaturesAdapter {
 				$rest_alias = null;
 				if ( method_exists( $feature, 'get_rest_alias' ) ) {
 					$rest_alias = $feature->get_rest_alias();
-					
+
 					// Handle potential WP_Error or array return
 					if ( is_string( $rest_alias ) ) {
 						$route = $rest_alias;
@@ -103,8 +103,8 @@ class WpFeaturesAdapter {
 					} else {
 						// If it's the REST alias is stored in the feature itself
 						$rest_alias_prop = $feature->rest_alias ?? null;
-						$route = is_string( $rest_alias_prop ) ? $rest_alias_prop : null;
-						
+						$route           = is_string( $rest_alias_prop ) ? $rest_alias_prop : null;
+
 						if ( null === $route ) {
 							continue;
 						}
@@ -112,13 +112,13 @@ class WpFeaturesAdapter {
 				} else {
 					// As a fallback, try accessing the property directly
 					$rest_alias_prop = $feature->rest_alias ?? null;
-					$route = is_string( $rest_alias_prop ) ? $rest_alias_prop : null;
-					
+					$route           = is_string( $rest_alias_prop ) ? $rest_alias_prop : null;
+
 					if ( null === $route ) {
 						continue;
 					}
 				}
-				
+
 				$the_feature['rest_alias'] = array(
 					'route'  => $route,
 					'method' => $rest_method,
@@ -129,7 +129,7 @@ class WpFeaturesAdapter {
 				if ( method_exists( $feature, 'get_callback' ) ) {
 					$callback = $feature->get_callback();
 				}
-				
+
 				if ( is_callable( $callback ) ) {
 					$the_feature['callback'] = function ( $args ) use ( $feature, $callback ) {
 						return call_user_func( $callback, $args );

@@ -224,22 +224,14 @@ class WpMcp {
 			throw new InvalidArgumentException( 'The tool name must be unique. A tool with this name already exists: ' . esc_html( $args['name'] ) );
 		}
 
-		if ( empty( $args['permissions_callback'] ) ) {
-			throw new InvalidArgumentException( 'The permissions callback is required for tool registration.' );
-		}
-
-		if ( empty( $args['callback'] ) ) {
-			throw new InvalidArgumentException( 'The callback is required for tool registration.' );
-		}
-
 		$this->tools_callbacks[ $args['name'] ] = array(
-			'callback'             => $args['callback'],
-			'permissions_callback' => $args['permissions_callback'],
-			'rest_alias'           => $args['rest_alias'] ?? null,
+			'callback'            => $args['callback'],
+			'permission_callback' => $args['permission_callback'],
+			'rest_alias'          => $args['rest_alias'] ?? null,
 		);
 
 		unset( $args['callback'] );
-		unset( $args['permissions_callback'] );
+		unset( $args['permission_callback'] );
 		unset( $args['rest_alias'] );
 		$this->tools[] = $args;
 	}

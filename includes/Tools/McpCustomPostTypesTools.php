@@ -50,12 +50,12 @@ class McpCustomPostTypesTools {
 
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'wp_cpt_search',
-				'description'          => 'Search and filter WordPress custom post types including ' . $post_types_list . ' with pagination',
-				'type'                 => 'read',
-				'callback'             => array( $this, 'search_custom_post_types' ),
-				'permissions_callback' => array( $this, 'search_custom_post_types_permissions_callback' ),
-				'inputSchema'          => array(
+				'name'                => 'wp_cpt_search',
+				'description'         => 'Search and filter WordPress custom post types including ' . $post_types_list . ' with pagination',
+				'type'                => 'read',
+				'callback'            => array( $this, 'search_custom_post_types' ),
+				'permission_callback' => array( $this, 'search_custom_post_types_permission_callback' ),
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'post_type' => array(
@@ -89,7 +89,7 @@ class McpCustomPostTypesTools {
 						'post_type',
 					),
 				),
-				'annotations'          => array(
+				'annotations'         => array(
 					'title'         => 'Search Custom Post Types',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
@@ -99,12 +99,12 @@ class McpCustomPostTypesTools {
 
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'wp_get_cpt',
-				'description'          => 'Get a WordPress custom post type by ID',
-				'type'                 => 'read',
-				'callback'             => array( $this, 'get_custom_post_type' ),
-				'permissions_callback' => array( $this, 'get_custom_post_type_permissions_callback' ),
-				'inputSchema'          => array(
+				'name'                => 'wp_get_cpt',
+				'description'         => 'Get a WordPress custom post type by ID',
+				'type'                => 'read',
+				'callback'            => array( $this, 'get_custom_post_type' ),
+				'permission_callback' => array( $this, 'get_custom_post_type_permission_callback' ),
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'post_type' => array(
@@ -121,7 +121,7 @@ class McpCustomPostTypesTools {
 						'id',
 					),
 				),
-				'annotations'          => array(
+				'annotations'         => array(
 					'title'         => 'Get Custom Post Type',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
@@ -131,12 +131,12 @@ class McpCustomPostTypesTools {
 
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'wp_add_cpt',
-				'description'          => 'Add a new WordPress custom post type',
-				'type'                 => 'create',
-				'callback'             => array( $this, 'add_custom_post_type' ),
-				'permissions_callback' => array( $this, 'add_custom_post_type_permissions_callback' ),
-				'inputSchema'          => array(
+				'name'                => 'wp_add_cpt',
+				'description'         => 'Add a new WordPress custom post type',
+				'type'                => 'create',
+				'callback'            => array( $this, 'add_custom_post_type' ),
+				'permission_callback' => array( $this, 'add_custom_post_type_permission_callback' ),
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'post_type' => array(
@@ -166,7 +166,7 @@ class McpCustomPostTypesTools {
 						'content',
 					),
 				),
-				'annotations'          => array(
+				'annotations'         => array(
 					'title'           => 'Add Custom Post Type',
 					'readOnlyHint'    => false,
 					'destructiveHint' => false,
@@ -178,12 +178,12 @@ class McpCustomPostTypesTools {
 
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'wp_update_cpt',
-				'description'          => 'Update a WordPress custom post type by ID',
-				'type'                 => 'update',
-				'callback'             => array( $this, 'update_custom_post_type' ),
-				'permissions_callback' => array( $this, 'update_custom_post_type_permissions_callback' ),
-				'inputSchema'          => array(
+				'name'                => 'wp_update_cpt',
+				'description'         => 'Update a WordPress custom post type by ID',
+				'type'                => 'update',
+				'callback'            => array( $this, 'update_custom_post_type' ),
+				'permission_callback' => array( $this, 'update_custom_post_type_permission_callback' ),
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'post_type' => array(
@@ -216,7 +216,7 @@ class McpCustomPostTypesTools {
 						'id',
 					),
 				),
-				'annotations'          => array(
+				'annotations'         => array(
 					'title'           => 'Update Custom Post Type',
 					'readOnlyHint'    => false,
 					'destructiveHint' => false,
@@ -228,12 +228,12 @@ class McpCustomPostTypesTools {
 
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'wp_delete_cpt',
-				'description'          => 'Delete a WordPress custom post type by ID',
-				'type'                 => 'delete',
-				'callback'             => array( $this, 'delete_custom_post_type' ),
-				'permissions_callback' => array( $this, 'delete_custom_post_type_permissions_callback' ),
-				'inputSchema'          => array(
+				'name'                => 'wp_delete_cpt',
+				'description'         => 'Delete a WordPress custom post type by ID',
+				'type'                => 'delete',
+				'callback'            => array( $this, 'delete_custom_post_type' ),
+				'permission_callback' => array( $this, 'delete_custom_post_type_permission_callback' ),
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'post_type' => array(
@@ -250,7 +250,7 @@ class McpCustomPostTypesTools {
 						'id',
 					),
 				),
-				'annotations'          => array(
+				'annotations'         => array(
 					'title'           => 'Delete Custom Post Type',
 					'readOnlyHint'    => false,
 					'destructiveHint' => true,
@@ -306,7 +306,7 @@ class McpCustomPostTypesTools {
 	 *
 	 * @return bool
 	 */
-	public function search_custom_post_types_permissions_callback(): bool {
+	public function search_custom_post_types_permission_callback(): bool {
 		return current_user_can( 'edit_posts' );
 	}
 
@@ -334,7 +334,7 @@ class McpCustomPostTypesTools {
 	 *
 	 * @return bool
 	 */
-	public function get_custom_post_type_permissions_callback(): bool {
+	public function get_custom_post_type_permission_callback(): bool {
 		return current_user_can( 'edit_posts' );
 	}
 
@@ -378,7 +378,7 @@ class McpCustomPostTypesTools {
 	 *
 	 * @return bool
 	 */
-	public function add_custom_post_type_permissions_callback(): bool {
+	public function add_custom_post_type_permission_callback(): bool {
 		return current_user_can( 'edit_posts' );
 	}
 
@@ -437,7 +437,7 @@ class McpCustomPostTypesTools {
 	 *
 	 * @return bool
 	 */
-	public function update_custom_post_type_permissions_callback(): bool {
+	public function update_custom_post_type_permission_callback(): bool {
 		return current_user_can( 'edit_posts' );
 	}
 
@@ -476,7 +476,7 @@ class McpCustomPostTypesTools {
 	 *
 	 * @return bool
 	 */
-	public function delete_custom_post_type_permissions_callback(): bool {
+	public function delete_custom_post_type_permission_callback(): bool {
 		return current_user_can( 'edit_posts' );
 	}
 }

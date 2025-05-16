@@ -63,12 +63,12 @@ class McpMediaTools {
 
 		new RegisterMcpTool(
 			array(
-				'name'                 => 'wp_get_media_file',
-				'description'          => 'Get the actual file content (blob) of a WordPress media item',
-				'type'                 => 'read',
-				'callback'             => array( $this, 'wp_get_media_file' ),
-				'permissions_callback' => array( $this, 'get_media_file_permissions_callback' ),
-				'inputSchema'          => array(
+				'name'                => 'wp_get_media_file',
+				'description'         => 'Get the actual file content (blob) of a WordPress media item',
+				'type'                => 'read',
+				'callback'            => array( $this, 'wp_get_media_file' ),
+				'permission_callback' => array( $this, 'get_media_file_permission_callback' ),
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
 						'id'   => array(
@@ -84,7 +84,7 @@ class McpMediaTools {
 						'id',
 					),
 				),
-				'annotations'          => array(
+				'annotations'         => array(
 					'title'         => 'Get Media File',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
@@ -301,7 +301,7 @@ class McpMediaTools {
 	 *
 	 * @return bool
 	 */
-	public function get_media_file_permissions_callback(): bool {
+	public function get_media_file_permission_callback(): bool {
 		// todo: check if the user has permission to view the media file.
 		return true;
 	}
