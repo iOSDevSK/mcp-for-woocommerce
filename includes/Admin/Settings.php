@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Automattic\WordpressMcp\Admin;
 
+use Automattic\WordpressMcp\Core\WpMcp;
+
 /**
  * Class Settings
  * Handles the MCP settings page in WordPress admin.
@@ -14,6 +16,11 @@ class Settings {
 	const OPTION_NAME = 'wordpress_mcp_settings';
 
 	/**
+	 * The tool states option name.
+	 */
+	const TOOL_STATES_OPTION = 'wordpress_mcp_tool_states';
+
+	/**
 	 * Initialize the settings page.
 	 */
 	public function __construct() {
@@ -21,6 +28,8 @@ class Settings {
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_ajax_wordpress_mcp_save_settings', array( $this, 'ajax_save_settings' ) );
+		add_action( 'wp_ajax_wordpress_mcp_toggle_tool', array( $this, 'ajax_toggle_tool' ) );
+		add_action( 'wp_ajax_all_mcp_tools', array( $this, 'ajax_all_mcp_tools' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( WORDPRESS_MCP_PATH . 'wordpress-mcp.php' ), array( $this, 'plugin_action_links' ) );
 	}
 
@@ -105,6 +114,7 @@ class Settings {
 				'apiUrl'              => rest_url( 'wordpress-mcp/v1/settings' ),
 				'nonce'               => wp_create_nonce( 'wordpress_mcp_settings' ),
 				'settings'            => get_option( self::OPTION_NAME, array() ),
+				'toolStates'          => get_option( self::TOOL_STATES_OPTION, array() ),
 				'featureApiAvailable' => $this->is_feature_api_available(),
 				'strings'             => array(
 					'enableMcp'                        => __( 'Enable MCP functionality', 'wordpress-mcp' ),
@@ -120,6 +130,8 @@ class Settings {
 					'saveSettings'                     => __( 'Save Settings', 'wordpress-mcp' ),
 					'settingsSaved'                    => __( 'Settings saved successfully!', 'wordpress-mcp' ),
 					'settingsError'                    => __( 'Error saving settings. Please try again.', 'wordpress-mcp' ),
+					'toolEnabled'                      => __( 'Tool %1$s has been %2$s.', 'wordpress-mcp' ),
+					'toolDisabled'                     => __( 'Tool %1$s has been %2$s.', 'wordpress-mcp' ),
 				),
 			)
 		);
@@ -213,5 +225,73 @@ class Settings {
 		$settings_link = '<a href="' . admin_url( 'options-general.php?page=wordpress-mcp-settings' ) . '">' . __( 'Settings', 'wordpress-mcp' ) . '</a>';
 		array_unshift( $actions, $settings_link );
 		return $actions;
+	}
+
+	/**
+	 * AJAX handler for toggling tool state.
+	 */
+	public function ajax_toggle_tool(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'wordpress-mcp' ) ) );
+		}
+
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'wordpress_mcp_settings' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid nonce. Please refresh the page and try again.', 'wordpress-mcp' ) ) );
+		}
+
+		$tool_name = isset( $_POST['tool'] ) ? sanitize_text_field( wp_unslash( $_POST['tool'] ) ) : '';
+		$enabled   = isset( $_POST['tool_enabled'] ) ? filter_var( $_POST['tool_enabled'], FILTER_VALIDATE_BOOLEAN ) : false;
+
+		if ( empty( $tool_name ) ) {
+			wp_send_json_error( array( 'message' => __( 'Tool name is required.', 'wordpress-mcp' ) ) );
+		}
+
+		$success = $this->toggle_tool( $tool_name, $enabled );
+
+		if ( ! $success ) {
+			wp_send_json_error( array( 'message' => __( 'Failed to toggle tool state.', 'wordpress-mcp' ) ) );
+		}
+
+		wp_send_json_success(
+			array(
+				'message' => sprintf(
+					__( 'Tool %1$s has been %2$s.', 'wordpress-mcp' ),
+					$tool_name,
+					$enabled ? __( 'enabled', 'wordpress-mcp' ) : __( 'disabled', 'wordpress-mcp' )
+				),
+			)
+		);
+	}
+
+	/**
+	 * Toggle a tool's state.
+	 *
+	 * @param string $tool_name The name of the tool to toggle.
+	 * @param bool   $enabled   Whether the tool should be enabled.
+	 * @return bool Whether the operation was successful.
+	 */
+	public function toggle_tool( string $tool_name, bool $enabled ): bool {
+		$tool_states               = get_option( self::TOOL_STATES_OPTION, array() );
+		$tool_states[ $tool_name ] = $enabled;
+		try {
+			update_option( self::TOOL_STATES_OPTION, $tool_states, 'no' );
+		} catch ( \Exception $e ) {
+			error_log( 'Failed to update tool states option: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * AJAX handler for getting all MCP tools.
+	 */
+	public function ajax_all_mcp_tools(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'wordpress-mcp' ) ) );
+		}
+
+		$tools = WpMcp::instance()->get_all_tools();
+		wp_send_json_success( $tools );
 	}
 }
