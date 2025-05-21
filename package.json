@@ -1,6 +1,6 @@
 {
     "name": "wordpress-mcp",
-    "version": "0.1.15",
+    "version": "0.1.16",
     "description": "Wordpress MCP Settings",
     "main": "src/index.js",
     "private": true,
