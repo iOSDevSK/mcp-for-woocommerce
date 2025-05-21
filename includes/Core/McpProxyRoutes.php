@@ -106,6 +106,7 @@ class McpProxyRoutes {
 		return match ( $method ) {
 			'init' => $this->init( $params ),
 			'tools/list' => $this->list_tools( $params ),
+			'tools/list/all' => $this->list_all_tools( $params ),
 			'tools/call' => $this->call_tool( $params ),
 			'resources/list' => $this->list_resources( $params ),
 			'resources/templates/list' => $this->list_resource_templates( $params ),
@@ -187,6 +188,21 @@ class McpProxyRoutes {
 			array(
 				'tools' => $tools,
 			)
+		);
+	}
+
+	/**
+	 * List all tools
+	 *
+	 * @param array $params Request parameters.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function list_all_tools( array $params ): WP_Error|WP_REST_Response {
+		$tools = $this->mcp->get_all_tools();
+
+		return rest_ensure_response(
+			array( 'tools' => $tools )
 		);
 	}
 

@@ -348,11 +348,16 @@ class WpMcp {
 		return $this->tools;
 	}
 
+	/**
+	 * Get all tools with enabled state.
+	 *
+	 * @return array
+	 */
 	public function get_all_tools(): array {
 		$tool_states = get_option( self::TOOL_STATES_OPTION, array() );
 		$tools       = $this->all_tools;
 
-		// Add enabled state to each tool
+		// Add enabled state to each tool.
 		foreach ( $tools as &$tool ) {
 			$tool['enabled'] = ! isset( $tool_states[ $tool['name'] ] ) || $tool_states[ $tool['name'] ];
 		}

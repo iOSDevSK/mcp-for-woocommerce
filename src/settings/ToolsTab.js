@@ -25,14 +25,18 @@ const ToolsTab = () => {
 		const fetchTools = async () => {
 			try {
 				setLoading( true );
-				const response = await fetch(
-					ajaxurl + '?action=all_mcp_tools'
-				).then( ( res ) => res.json() );
+				const response = await apiFetch( {
+					path: '/wp/v2/wpmcp',
+					method: 'POST',
+					data: {
+						jsonrpc: '2.0',
+						method: 'tools/list/all',
+						params: {},
+					},
+				} );
 
-				console.log( 'response', response );
-
-				if ( response && response.data ) {
-					setTools( response.data );
+				if ( response && response.tools ) {
+					setTools( response.tools );
 				} else {
 					setError(
 						__( 'Failed to load tools data', 'wordpress-mcp' )
