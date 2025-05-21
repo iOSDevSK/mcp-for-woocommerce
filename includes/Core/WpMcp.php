@@ -107,6 +107,20 @@ class WpMcp {
 	private bool $has_triggered_init = false;
 
 	/**
+	 * The all tools.
+	 *
+	 * @var array
+	 */
+	private array $all_tools = array();
+
+	/**
+	 * The tool states option name.
+	 *
+	 * @var string
+	 */
+	private const TOOL_STATES_OPTION = 'wordpress_mcp_tool_states';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -243,9 +257,17 @@ class WpMcp {
 	 * @throws InvalidArgumentException If the tool name is not unique or if the tool type is disabled.
 	 */
 	public function register_tool( array $args ): void {
-		// Check if the tool type is enabled.
-		if ( ! $this->is_tool_type_enabled( $args['type'] ) ) {
-			return; // Skip registration if tool type is disabled.
+
+		$is_tool_type_enabled = $this->is_tool_type_enabled( $args['type'] );
+		$is_tool_enabled      = $this->is_tool_enabled( $args['name'] );
+
+		$args['tool_type_enabled'] = $is_tool_type_enabled;
+		$args['tool_enabled']      = $is_tool_enabled;
+
+		$this->all_tools[] = $args;
+		// Check if the tool is enabled
+		if ( ! $is_tool_enabled && ! $is_tool_type_enabled ) {
+			return; // Skip registration if tool is disabled
 		}
 
 		// The name should be unique.
@@ -324,6 +346,18 @@ class WpMcp {
 	 */
 	public function get_tools(): array {
 		return $this->tools;
+	}
+
+	public function get_all_tools(): array {
+		$tool_states = get_option( self::TOOL_STATES_OPTION, array() );
+		$tools       = $this->all_tools;
+
+		// Add enabled state to each tool
+		foreach ( $tools as &$tool ) {
+			$tool['enabled'] = ! isset( $tool_states[ $tool['name'] ] ) || $tool_states[ $tool['name'] ];
+		}
+
+		return $tools;
 	}
 
 	/**
@@ -413,5 +447,16 @@ class WpMcp {
 	 */
 	public function get_mcp_settings(): array {
 		return $this->mcp_settings;
+	}
+
+	/**
+	 * Check if a tool is enabled.
+	 *
+	 * @param string $tool_name The name of the tool to check.
+	 * @return bool Whether the tool is enabled.
+	 */
+	public function is_tool_enabled( string $tool_name ): bool {
+		$tool_states = get_option( self::TOOL_STATES_OPTION, array() );
+		return ! isset( $tool_states[ $tool_name ] ) || $tool_states[ $tool_name ];
 	}
 }
