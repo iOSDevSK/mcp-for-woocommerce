@@ -29,7 +29,6 @@ class Settings {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_ajax_wordpress_mcp_save_settings', array( $this, 'ajax_save_settings' ) );
 		add_action( 'wp_ajax_wordpress_mcp_toggle_tool', array( $this, 'ajax_toggle_tool' ) );
-		add_action( 'wp_ajax_all_mcp_tools', array( $this, 'ajax_all_mcp_tools' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( WORDPRESS_MCP_PATH . 'wordpress-mcp.php' ), array( $this, 'plugin_action_links' ) );
 	}
 
@@ -281,17 +280,5 @@ class Settings {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * AJAX handler for getting all MCP tools.
-	 */
-	public function ajax_all_mcp_tools(): void {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'wordpress-mcp' ) ) );
-		}
-
-		$tools = WpMcp::instance()->get_all_tools();
-		wp_send_json_success( $tools );
 	}
 }
