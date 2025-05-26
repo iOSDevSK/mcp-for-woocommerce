@@ -35,7 +35,7 @@ class McpSiteInfo {
 				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => new stdClass(),
-					'required'   => new stdClass(),
+					'required'   => array(),
 				),
 				'callback'            => array( $this, 'get_site_info' ),
 				'permission_callback' => array( $this, 'permission_callback' ),

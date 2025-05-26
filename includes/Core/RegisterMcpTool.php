@@ -108,8 +108,10 @@ class RegisterMcpTool {
 
 			// Handle enums if present.
 			if ( isset( $arg_schema['enum'] ) ) {
-				$input_schema['properties'][ $arg_name ]['enum'] = $arg_schema['enum'];
-			}
+                // Ensure enum values are unique
+                $unique_enum = array_values(array_unique($arg_schema['enum'], SORT_REGULAR));
+                $input_schema['properties'][  ]['enum'] = $unique_enum;
+            }
 
 			// Handle default values if present.
 			if ( isset( $arg_schema['default'] ) && ! empty( $arg_schema['default'] ) ) {
