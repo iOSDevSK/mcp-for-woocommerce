@@ -14,6 +14,7 @@
 
 declare(strict_types=1);
 
+use Automattic\WordpressMcp\Core\McpStreamable;
 use Automattic\WordpressMcp\Core\WpMcp;
 use Automattic\WordpressMcp\Core\McpProxyRoutes;
 use Automattic\WordpressMcp\Admin\Settings;
@@ -41,6 +42,9 @@ function init_wordpress_mcp() {
 
 	// Initialize the REST route.
 	new McpProxyRoutes( $mcp );
+
+	// Initialize the Streamable routes.
+	new McpStreamable( $mcp );
 
 	// Initialize the settings page.
 	new Settings();
