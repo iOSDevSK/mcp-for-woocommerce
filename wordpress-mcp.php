@@ -5,6 +5,8 @@
  * Version: 0.1.18
  * Author: Automattic AI, Ovidiu Galatan <ovidiu.galatan@a8c.com>
  * Author URI: https://automattic.ai
+ * License: GPL-2.0-or-later
+ * License URI: https://spdx.org/licenses/GPL-2.0-or-later.html
  * Text Domain: wordpress-mcp
  * Domain Path: /languages
  * Requires PHP: 8.0
