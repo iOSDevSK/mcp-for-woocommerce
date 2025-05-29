@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Automattic\WordpressMcp\Core;
 
 use Automattic\WordpressMcp\Utils\InputSchema;
+use stdClass;
 
 /**
  * Class WpFeaturesAdapter
@@ -63,10 +64,14 @@ class WpFeaturesAdapter {
 			$input_schema = $feature->get_input_schema();
 
 			if ( empty( $input_schema ) ) {
-				$input_schema = null;
+				$input_schema = array(
+					'type'       => 'object',
+					'properties' => new stdClass(),
+					'required'   => array(),
+				);
 			}
 
-			// Determine MCP functionality type.
+			// Determine the MCP functionality type.
 			$rest_method  = $feature->get_rest_method();
 			$feature_type = $feature->get_type();
 			$mcp_type     = $this->map_functionality_type( $rest_method, $feature_type );
