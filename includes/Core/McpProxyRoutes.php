@@ -90,21 +90,22 @@ class McpProxyRoutes {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function handle_request( WP_REST_Request $request ): WP_Error|WP_REST_Response {
-		$params = $request->get_json_params();
+		$message = $request->get_json_params();
 
-		if ( empty( $params ) || ! isset( $params['method'] ) ) {
+		if ( empty( $message ) || ! isset( $message['method'] ) ) {
 			return new WP_Error(
 				'invalid_request',
 				'Invalid request: method parameter is required',
 				array( 'status' => 400 )
 			);
 		}
-
-		$method = $params['method'];
+		$method = $message['method'];
+		$params = $message['params'] ?? $message; // backward compatibility with the old request format.
 
 		// Route the request to the appropriate handler based on the method.
 		return match ( $method ) {
-			'init' => $this->init( $params ),
+			'initialize' => $this->init(),
+			'init' => $this->init(),
 			'tools/list' => $this->list_tools( $params ),
 			'tools/list/all' => $this->list_all_tools( $params ),
 			'tools/call' => $this->call_tool( $params ),
@@ -129,15 +130,13 @@ class McpProxyRoutes {
 	/**
 	 * Initialize the MCP server
 	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return WP_REST_Response|WP_Error
+	 * @return WP_REST_Response
 	 */
-	public function init( array $params ): WP_Error|WP_REST_Response {
+	public function init(): WP_REST_Response {
 		// @todo: the name should be editable from the admin page
 		$server_info = array(
 			'name'    => 'WordPress MCP Server',
-			'version' => '1.0.0',
+			'version' => WORDPRESS_MCP_VERSION,
 		);
 
 		// @todo: add capabilities based on your implementation
