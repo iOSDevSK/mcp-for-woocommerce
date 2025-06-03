@@ -7,10 +7,11 @@
 
 namespace Automattic\WordpressMcp\Core;
 
-use Automattic\WordpressMcp\Sse\McpMethodNotFound;
-use Automattic\WordpressMcp\Utils\HandlePromptGet;
-use Automattic\WordpressMcp\Utils\HandleToolsCall;
-use stdClass;
+use Automattic\WordpressMcp\RequestMethodHandlers\InitializeHandler;
+use Automattic\WordpressMcp\RequestMethodHandlers\ToolsHandler;
+use Automattic\WordpressMcp\RequestMethodHandlers\ResourcesHandler;
+use Automattic\WordpressMcp\RequestMethodHandlers\PromptsHandler;
+use Automattic\WordpressMcp\RequestMethodHandlers\SystemHandler;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -20,12 +21,48 @@ use WP_REST_Server;
  * The WordPress MCP Streamable HTTP Transport class.
  */
 class McpStreamable {
+
 	/**
-	 * The WordPress MCP instance.
+	 * The request ID.
 	 *
-	 * @var WpMcp
+	 * @var int
 	 */
-	private WpMcp $mcp;
+	private int $request_id = 0;
+
+	/**
+	 * The initialize handler.
+	 *
+	 * @var InitializeHandler
+	 */
+	private InitializeHandler $initialize_handler;
+
+	/**
+	 * The tools handler.
+	 *
+	 * @var ToolsHandler
+	 */
+	private ToolsHandler $tools_handler;
+
+	/**
+	 * The resources handler.
+	 *
+	 * @var ResourcesHandler
+	 */
+	private ResourcesHandler $resources_handler;
+
+	/**
+	 * The prompts handler.
+	 *
+	 * @var PromptsHandler
+	 */
+	private PromptsHandler $prompts_handler;
+
+	/**
+	 * The system handler.
+	 *
+	 * @var SystemHandler
+	 */
+	private SystemHandler $system_handler;
 
 	/**
 	 * Initialize the class and register routes
@@ -33,7 +70,14 @@ class McpStreamable {
 	 * @param WpMcp $mcp The WordPress MCP instance.
 	 */
 	public function __construct( WpMcp $mcp ) {
-		$this->mcp = $mcp;
+
+		// Initialize handlers
+		$this->initialize_handler = new InitializeHandler();
+		$this->tools_handler      = new ToolsHandler( $mcp );
+		$this->resources_handler  = new ResourcesHandler( $mcp );
+		$this->prompts_handler    = new PromptsHandler( $mcp );
+		$this->system_handler     = new SystemHandler();
+
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
 
@@ -55,7 +99,7 @@ class McpStreamable {
 			'wp/v2',
 			'/wpmcp/streamable',
 			array(
-				'methods'             => array( WP_REST_Server::READABLE, WP_REST_Server::CREATABLE ),
+				'methods'             => WP_REST_Server::ALLMETHODS,
 				'callback'            => array( $this, 'handle_request' ),
 				'permission_callback' => array( $this, 'check_permission' ),
 			)
@@ -82,8 +126,7 @@ class McpStreamable {
 			);
 		}
 
-		// return current_user_can( 'manage_options' );
-		return true;
+		return current_user_can( 'manage_options' );
 	}
 
 	/**
@@ -93,14 +136,31 @@ class McpStreamable {
 	 * @return WP_REST_Response
 	 */
 	public function handle_request( WP_REST_Request $request ) {
+		// Log request headers for debugging.
+		@ray(
+			array(
+				'method'  => $request->get_method(),
+				'headers' => $request->get_headers(),
+				'body'    => $request->get_body(),
+			)
+		);
+
+		// Handle preflight requests
+		if ( 'OPTIONS' === $request->get_method() ) {
+			return new WP_REST_Response( null, 204 );
+		}
+
 		$method = $request->get_method();
 
 		if ( 'POST' === $method ) {
 			return $this->handle_post_request( $request );
 		}
 
-		// Return 405 for GET requests as specified.
-		return new WP_REST_Response( 'Method not allowed', 405 );
+		// Return 405 for unsupported methods.
+		return new WP_REST_Response(
+			McpErrorHandler::create_error_response( 0, McpErrorHandler::INVALID_REQUEST, 'Method not allowed' ),
+			405
+		);
 	}
 
 	/**
@@ -110,52 +170,93 @@ class McpStreamable {
 	 * @return WP_REST_Response
 	 */
 	private function handle_post_request( $request ) {
-		// Validate content type.
-		$content_type = $request->get_header( 'content-type' );
-		if ( 'application/json' !== $content_type ) {
+		try {
+			// Validate Accept header - client MUST include both content types
+			$accept_header = $request->get_header( 'accept' );
+			if ( ! $accept_header ||
+				strpos( $accept_header, 'application/json' ) === false ||
+				strpos( $accept_header, 'text/event-stream' ) === false ) {
+				return new WP_REST_Response(
+					McpErrorHandler::invalid_accept_header( 0 ),
+					400
+				);
+			}
+
+			// Validate content type - be more flexible with content-type headers
+			$content_type = $request->get_header( 'content-type' );
+			if ( $content_type && strpos( $content_type, 'application/json' ) === false ) {
+				return new WP_REST_Response(
+					McpErrorHandler::invalid_content_type( 0 ),
+					400
+				);
+			}
+
+			// Get the JSON-RPC message(s) - can be single message or array batch
+			$body = $request->get_json_params();
+			if ( null === $body ) {
+				return new WP_REST_Response(
+					McpErrorHandler::parse_error( 0, 'Invalid JSON in request body' ),
+					400
+				);
+			}
+
+			// Handle both single messages and batched arrays
+			$messages                       = is_array( $body ) && isset( $body[0] ) ? $body : array( $body );
+			$has_requests                   = false;
+			$has_notifications_or_responses = false;
+
+			// Validate all messages and categorize them
+			foreach ( $messages as $message ) {
+				$validation_result = McpErrorHandler::validate_jsonrpc_message( $message );
+				if ( true !== $validation_result ) {
+					return new WP_REST_Response( $validation_result, 400 );
+				}
+
+				// Check if it's a request (has id and method) or notification/response
+				if ( isset( $message['method'] ) && isset( $message['id'] ) ) {
+					$has_requests = true;
+				} else {
+					$has_notifications_or_responses = true;
+				}
+			}
+
+			// If only notifications or responses, return 202 Accepted with no body
+			if ( $has_notifications_or_responses && ! $has_requests ) {
+				return new WP_REST_Response( null, 202 );
+			}
+
+			// Process requests and return JSON response
+			$results        = array();
+			$has_initialize = false;
+			foreach ( $messages as $message ) {
+				if ( isset( $message['method'] ) && isset( $message['id'] ) ) {
+					$this->request_id = (int) $message['id'];
+					if ( 'initialize' === $message['method'] ) {
+						$has_initialize = true;
+					}
+					$results[] = $this->process_message( $message );
+				}
+			}
+
+			// Return single result or batch
+			$response_body = count( $results ) === 1 ? $results[0] : $results;
+
+			$headers = array(
+				'Content-Type'                 => 'application/json',
+				'Access-Control-Allow-Origin'  => '*',
+				'Access-Control-Allow-Methods' => 'OPTIONS, GET, POST, PUT, PATCH, DELETE',
+			);
+
+			return new WP_REST_Response( $response_body, 200, $headers );
+
+		} catch ( \Throwable $exception ) {
+			// Handle any unexpected exceptions
+			McpErrorHandler::log_error( 'Unexpected error in handle_post_request', array( 'exception' => $exception->getMessage() ) );
 			return new WP_REST_Response(
-				array(
-					'error' => array(
-						'code'    => 'invalid_content_type',
-						'message' => 'Content-Type must be application/json.',
-					),
-				),
-				400
+				McpErrorHandler::handle_exception( $exception, $this->request_id ),
+				500
 			);
 		}
-
-		// Get session ID from header.
-		$session_id = $request->get_header( 'mcp-session-id' );
-
-		// Get the JSON-RPC message.
-		$message = $request->get_json_params();
-		if ( ! $this->is_valid_jsonrpc_message( $message ) ) {
-			return new WP_REST_Response(
-				array(
-					'error' => array(
-						'code'    => 'invalid_request',
-						'message' => 'Invalid JSON-RPC message format.',
-					),
-				),
-				400
-			);
-		}
-
-		// For all other requests, session ID is required.
-		if ( empty( $session_id ) ) {
-			$session_id = wp_generate_uuid4();
-		}
-
-		// Process the message.
-		$result = $this->process_message( $message );
-
-		// For notifications and responses, return 202 Accepted.
-		// if ( ! isset( $message['id'] ) ) {
-		// return new WP_REST_Response( null, 202 );
-		// }
-
-		// For requests, return the result.
-		return new WP_REST_Response( $result );
 	}
 
 	/**
@@ -165,431 +266,72 @@ class McpStreamable {
 	 * @return array
 	 */
 	private function process_message( array $message ): array {
-		@ray( $message );
-		$result = match ( $message['method'] ) {
-			'initialize' => $this->initialize( $message ),
-			'tools/list' => $this->list_tools( $message ),
-			'tools/list/all' => $this->list_all_tools( $message ),
-			'tools/call' => $this->call_tool( $message ),
-			'resources/list' => $this->list_resources( $message ),
-			'resources/templates/list' => $this->list_resource_templates( $message ),
-			'resources/read' => $this->read_resource( $message ),
-			'resources/subscribe' => $this->subscribe_resource( $message ),
-			'resources/unsubscribe' => $this->unsubscribe_resource( $message ),
-			'prompts/list' => $this->list_prompts( $message ),
-			'prompts/get' => $this->get_prompt( $message ),
-			'logging/setLevel' => $this->set_logging_level( $message ),
-			'completion/complete' => $this->complete( $message ),
-			'roots/list' => $this->list_roots( $message ),
-			default => $this->method_not_found( $message ),
-		};
+		try {
+			$result = match ( $message['method'] ) {
+				'initialize' => $this->initialize_handler->handle(),
+				'tools/list' => $this->tools_handler->list_tools(),
+				'tools/list/all' => $this->tools_handler->list_all_tools( $message ),
+				'tools/call' => $this->tools_handler->call_tool( $message ),
+				'resources/list' => $this->resources_handler->list_resources(),
+				'resources/templates/list' => $this->resources_handler->list_resource_templates( $message ),
+				'resources/read' => $this->resources_handler->read_resource( $message ),
+				'resources/subscribe' => $this->resources_handler->subscribe_resource( $message ),
+				'resources/unsubscribe' => $this->resources_handler->unsubscribe_resource( $message ),
+				'prompts/list' => $this->prompts_handler->list_prompts(),
+				'prompts/get' => $this->prompts_handler->get_prompt( $message ),
+				'logging/setLevel' => $this->system_handler->set_logging_level( $message ),
+				'completion/complete' => $this->system_handler->complete(),
+				'roots/list' => $this->system_handler->list_roots(),
+				default => array( 'error' => McpErrorHandler::method_not_found( $this->request_id, $message['method'] )['error'] ),
+			};
 
-		return array(
-			'jsonrpc' => '2.0',
-			'id'      => $message['id'] ?? null,
-			'result'  => $result,
-		);
-	}
-
-	/**
-	 * Validate if the message follows JSON-RPC format.
-	 *
-	 * @param mixed $message The message to validate.
-	 * @return bool
-	 */
-	private function is_valid_jsonrpc_message( $message ): bool {
-		if ( ! is_array( $message ) ) {
-			return false;
-		}
-
-		// Basic JSON-RPC 2.0 message validation.
-		$required_fields = array( 'jsonrpc', 'method' );
-		foreach ( $required_fields as $field ) {
-			if ( ! isset( $message[ $field ] ) ) {
-				return false;
+			// Check if the result contains an error
+			if ( isset( $result['error'] ) ) {
+				return $this->ensure_jsonrpc_error_response( $result );
 			}
+
+			return $this->ensure_jsonrpc_response( $result );
+
+		} catch ( \Throwable $exception ) {
+			return McpErrorHandler::handle_exception( $exception, $this->request_id );
 		}
-
-		if ( '2.0' !== $message['jsonrpc'] ) {
-			return false;
-		}
-
-		return true;
 	}
 
 	/**
-	 * Initialize the MCP server
+	 * Ensure the response is a JSON-RPC response
 	 *
-	 * @param array $params Request parameters.
-	 *
+	 * @param array $response The response to ensure.
 	 * @return array
 	 */
-	public function initialize( array $params ): array {
-		// @todo: the name should be editable from the admin page
-		$server_info = array(
-			'name'    => 'WordPress MCP Server',
-			'version' => '1.0.0',
-		);
+	private function ensure_jsonrpc_response( array $response ): array {
+		$response =
+			array(
+				'jsonrpc' => '2.0',
+				'id'      => $this->request_id,
+				'result'  => $response,
+			);
 
-		// @todo: add capabilities based on your implementation
-		$capabilities = array(
-			'tools'      => array(
-				'list' => true,
-				'call' => true,
-			),
-			'resources'  => array(
-				'list'        => true,
-				'subscribe'   => true,
-				'listChanged' => true,
-			),
-			'prompts'    => array(
-				'list'        => true,
-				'get'         => true,
-				'listChanged' => true,
-			),
-			'logging'    => new stdClass(),
-			'completion' => new stdClass(),
-			'roots'      => array(
-				'list'        => true,
-				'listChanged' => true,
-			),
-		);
+		@ray( $response );
 
-		// Send the response according to JSON-RPC 2.0 and InitializeResult schema.
-		return array(
-			'protocolVersion' => '2025-03-26',
-			'serverInfo'      => $server_info,
-			'capabilities'    => (object) $capabilities,
-			'instructions'    => 'This is a WordPress MCP Server implementation that provides tools, resources, and prompts for interacting with WordPress.',
-		);
+		return $response;
 	}
 
 	/**
-	 * List available tools
+	 * Ensure the error response is a JSON-RPC error response
 	 *
-	 * @param array $params Request parameters.
-	 *
+	 * @param array $response The error response to ensure.
 	 * @return array
 	 */
-	public function list_tools( array $params ): array {
-
-		// Implement tool listing logic here.
-		$tools = $this->mcp->get_tools();
-
-		return array(
-			'tools' => $tools,
-		);
-	}
-
-	/**
-	 * List all tools
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function list_all_tools( array $params ): array {
-		$tools = $this->mcp->get_all_tools();
-
-		return array( 'tools' => $tools );
-	}
-
-	/**
-	 * Call a tool
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function call_tool( array $params ): array {
-		if ( ! isset( $params['name'] ) ) {
+	private function ensure_jsonrpc_error_response( array $response ): array {
+		if ( isset( $response['error'] ) ) {
 			return array(
-				'error' => array(
-					'code'    => 'missing_parameter',
-					'message' => 'Missing required parameter: name',
-				),
+				'jsonrpc' => '2.0',
+				'id'      => $this->request_id,
+				'error'   => $response['error'],
 			);
 		}
 
-		// Implement a tool calling logic here.
-		$result = HandleToolsCall::run( $params );
-
-		$response = array(
-			'content' => array(
-				array(
-					'type' => 'text',
-				),
-			),
-		);
-
-		// @todo: add support for EmbeddedResource schema.ts:619.
-		if ( isset( $result['type'] ) && 'image' === $result['type'] ) {
-			$response['content'][0]['type'] = 'image';
-			$response['content'][0]['data'] = base64_encode( $result['results'] ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-
-			// @todo: improve this ?!.
-			$response['content'][0]['mimeType'] = $result['mimeType'] ?? 'image/png';
-		} else {
-			$response['content'][0]['text'] = wp_json_encode( $result );
-		}
-
-		return array(
-			$response,
-			$params['id'],
-		);
-	}
-
-	/**
-	 * List resources
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function list_resources( array $params ): array {
-
-		// Get the registered resources from the MCP instance.
-		$resources = array_values( $this->mcp->get_resources() );
-
-		return array(
-			'resources' => $resources,
-		);
-	}
-
-	/**
-	 * List resource templates
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function list_resource_templates( array $params ): array {
-
-		// Implement resource template listing logic here.
-		$templates = array();
-
-		return array(
-			'templates' => $templates,
-		);
-	}
-
-	/**
-	 * Read a resource
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function read_resource( array $params ): array {
-		if ( ! isset( $params['uri'] ) ) {
-			return array(
-				'error' => array(
-					'code'    => 'missing_parameter',
-					'message' => 'Missing required parameter: uri',
-				),
-			);
-		}
-
-		// Implement resource reading logic here.
-		$uri                = $params['uri'];
-		$resource_callbacks = $this->mcp->get_resource_callbacks();
-
-		if ( ! isset( $resource_callbacks[ $uri ] ) ) {
-			return array(
-				'error' => array(
-					'code'    => 'resource_not_found',
-					'message' => 'Resource not found: ' . $uri,
-				),
-			);
-		}
-
-		$callback = $resource_callbacks[ $uri ];
-		$content  = call_user_func( $callback, $params );
-
-		$resource = $this->mcp->get_resources()[ $uri ];
-
-		return array(
-			'contents' => array(
-				array(
-					'uri'      => $uri,
-					'mimeType' => $resource['mimeType'],
-					'text'     => wp_json_encode( $content ),
-				),
-			),
-		);
-	}
-
-	/**
-	 * Subscribe to a resource
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function subscribe_resource( array $params ): array {
-		if ( ! isset( $params['uri'] ) ) {
-			return array(
-				'error' => array(
-					'error' => array(
-						'code'    => 'missing_parameter',
-						'message' => 'Missing required parameter: uri',
-					),
-				),
-			);
-		}
-
-		// Implement resource subscription logic here.
-		$uri = $params['uri'];
-
-		return array(
-			'subscriptionId' => 'sub_' . md5( $uri ),
-		);
-	}
-
-	/**
-	 * Unsubscribe from a resource
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function unsubscribe_resource( array $params ): array {
-		if ( ! isset( $params['subscriptionId'] ) ) {
-			return array(
-				'error' => array(
-					'code'    => 'missing_parameter',
-					'message' => 'Missing required parameter: subscriptionId',
-				),
-			);
-		}
-
-		// @todo: Implement resource unsubscription logic here.
-
-		return array(
-			'success' => true,
-		);
-	}
-
-	/**
-	 * List prompt.
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function list_prompts( array $params ): array {
-		return array(
-			'prompts' => array_values( $this->mcp->get_prompts() ),
-		);
-	}
-
-	/**
-	 * Get a prompt
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function get_prompt( array $params ): array {
-		if ( ! isset( $params['name'] ) ) {
-			return array(
-				'error' => array(
-					'code'    => 'missing_parameter',
-					'message' => 'Missing required parameter: name',
-				),
-			);
-		}
-
-		// Get the prompt by name.
-		$prompt_name = $params['name'];
-		$prompt      = $this->mcp->get_prompt_by_name( $prompt_name );
-
-		if ( ! $prompt ) {
-			return array(
-				'error' => array(
-					'code'    => 'prompt_not_found',
-					'message' => 'Prompt not found: ' . $prompt_name,
-				),
-			);
-		}
-
-		// Get the arguments for the prompt.
-		$arguments = $params['arguments'] ?? array();
-		$messages  = $this->mcp->get_prompt_messages( $prompt_name );
-
-		return array(
-			'result' => HandlePromptGet::run( $prompt, $messages, $arguments ),
-		);
-	}
-
-	/**
-	 * Set the logging level
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function set_logging_level( array $params ): array {
-		if ( ! isset( $params['level'] ) ) {
-			return array(
-				'error' => array(
-					'code'    => 'missing_parameter',
-					'message' => 'Missing required parameter: level',
-				),
-			);
-		}
-
-		// @todo: Implement logging level setting logic here.
-
-		return array(
-			'success' => true,
-		);
-	}
-
-	/**
-	 * Complete a request
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function complete( array $params ): array {
-		// Implement completion logic here.
-
-		return array(
-			'success' => true,
-		);
-	}
-
-	/**
-	 * List roots
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function list_roots( array $params ): array {
-		// Implement roots listing logic here.
-		$roots = array();
-
-		return array(
-			'roots' => $roots,
-		);
-	}
-
-	/**
-	 * Handle method not found
-	 *
-	 * @param array $params Request parameters.
-	 *
-	 * @return array
-	 */
-	public function method_not_found( array $params ): array {
-		return array(
-			'error' => array(
-				'code'    => 'method_not_found',
-				'message' => 'Method not found: ' . $params['method'],
-			),
-		);
+		// If it's not already a proper error response, make it one
+		return McpErrorHandler::internal_error( $this->request_id, 'Invalid error response format' );
 	}
 }
