@@ -30,11 +30,25 @@ class JwtAuth {
 	private const JWT_SECRET_KEY_OPTION = 'wpmcp_jwt_secret_key';
 
 	/**
-	 * Access token expiration time in seconds.
+	 * Default access token expiration time in seconds.
 	 *
 	 * @var int
 	 */
-	private const JWT_ACCESS_EXP = 3600; // 1 hour.
+	private const JWT_ACCESS_EXP_DEFAULT = 3600; // 1 hour.
+
+	/**
+	 * Minimum access token expiration time in seconds.
+	 *
+	 * @var int
+	 */
+	private const JWT_ACCESS_EXP_MIN = 3600; // 1 hour.
+
+	/**
+	 * Maximum access token expiration time in seconds.
+	 *
+	 * @var int
+	 */
+	private const JWT_ACCESS_EXP_MAX = 86400; // 1 day.
 
 	/**
 	 * Option name for storing active tokens.
@@ -79,6 +93,26 @@ class JwtAuth {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'generate_jwt_token' ),
 				'permission_callback' => '__return_true',
+				'args'                => array(
+					'username'   => array(
+						'type'        => 'string',
+						'description' => 'Username for authentication',
+						'required'    => false,
+					),
+					'password'   => array(
+						'type'        => 'string',
+						'description' => 'Password for authentication',
+						'required'    => false,
+					),
+					'expires_in' => array(
+						'type'        => 'integer',
+						'description' => 'Token expiration time in seconds (3600-86400)',
+						'required'    => false,
+						'minimum'     => self::JWT_ACCESS_EXP_MIN,
+						'maximum'     => self::JWT_ACCESS_EXP_MAX,
+						'default'     => self::JWT_ACCESS_EXP_DEFAULT,
+					),
+				),
 			)
 		);
 
@@ -119,13 +153,28 @@ class JwtAuth {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function generate_jwt_token( WP_REST_Request $request ) {
+		$params     = $request->get_json_params();
+		$expires_in = isset( $params['expires_in'] ) ? intval( $params['expires_in'] ) : self::JWT_ACCESS_EXP_DEFAULT;
+
+		// Validate expiration time.
+		if ( $expires_in < self::JWT_ACCESS_EXP_MIN || $expires_in > self::JWT_ACCESS_EXP_MAX ) {
+			return new WP_Error(
+				'invalid_expiration',
+				sprintf(
+					'Token expiration must be between %d seconds (1 hour) and %d seconds (1 day)',
+					self::JWT_ACCESS_EXP_MIN,
+					self::JWT_ACCESS_EXP_MAX
+				),
+				array( 'status' => 400 )
+			);
+		}
+
 		// If user is already authenticated, use their ID.
 		if ( is_user_logged_in() ) {
-			return rest_ensure_response( $this->generate_token( get_current_user_id() ) );
+			return rest_ensure_response( $this->generate_token( get_current_user_id(), $expires_in ) );
 		}
 
 		// Otherwise, try to authenticate with provided credentials.
-		$params   = $request->get_json_params();
 		$username = isset( $params['username'] ) ? sanitize_text_field( $params['username'] ) : '';
 		$password = isset( $params['password'] ) ? $params['password'] : '';
 
@@ -138,23 +187,25 @@ class JwtAuth {
 			);
 		}
 
-		return rest_ensure_response( $this->generate_token( $user->ID ) );
+		return rest_ensure_response( $this->generate_token( $user->ID, $expires_in ) );
 	}
 
 	/**
 	 * Generate access token.
 	 *
 	 * @param int $user_id The user ID.
+	 * @param int $expires_in Token expiration time in seconds.
 	 * @return array
 	 */
-	private function generate_token( int $user_id ): array {
-		$issued_at = time();
-		$jti       = wp_generate_password( 32, false );
+	private function generate_token( int $user_id, int $expires_in = self::JWT_ACCESS_EXP_DEFAULT ): array {
+		$issued_at  = time();
+		$expires_at = $issued_at + $expires_in;
+		$jti        = wp_generate_password( 32, false );
 
 		$payload = array(
 			'iss'     => get_bloginfo( 'url' ),
 			'iat'     => $issued_at,
-			'exp'     => $issued_at + self::JWT_ACCESS_EXP,
+			'exp'     => $expires_at,
 			'user_id' => $user_id,
 			'jti'     => $jti,
 		);
@@ -162,11 +213,13 @@ class JwtAuth {
 		$token = JWT::encode( $payload, $this->get_jwt_secret_key(), 'HS256' );
 
 		// Register the token.
-		$this->register_token( $jti, $user_id, $issued_at, $payload['exp'] );
+		$this->register_token( $jti, $user_id, $issued_at, $expires_at );
 
 		return array(
-			'token'   => $token,
-			'user_id' => $user_id,
+			'token'      => $token,
+			'user_id'    => $user_id,
+			'expires_in' => $expires_in,
+			'expires_at' => $expires_at,
 		);
 	}
 
@@ -313,9 +366,9 @@ class JwtAuth {
 			return $result;
 		}
 
-		// Only apply JWT authentication to the streamable endpoint.
+		// Apply JWT authentication to MCP endpoints.
 		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-		if ( ! str_contains( $request_uri, '/wp/v2/wpmcp/streamable' ) ) {
+		if ( ! str_contains( $request_uri, '/wp/v2/wpmcp' ) ) {
 			return $result;
 		}
 
