@@ -79,7 +79,8 @@ class McpProxyRoutes {
 			);
 		}
 
-		return current_user_can( 'manage_options' );
+		// JWT authentication handles user validation, so just check if user is logged in.
+		return is_user_logged_in();
 	}
 
 	/**
@@ -388,7 +389,7 @@ class McpProxyRoutes {
 	/**
 	 * List prompt.
 	 *
-	 * @param array $params
+	 * @param array $params Request parameters.
 	 *
 	 * @return WP_REST_Response|WP_Error
 	 */
