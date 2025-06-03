@@ -21,8 +21,8 @@ class HandleToolsCall {
 	 * @return array
 	 */
 	public static function run( array $message ): array {
-		$tool_name = $message['name'] ?? '';
-		$args      = $message['arguments'] ?? array();
+		$tool_name = $message['params']['name'] ?? $message['name'] ?? '';
+		$args      = $message['params']['arguments'] ?? $message['arguments'] ?? array();
 
 		// Get the WordPress MCP instance.
 		$wpmcp = WpMcp::instance();
