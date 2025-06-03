@@ -18,12 +18,23 @@ use Automattic\WordpressMcp\Core\McpStreamable;
 use Automattic\WordpressMcp\Core\WpMcp;
 use Automattic\WordpressMcp\Core\McpProxyRoutes;
 use Automattic\WordpressMcp\Admin\Settings;
+use Automattic\WordpressMcp\Auth\JwtAuth;
 
 define( 'WORDPRESS_MCP_VERSION', '0.1.9' );
 define( 'WORDPRESS_MCP_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WORDPRESS_MCP_URL', plugin_dir_url( __FILE__ ) );
 
-require_once WORDPRESS_MCP_PATH . 'includes/autoload.php';
+// Check if Composer autoloader exists.
+if ( ! file_exists( WORDPRESS_MCP_PATH . 'vendor/autoload.php' ) ) {
+	wp_die(
+		sprintf(
+			'Please run <code>composer install</code> in the plugin directory: <code>%s</code>',
+			esc_html( WORDPRESS_MCP_PATH )
+		)
+	);
+}
+
+require_once WORDPRESS_MCP_PATH . 'vendor/autoload.php';
 
 /**
  * Get the WordPress MCP instance.
@@ -48,6 +59,9 @@ function init_wordpress_mcp() {
 
 	// Initialize the settings page.
 	new Settings();
+
+	// Initialize the JWT authentication.
+	new JwtAuth();
 }
 
 // Initialize the plugin on plugins_loaded to ensure all dependencies are available.
