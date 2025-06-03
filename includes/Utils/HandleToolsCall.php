@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Automattic\WordpressMcp\Utils;
 
 use Automattic\WordpressMcp\Core\WpMcp;
+use Automattic\WordpressMcp\Core\McpErrorHandler;
 use Exception;
 use WP_REST_Request;
 
@@ -20,8 +21,8 @@ class HandleToolsCall {
 	 * @return array
 	 */
 	public static function run( array $message ): array {
-		$tool_name = $message['params']['name'] ?? $message['name'] ?? '';
-		$args      = $message['params']['arguments'] ?? $message['arguments'] ?? array();
+		$tool_name = $message['name'] ?? '';
+		$args      = $message['arguments'] ?? array();
 
 		// Get the WordPress MCP instance.
 		$wpmcp = WpMcp::instance();
@@ -32,10 +33,7 @@ class HandleToolsCall {
 		// Check if the tool exists.
 		if ( ! isset( $tools_callbacks[ $tool_name ] ) ) {
 			return array(
-				'error' => array(
-					'code'    => -32601,
-					'message' => 'Method not found: ' . $tool_name,
-				),
+				'error' => McpErrorHandler::tool_not_found( 0, $tool_name ),
 			);
 		}
 
@@ -45,52 +43,22 @@ class HandleToolsCall {
 		// Handle REST API alias if present.
 		if ( isset( $tool_callback['rest_alias'] ) ) {
 			try {
-				$route = $tool_callback['rest_alias']['route'];
-				// Replace route parameters with actual values.
-				foreach ( $args as $key => $value ) {
-					$pattern = '(?P<' . $key . '>[\\d]+)';
-					$route   = str_replace( $pattern, is_array( $value ) ? json_encode( $value ) : (string) $value, $route );
-				}
+				$rest_alias = $tool_callback['rest_alias'];
+				$route      = $rest_alias['route'];
+				$method     = $rest_alias['method'];
 
-				$headers = null;
-				$body    = null;
-				// Run the pre-callback if present.
-				if ( isset( $tool_callback['rest_alias']['preCallback'] ) && is_callable( $tool_callback['rest_alias']['preCallback'] ) ) {
-					$new_params = call_user_func( $tool_callback['rest_alias']['preCallback'], $args );
-					$args       = $new_params['args'];
-					$headers    = $new_params['headers'];
-					$body       = $new_params['body'];
-				}
+				$request = new \WP_REST_Request( $method, $route );
 
-				$request = new WP_REST_Request( $tool_callback['rest_alias']['method'], $route );
-
-				// Handle headers if present.
-				if ( $headers ) {
-					foreach ( $headers as $header_name => $header_value ) {
-						$request->add_header( $header_name, $header_value[0] );
+				// Set the arguments as query parameters or body parameters based on method.
+				if ( in_array( $method, array( 'GET', 'DELETE' ), true ) ) {
+					// For GET and DELETE, use query parameters.
+					foreach ( $args as $key => $value ) {
+						$request->set_query_params( array_merge( $request->get_query_params(), array( $key => $value ) ) );
 					}
-				}
-
-				// Handle body if present.
-				if ( $body ) {
-					$request->set_body( $body );
-				}
-
-				// Set remaining parameters.
-				foreach ( $args as $key => $value ) {
-					$request->set_param( $key, $value );
-				}
-
-				if ( isset( $tool_callback['permission_callback'] ) && is_callable( $tool_callback['permission_callback'] ) ) {
-					$permission_result = call_user_func( $tool_callback['permission_callback'], $request );
-
-					if ( ! $permission_result ) {
-						return array(
-							'error' => array(
-								'code'    => -32000,
-								'message' => 'Permission denied for tool: ' . $tool_name,
-							),
-						);
+				} else {
+					// For POST, PUT, PATCH, use body parameters.
+					foreach ( $args as $key => $value ) {
+						$request->set_param( $key, $value );
 					}
 				}
 
@@ -98,49 +66,56 @@ class HandleToolsCall {
 
 				if ( $rest_response->is_error() ) {
 					// Handle REST API error.
-					$response = array(
-						'error' => array(
-							'code'    => -32000,
-							'message' => $rest_response->as_error()->get_error_message(),
+					return array(
+						'error' => McpErrorHandler::create_error_response(
+							0,
+							McpErrorHandler::REST_API_ERROR,
+							'REST API error occurred',
+							$rest_response->as_error()->get_error_message()
 						),
 					);
 				} else {
-					$response = $rest_response->get_data();
+					return $rest_response->get_data();
 				}
-			} catch ( Exception $e ) {
-				$response = array(
-					'error' => array(
-						'code'    => -32000,
-						'message' => 'Error executing REST API: ' . $e->getMessage(),
+			} catch ( \Exception $e ) {
+				McpErrorHandler::log_error(
+					'REST API tool execution failed',
+					array(
+						'tool'      => $tool_name,
+						'exception' => $e->getMessage(),
+					)
+				);
+				return array(
+					'error' => McpErrorHandler::create_error_response(
+						0,
+						McpErrorHandler::REST_API_ERROR,
+						'Error executing REST API',
+						$e->getMessage()
 					),
 				);
 			}
 		} else {
-			if ( isset( $tool_callback['permission_callback'] ) && is_callable( $tool_callback['permission_callback'] ) ) {
-				$permission_result = call_user_func( $tool_callback['permission_callback'], $args );
-				if ( ! $permission_result ) {
-					return array(
-						'error' => array(
-							'code'    => -32000,
-							'message' => 'Permission denied for tool: ' . $tool_name,
-						),
-					);
-				}
-			}
-
 			// Execute the tool callback.
 			try {
-				return call_user_func( $tool_callback['callback'], $args );
-			} catch ( Exception $e ) {
-				$response = array(
-					'error' => array(
-						'code'    => -32000,
-						'message' => 'Error executing tool: ' . $e->getMessage(),
+				$result = call_user_func( $tool_callback['callback'], $args );
+				return $result;
+			} catch ( \Exception $e ) {
+				McpErrorHandler::log_error(
+					'Tool execution failed',
+					array(
+						'tool'      => $tool_name,
+						'exception' => $e->getMessage(),
+					)
+				);
+				return array(
+					'error' => McpErrorHandler::create_error_response(
+						0,
+						McpErrorHandler::INTERNAL_ERROR,
+						'Error executing tool',
+						$e->getMessage()
 					),
 				);
 			}
 		}
-
-		return $response;
 	}
 }
