@@ -57,6 +57,7 @@ class RegisterMcpTool {
 	 * Get the arguments from the rest api.
 	 *
 	 * @return void
+	 * @throws InvalidArgumentException When the REST API route or method is invalid.
 	 */
 	private function get_args_from_rest_api(): void {
 		$method = $this->args['rest_alias']['method'];
@@ -106,9 +107,9 @@ class RegisterMcpTool {
 				$input_schema['properties'][ $arg_name ]['items'] = $arg_schema['items'];
 			}
 
-			// Handle enums if present.
+			// Handle enums if present and remove duplicates.
 			if ( isset( $arg_schema['enum'] ) ) {
-				$input_schema['properties'][ $arg_name ]['enum'] = $arg_schema['enum'];
+				$input_schema['properties'][ $arg_name ]['enum'] = array_values( array_unique( $arg_schema['enum'] ) );
 			}
 
 			// Handle default values if present.
@@ -264,7 +265,7 @@ class RegisterMcpTool {
 		// Validate properties field exists and is an object.
 		// If ( ! isset( $this->args['inputSchema']['properties'] ) || ! is_array($this->args['inputSchema']['properties'] ) ) {
 		// throw new \InvalidArgumentException( esc_html__( 'The input schema must have a properties field that is an object.', 'wordpress-mcp' ) );
-		// }
+		// }.
 
 		// Validate each property has a type.
 		foreach ( $this->args['inputSchema']['properties'] as $property_name => $property ) {
@@ -289,10 +290,6 @@ class RegisterMcpTool {
 
 		// Validate the required field if present.
 		if ( isset( $this->args['inputSchema']['required'] ) ) {
-			// if ( ! is_array( $this->args['inputSchema']['required'] ) ) {
-			// throw new \InvalidArgumentException( esc_html__( 'The required field must be an array.', 'wordpress-mcp' ) );
-			// }
-
 			// Check all required properties exist in properties.
 			foreach ( $this->args['inputSchema']['required'] as $required_property ) {
 				if ( ! isset( $this->args['inputSchema']['properties'][ $required_property ] ) ) {
