@@ -127,6 +127,8 @@ class Settings {
 					'enableUpdateToolsDescription'     => __( 'Allow update operations via tools.', 'wordpress-mcp' ),
 					'enableDeleteTools'                => __( 'Enable Delete Tools', 'wordpress-mcp' ),
 					'enableDeleteToolsDescription'     => __( '⚠️ CAUTION: Allow deletion operations via tools.', 'wordpress-mcp' ),
+					'enableRestApiCrudTools'           => __( '🧪 Enable REST API CRUD Tools (EXPERIMENTAL)', 'wordpress-mcp' ),
+					'enableRestApiCrudToolsDescription' => __( '⚠️ EXPERIMENTAL FEATURE: Enable or disable the generic REST API CRUD tools for accessing WordPress endpoints. This is experimental functionality that may change or be removed in future versions. When enabled, all tools that are a rest_alias or have the disabled_by_rest_crud flag will be disabled.', 'wordpress-mcp' ),
 					'saveSettings'                     => __( 'Save Settings', 'wordpress-mcp' ),
 					'settingsSaved'                    => __( 'Settings saved successfully!', 'wordpress-mcp' ),
 					'settingsError'                    => __( 'Error saving settings. Please try again.', 'wordpress-mcp' ),
@@ -195,6 +197,12 @@ class Settings {
 			$sanitized['enable_delete_tools'] = (bool) $input['enable_delete_tools'];
 		} else {
 			$sanitized['enable_delete_tools'] = false;
+		}
+
+		if ( isset( $input['enable_rest_api_crud_tools'] ) ) {
+			$sanitized['enable_rest_api_crud_tools'] = (bool) $input['enable_rest_api_crud_tools'];
+		} else {
+			$sanitized['enable_rest_api_crud_tools'] = false;
 		}
 
 		return $sanitized;

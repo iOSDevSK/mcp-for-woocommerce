@@ -1,6 +1,6 @@
 {
     "name": "wordpress-mcp",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "A plugin to integrate WordPress with Model Context Protocol (MCP), providing AI-accessible interfaces to WordPress data and functionality through standardized tools, resources, and prompts. Enables AI assistants to interact with posts, users, site settings, and WooCommerce data.",
     "keywords": [
         "wordpress",
@@ -27,7 +27,7 @@
         "lint:js": "wp-scripts lint-js",
         "packages-update": "wp-scripts packages-update",
         "plugin-zip": "wp-scripts plugin-zip",
-        "plugin-zip:build": "composer install --no-dev && npm run build && npm run plugin-zip",
+        "plugin-zip:build": "composer install --no-dev && pnpm run build && pnpm run plugin-zip",
         "clean": "rm -rf build"
     },
     "dependencies": {

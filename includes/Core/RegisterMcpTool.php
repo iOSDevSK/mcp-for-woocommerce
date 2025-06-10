@@ -186,8 +186,8 @@ class RegisterMcpTool {
 			throw new InvalidArgumentException( 'The functionality type is required.' );
 		}
 
-		// validate functionality type: must be one of 'create', 'read', 'update', 'delete'.
-		$valid_types = array( 'create', 'read', 'update', 'delete' );
+		// validate functionality type: must be one of 'create', 'read', 'update', 'delete', 'action'.
+		$valid_types = array( 'create', 'read', 'update', 'delete', 'action' );
 		if ( ! in_array( $this->args['type'], $valid_types, true ) ) {
 			throw new InvalidArgumentException( 'The functionality type must be one of: ' . esc_html( implode( ', ', $valid_types ) ) );
 		}

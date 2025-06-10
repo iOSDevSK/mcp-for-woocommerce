@@ -55,6 +55,7 @@ class McpCustomPostTypesTools {
 				'type'                => 'read',
 				'callback'            => array( $this, 'search_custom_post_types' ),
 				'permission_callback' => array( $this, 'search_custom_post_types_permission_callback' ),
+				'disabled_by_rest_crud' => true,
 				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
@@ -104,6 +105,7 @@ class McpCustomPostTypesTools {
 				'type'                => 'read',
 				'callback'            => array( $this, 'get_custom_post_type' ),
 				'permission_callback' => array( $this, 'get_custom_post_type_permission_callback' ),
+				'disabled_by_rest_crud' => true,
 				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
@@ -136,6 +138,7 @@ class McpCustomPostTypesTools {
 				'type'                => 'create',
 				'callback'            => array( $this, 'add_custom_post_type' ),
 				'permission_callback' => array( $this, 'add_custom_post_type_permission_callback' ),
+				'disabled_by_rest_crud' => true,
 				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
@@ -183,6 +186,7 @@ class McpCustomPostTypesTools {
 				'type'                => 'update',
 				'callback'            => array( $this, 'update_custom_post_type' ),
 				'permission_callback' => array( $this, 'update_custom_post_type_permission_callback' ),
+				'disabled_by_rest_crud' => true,
 				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
@@ -233,6 +237,7 @@ class McpCustomPostTypesTools {
 				'type'                => 'delete',
 				'callback'            => array( $this, 'delete_custom_post_type' ),
 				'permission_callback' => array( $this, 'delete_custom_post_type_permission_callback' ),
+				'disabled_by_rest_crud' => true,
 				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
