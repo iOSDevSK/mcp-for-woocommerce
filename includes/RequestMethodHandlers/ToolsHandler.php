@@ -91,6 +91,11 @@ class ToolsHandler {
 			// Implement a tool calling logic here.
 			$result = HandleToolsCall::run( $request_params );
 
+			// Check if the result contains an error
+			if ( isset( $result['error'] ) ) {
+				return $result; // Return error directly
+			}
+
 			$response = array(
 				'content' => array(
 					array(
