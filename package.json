@@ -4,6 +4,12 @@
     "description": "Wordpress MCP Settings",
     "main": "src/index.js",
     "private": true,
+    "files": [
+        "build",
+        "includes",
+        "vendor",
+        "wordpress-mcp.php"
+    ],
     "scripts": {
         "build": "wp-scripts build",
         "start": "wp-scripts start",
@@ -12,6 +18,7 @@
         "lint:js": "wp-scripts lint-js",
         "packages-update": "wp-scripts packages-update",
         "plugin-zip": "wp-scripts plugin-zip",
+        "plugin-zip:build": "composer install --no-dev && npm run build && npm run plugin-zip",
         "clean": "rm -rf build"
     },
     "keywords": [
