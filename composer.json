@@ -18,5 +18,10 @@
         "psr-4": {
             "Automattic\\WordpressMcp\\": "includes/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Automattic\\WordpressMcp\\Tests\\": "tests/phpunit/"
+        }
     }
 }
