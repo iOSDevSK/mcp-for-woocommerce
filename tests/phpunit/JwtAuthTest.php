@@ -247,16 +247,31 @@ class JwtAuthTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test authentication with missing authorization header.
+	 * Test authentication with missing authorization header (not logged in).
 	 */
-	public function test_authentication_with_missing_header(): void {
+	public function test_authentication_with_missing_header_not_logged_in(): void {
 		$_SERVER['REQUEST_URI'] = '/wp-json/wp/v2/wpmcp';
 		unset( $_SERVER['HTTP_AUTHORIZATION'] );
+		wp_set_current_user( 0 ); // Ensure no user is logged in
 
 		$auth_result = $this->jwt_auth->authenticate_request( null );
 
 		$this->assertInstanceOf( 'WP_Error', $auth_result );
 		$this->assertEquals( 'unauthorized', $auth_result->get_error_code() );
+		$this->assertEquals( 'Authentication required. Please provide a Bearer token or log in as an administrator.', $auth_result->get_error_message() );
+	}
+
+	/**
+	 * Test authentication with missing authorization header but logged in user.
+	 */
+	public function test_authentication_with_missing_header_logged_in(): void {
+		$_SERVER['REQUEST_URI'] = '/wp-json/wp/v2/wpmcp';
+		unset( $_SERVER['HTTP_AUTHORIZATION'] );
+		wp_set_current_user( $this->admin_user->ID ); // Log in as admin
+
+		$auth_result = $this->jwt_auth->authenticate_request( null );
+
+		$this->assertTrue( $auth_result );
 	}
 
 	/**
@@ -509,7 +524,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 
 		$this->assertInstanceOf( 'WP_Error', $auth_result );
 		$this->assertEquals( 'invalid_token', $auth_result->get_error_code() );
-		$this->assertEquals( 'User not found.', $auth_result->get_error_message() );
+		$this->assertEquals( 'User associated with token no longer exists.', $auth_result->get_error_message() );
 	}
 
 	/**
