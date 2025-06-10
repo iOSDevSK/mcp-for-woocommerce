@@ -121,8 +121,6 @@ class WpFeaturesApiAdapterTest extends WP_UnitTestCase {
 		// Dispatch the request.
 		$response = rest_do_request( $request );
 
-		// error_log( 'response: ' . print_r( $response->get_data(), true ) );
-
 		// Check the response.
 		$this->assertEquals( 200, $response->get_status() );
 		$this->assertArrayHasKey( 'tools', $response->get_data() );
