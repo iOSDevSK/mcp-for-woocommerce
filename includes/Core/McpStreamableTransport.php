@@ -7,11 +7,6 @@
 
 namespace Automattic\WordpressMcp\Core;
 
-use Automattic\WordpressMcp\RequestMethodHandlers\InitializeHandler;
-use Automattic\WordpressMcp\RequestMethodHandlers\ToolsHandler;
-use Automattic\WordpressMcp\RequestMethodHandlers\ResourcesHandler;
-use Automattic\WordpressMcp\RequestMethodHandlers\PromptsHandler;
-use Automattic\WordpressMcp\RequestMethodHandlers\SystemHandler;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -19,8 +14,9 @@ use WP_REST_Server;
 
 /**
  * The WordPress MCP Streamable HTTP Transport class.
+ * Uses JSON-RPC 2.0 format for direct streamable connections.
  */
-class McpStreamable {
+class McpStreamableTransport extends McpTransportBase {
 
 	/**
 	 * The request ID.
@@ -30,54 +26,12 @@ class McpStreamable {
 	private int $request_id = 0;
 
 	/**
-	 * The initialize handler.
-	 *
-	 * @var InitializeHandler
-	 */
-	private InitializeHandler $initialize_handler;
-
-	/**
-	 * The tools handler.
-	 *
-	 * @var ToolsHandler
-	 */
-	private ToolsHandler $tools_handler;
-
-	/**
-	 * The resources handler.
-	 *
-	 * @var ResourcesHandler
-	 */
-	private ResourcesHandler $resources_handler;
-
-	/**
-	 * The prompts handler.
-	 *
-	 * @var PromptsHandler
-	 */
-	private PromptsHandler $prompts_handler;
-
-	/**
-	 * The system handler.
-	 *
-	 * @var SystemHandler
-	 */
-	private SystemHandler $system_handler;
-
-	/**
 	 * Initialize the class and register routes
 	 *
 	 * @param WpMcp $mcp The WordPress MCP instance.
 	 */
 	public function __construct( WpMcp $mcp ) {
-
-		// Initialize handlers
-		$this->initialize_handler = new InitializeHandler();
-		$this->tools_handler      = new ToolsHandler( $mcp );
-		$this->resources_handler  = new ResourcesHandler( $mcp );
-		$this->prompts_handler    = new PromptsHandler( $mcp );
-		$this->system_handler     = new SystemHandler();
-
+		parent::__construct( $mcp );
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
 
@@ -85,12 +39,8 @@ class McpStreamable {
 	 * Register all MCP proxy routes
 	 */
 	public function register_routes(): void {
-		// Check if MCP is enabled in settings.
-		$options = get_option( 'wordpress_mcp_settings', array() );
-		$enabled = isset( $options['enabled'] ) && $options['enabled'];
-
 		// If MCP is disabled, don't register routes.
-		if ( ! $enabled ) {
+		if ( ! $this->is_mcp_enabled() ) {
 			return;
 		}
 
@@ -112,13 +62,8 @@ class McpStreamable {
 	 * @return bool|WP_Error
 	 */
 	public function check_permission(): WP_Error|bool {
-
-		// Check if MCP is enabled in settings.
-		$options = get_option( 'wordpress_mcp_settings', array() );
-		$enabled = isset( $options['enabled'] ) && $options['enabled'];
-
 		// If MCP is disabled, deny access.
-		if ( ! $enabled ) {
+		if ( ! $this->is_mcp_enabled() ) {
 			return new WP_Error(
 				'mcp_disabled',
 				'MCP functionality is currently disabled.',
@@ -136,15 +81,6 @@ class McpStreamable {
 	 * @return WP_REST_Response
 	 */
 	public function handle_request( WP_REST_Request $request ) {
-		// Log request headers for debugging.
-		@ray(
-			array(
-				'method'  => $request->get_method(),
-				'headers' => $request->get_headers(),
-				'body'    => $request->get_body(),
-			)
-		);
-
 		// Handle preflight requests
 		if ( 'OPTIONS' === $request->get_method() ) {
 			return new WP_REST_Response( null, 204 );
@@ -266,72 +202,78 @@ class McpStreamable {
 	 * @return array
 	 */
 	private function process_message( array $message ): array {
-		try {
-			$result = match ( $message['method'] ) {
-				'initialize' => $this->initialize_handler->handle(),
-				'tools/list' => $this->tools_handler->list_tools(),
-				'tools/list/all' => $this->tools_handler->list_all_tools( $message ),
-				'tools/call' => $this->tools_handler->call_tool( $message ),
-				'resources/list' => $this->resources_handler->list_resources(),
-				'resources/templates/list' => $this->resources_handler->list_resource_templates( $message ),
-				'resources/read' => $this->resources_handler->read_resource( $message ),
-				'resources/subscribe' => $this->resources_handler->subscribe_resource( $message ),
-				'resources/unsubscribe' => $this->resources_handler->unsubscribe_resource( $message ),
-				'prompts/list' => $this->prompts_handler->list_prompts(),
-				'prompts/get' => $this->prompts_handler->get_prompt( $message ),
-				'logging/setLevel' => $this->system_handler->set_logging_level( $message ),
-				'completion/complete' => $this->system_handler->complete(),
-				'roots/list' => $this->system_handler->list_roots(),
-				default => array( 'error' => McpErrorHandler::method_not_found( $this->request_id, $message['method'] )['error'] ),
-			};
+		$this->request_id = (int) $message['id'];
+		$params = $message['params'] ?? array();
 
-			// Check if the result contains an error
-			if ( isset( $result['error'] ) ) {
-				return $this->ensure_jsonrpc_error_response( $result );
-			}
+		// Route the request using the base class
+		$result = $this->route_request( $message['method'], $params, $this->request_id );
 
-			return $this->ensure_jsonrpc_response( $result );
-
-		} catch ( \Throwable $exception ) {
-			return McpErrorHandler::handle_exception( $exception, $this->request_id );
+		// Check if the result contains an error
+		if ( isset( $result['error'] ) ) {
+			return $this->format_error_response( $result, $this->request_id );
 		}
+
+		return $this->format_success_response( $result, $this->request_id );
 	}
 
 	/**
-	 * Ensure the response is a JSON-RPC response
+	 * Create a method not found error (JSON-RPC 2.0 format)
 	 *
-	 * @param array $response The response to ensure.
+	 * @param string $method The method that was not found.
+	 * @param int    $request_id The request ID.
 	 * @return array
 	 */
-	private function ensure_jsonrpc_response( array $response ): array {
-		$response =
-			array(
-				'jsonrpc' => '2.0',
-				'id'      => $this->request_id,
-				'result'  => $response,
-			);
+	protected function create_method_not_found_error( string $method, int $request_id ): array {
+		return array(
+			'error' => McpErrorHandler::method_not_found( $request_id, $method )['error'],
+		);
+	}
 
-		@ray( $response );
+	/**
+	 * Handle exceptions that occur during request processing (JSON-RPC 2.0 format)
+	 *
+	 * @param \Throwable $exception The exception.
+	 * @param int        $request_id The request ID.
+	 * @return array
+	 */
+	protected function handle_exception( \Throwable $exception, int $request_id ): array {
+		return McpErrorHandler::handle_exception( $exception, $request_id );
+	}
+
+	/**
+	 * Format a successful response (JSON-RPC 2.0 format)
+	 *
+	 * @param array $result The result data.
+	 * @param int   $request_id The request ID.
+	 * @return array
+	 */
+	protected function format_success_response( array $result, int $request_id = 0 ): array {
+		$response = array(
+			'jsonrpc' => '2.0',
+			'id'      => $request_id,
+			'result'  => $result,
+		);
 
 		return $response;
 	}
 
 	/**
-	 * Ensure the error response is a JSON-RPC error response
+	 * Format an error response (JSON-RPC 2.0 format)
 	 *
-	 * @param array $response The error response to ensure.
+	 * @param array $error The error data.
+	 * @param int   $request_id The request ID.
 	 * @return array
 	 */
-	private function ensure_jsonrpc_error_response( array $response ): array {
-		if ( isset( $response['error'] ) ) {
+	protected function format_error_response( array $error, int $request_id = 0 ): array {
+		if ( isset( $error['error'] ) ) {
 			return array(
 				'jsonrpc' => '2.0',
-				'id'      => $this->request_id,
-				'error'   => $response['error'],
+				'id'      => $request_id,
+				'error'   => $error['error'],
 			);
 		}
 
 		// If it's not already a proper error response, make it one
-		return McpErrorHandler::internal_error( $this->request_id, 'Invalid error response format' );
+		return McpErrorHandler::internal_error( $request_id, 'Invalid error response format' );
 	}
 }
