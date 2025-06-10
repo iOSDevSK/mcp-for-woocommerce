@@ -38,6 +38,14 @@ final class McpMediaToolsTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 
+		// Enable MCP in settings
+		update_option(
+			'wordpress_mcp_settings',
+			array(
+				'enabled' => true,
+			)
+		);
+
 		// Create an admin user.
 		$this->admin_user = $this->factory->user->create_and_get(
 			array(
@@ -312,7 +320,8 @@ final class McpMediaToolsTest extends WP_UnitTestCase {
 					'method'    => 'tools/call',
 					'name'      => 'wp_delete_media',
 					'arguments' => array(
-						'id' => $attachment_id,
+						'id'    => $attachment_id,
+						'force' => true,
 					),
 				)
 			)
@@ -341,6 +350,8 @@ final class McpMediaToolsTest extends WP_UnitTestCase {
 		$attachment = get_post( $attachment_id );
 		$this->assertNull( $attachment );
 	}
+
+
 
 	/**
 	 * Test the wp_search_media tool.
