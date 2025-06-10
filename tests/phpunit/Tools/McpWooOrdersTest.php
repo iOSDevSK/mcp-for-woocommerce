@@ -130,7 +130,6 @@ final class McpWooOrdersTest extends WP_UnitTestCase {
 		$response = rest_do_request( $request );
 
 		$response_json = json_decode( $response->get_data()['content'][0]['text'], true );
-		// error_log( 'Response: ' . print_r( $response_json, true ) );
 
 		// Check the response.
 		$this->assertEquals( 200, $response->get_status() );

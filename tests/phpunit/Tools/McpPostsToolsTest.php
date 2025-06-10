@@ -141,8 +141,6 @@ final class McpPostsToolsTest extends WP_UnitTestCase {
 		// Dispatch the request.
 		$response = rest_do_request( $request );
 
-		// error_log( 'Response: ' . print_r( $response, true ) );
-
 		// Check the response.
 		$this->assertEquals( 200, $response->get_status() );
 		$this->assertArrayHasKey( 'content', $response->get_data() );
