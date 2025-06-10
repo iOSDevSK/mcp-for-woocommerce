@@ -14,9 +14,9 @@
 
 declare(strict_types=1);
 
-use Automattic\WordpressMcp\Core\McpStreamable;
+use Automattic\WordpressMcp\Core\McpStreamableTransport;
 use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Core\McpProxyRoutes;
+use Automattic\WordpressMcp\Core\McpStdioTransport;
 use Automattic\WordpressMcp\Admin\Settings;
 use Automattic\WordpressMcp\Auth\JwtAuth;
 
@@ -51,11 +51,11 @@ function WPMCP() { // phpcs:ignore
 function init_wordpress_mcp() {
 	$mcp = WPMCP();
 
-	// Initialize the REST route.
-	new McpProxyRoutes( $mcp );
+	// Initialize the STDIO transport.
+	new McpStdioTransport( $mcp );
 
-	// Initialize the Streamable routes.
-	new McpStreamable( $mcp );
+	// Initialize the Streamable transport.
+	new McpStreamableTransport( $mcp );
 
 	// Initialize the settings page.
 	new Settings();
