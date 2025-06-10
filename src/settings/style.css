@@ -3,7 +3,7 @@
  */
 
 .wordpress-mcp-settings {
-	max-width: 800px;
+	/* max-width: 800px; */
 	margin: 20px 0;
 }
 
@@ -137,4 +137,60 @@
 
 .wordpress-mcp-disabled-tab-notice p:last-child {
 	margin-bottom: 0;
+}
+
+/* JWT Token Generator Styles */
+.mcp-token-section {
+	margin-top: 2rem;
+	padding-top: 1rem;
+	border-top: 1px solid #ddd;
+}
+
+.mcp-token-container {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.mcp-token-container h3 {
+	margin-top: 0;
+	margin-bottom: 1rem;
+}
+
+.mcp-token-container .components-textarea-control__input {
+	font-family: monospace;
+	background: #f8f9fa;
+	border: 1px solid #ddd;
+	padding: 0.75rem;
+	width: 100%;
+	resize: vertical;
+}
+
+.mcp-token-container .components-button {
+	margin-top: 0.5rem;
+}
+
+.mcp-token-container .description {
+	color: #666;
+	font-style: italic;
+	margin: 0.5rem 0 0;
+}
+
+.mcp-error-message {
+	color: #d63638;
+	margin: 1rem 0;
+	padding: 0.75rem;
+	background: #f8d7da;
+	border: 1px solid #f5c6cb;
+	border-radius: 4px;
+}
+
+.mcp-form-field {
+	margin-bottom: 1.5rem;
+}
+
+.mcp-form-field .components-select-control__input {
+	max-width: 400px;
 }
