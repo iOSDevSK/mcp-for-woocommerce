@@ -47,6 +47,7 @@ const AuthenticationTokensTab = () => {
 			const response = await apiFetch( {
 				path: '/jwt-auth/v1/tokens',
 				method: 'GET',
+				includeCredentials: true,
 			} );
 			setTokens( response );
 		} catch ( err ) {
@@ -65,6 +66,7 @@ const AuthenticationTokensTab = () => {
 				data: {
 					expires_in: selectedDuration,
 				},
+				includeCredentials: true,
 			} );
 
 			setToken( response );
@@ -87,6 +89,7 @@ const AuthenticationTokensTab = () => {
 				data: {
 					jti: jti,
 				},
+				includeCredentials: true,
 			} );
 			// Refresh the tokens list
 			fetchTokens();
