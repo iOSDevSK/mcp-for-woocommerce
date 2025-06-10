@@ -14,6 +14,16 @@ use Automattic\WordpressMcp\Core\McpErrorHandler;
  */
 class SystemHandler {
 	/**
+	 * Handle the ping request.
+	 *
+	 * @return array
+	 */
+	public function ping(): array {
+		// According to MCP specification, ping returns an empty result
+		return array();
+	}
+
+	/**
 	 * Handle the logging/setLevel request.
 	 *
 	 * @param array $params Request parameters.
