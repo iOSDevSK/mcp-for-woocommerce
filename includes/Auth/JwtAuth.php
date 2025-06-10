@@ -58,6 +58,27 @@ class JwtAuth {
 	private const TOKEN_REGISTRY_OPTION = 'jwt_token_registry';
 
 	/**
+	 * MCP endpoint path pattern for authentication.
+	 *
+	 * @var string
+	 */
+	private const MCP_ENDPOINT_PATTERN = '/wp/v2/wpmcp';
+
+	/**
+	 * Basic authentication pattern.
+	 *
+	 * @var string
+	 */
+	private const BASIC_AUTH_PATTERN = '/^Basic\s/';
+
+	/**
+	 * Bearer token pattern.
+	 *
+	 * @var string
+	 */
+	private const BEARER_TOKEN_PATTERN = '/Bearer\s(\S+)/';
+
+	/**
 	 * Get JWT secret key from options or generate a new one if not exists.
 	 *
 	 * @return string
@@ -355,6 +376,80 @@ class JwtAuth {
 	}
 
 	/**
+	 * Check if the current request is for an MCP endpoint.
+	 *
+	 * @return bool
+	 */
+	private function is_mcp_endpoint(): bool {
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		return str_contains( $request_uri, self::MCP_ENDPOINT_PATTERN );
+	}
+
+	/**
+	 * Get Authorization header from request.
+	 *
+	 * @return string
+	 */
+	private function get_authorization_header(): string {
+		return isset( $_SERVER['HTTP_AUTHORIZATION'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_AUTHORIZATION'] ) ) : '';
+	}
+
+	/**
+	 * Check if the authorization header contains Basic authentication.
+	 *
+	 * @param string $auth Authorization header value.
+	 * @return bool
+	 */
+	private function is_basic_auth( string $auth ): bool {
+		return ! empty( $auth ) && preg_match( self::BASIC_AUTH_PATTERN, $auth );
+	}
+
+	/**
+	 * Extract Bearer token from authorization header.
+	 *
+	 * @param string $auth Authorization header value.
+	 * @return string|null Token if found, null otherwise.
+	 */
+	private function extract_bearer_token( string $auth ): ?string {
+		if ( preg_match( self::BEARER_TOKEN_PATTERN, $auth, $matches ) ) {
+			return $matches[1];
+		}
+		return null;
+	}
+
+	/**
+	 * Check if cookie-based authentication is valid for MCP endpoints.
+	 *
+	 * @return bool
+	 */
+	private function is_valid_cookie_auth(): bool {
+		// Only allow cookie auth for logged-in users with manage_options capability
+		// This provides a secure fallback for admin users
+		return is_user_logged_in() && current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Log authentication events for security monitoring.
+	 *
+	 * @param string $event Event type.
+	 * @param string $details Event details.
+	 */
+	private function log_auth_event( string $event, string $details ): void {
+		// Only log if WP_DEBUG is enabled to avoid filling logs in production
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			// Use error_log for better performance than custom logging
+			$log_message = sprintf( 
+				'[WPMCP JWT Auth] %s: %s (IP: %s, URI: %s)', 
+				$event,
+				$details,
+				$_SERVER['REMOTE_ADDR'] ?? 'unknown',
+				$_SERVER['REQUEST_URI'] ?? 'unknown'
+			);
+			error_log( $log_message );
+		}
+	}
+
+	/**
 	 * Authenticate REST API request using JWT token.
 	 *
 	 * @param mixed $result The authentication result.
@@ -362,54 +457,125 @@ class JwtAuth {
 	 * @throws Exception When token validation fails.
 	 */
 	public function authenticate_request( $result ) {
+		// If already authenticated, return early
 		if ( ! empty( $result ) ) {
 			return $result;
 		}
 
-		// Apply JWT authentication to MCP endpoints.
-		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-		if ( ! str_contains( $request_uri, '/wp/v2/wpmcp' ) ) {
+		// Only apply JWT authentication to MCP endpoints
+		if ( ! $this->is_mcp_endpoint() ) {
 			return $result;
 		}
 
-		$auth = isset( $_SERVER['HTTP_AUTHORIZATION'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_AUTHORIZATION'] ) ) : '';
-		if ( ! $auth || ! preg_match( '/Bearer\s(\S+)/', $auth, $matches ) ) {
+		$auth = $this->get_authorization_header();
+		
+		// Handle Basic authentication - let it pass through to WordPress core handlers
+		if ( $this->is_basic_auth( $auth ) ) {
+			$this->log_auth_event( 'BASIC_AUTH_DETECTED', 'Deferring to Basic auth handler' );
+			return $result;
+		}
+
+		// Handle missing Authorization header
+		if ( empty( $auth ) ) {
+			return $this->handle_missing_authorization();
+		}
+
+		// Handle Bearer token authentication
+		return $this->handle_bearer_token( $auth );
+	}
+
+	/**
+	 * Handle authentication when no Authorization header is present.
+	 *
+	 * @return mixed Authentication result.
+	 */
+	private function handle_missing_authorization() {
+		// Fallback to cookie authentication for admin users
+		if ( $this->is_valid_cookie_auth() ) {
+			$this->log_auth_event( 'COOKIE_AUTH_SUCCESS', 'Admin user authenticated via cookies' );
+			return true;
+		}
+		
+		$this->log_auth_event( 'AUTH_REQUIRED', 'No valid authentication method found' );
+		return new WP_Error(
+			'unauthorized',
+			'Authentication required. Please provide a Bearer token or log in as an administrator.',
+			array( 'status' => 401 )
+		);
+	}
+
+	/**
+	 * Handle Bearer token authentication.
+	 *
+	 * @param string $auth Authorization header value.
+	 * @return mixed Authentication result.
+	 */
+	private function handle_bearer_token( string $auth ) {
+		$token = $this->extract_bearer_token( $auth );
+		
+		if ( null === $token ) {
+			$this->log_auth_event( 'INVALID_AUTH_FORMAT', 'Authorization header present but not Bearer token' );
 			return new WP_Error(
 				'unauthorized',
-				'Missing or invalid Authorization header.',
+				'Invalid Authorization header format. Expected "Bearer <token>".',
 				array( 'status' => 401 )
 			);
 		}
 
-		$token = $matches[1];
+		return $this->validate_jwt_token( $token );
+	}
+
+	/**
+	 * Validate JWT token and authenticate user.
+	 *
+	 * @param string $token JWT token.
+	 * @return mixed Authentication result.
+	 */
+	private function validate_jwt_token( string $token ) {
 		try {
 			$decoded = JWT::decode( $token, new Key( $this->get_jwt_secret_key(), 'HS256' ) );
 
-			// Check if token is valid.
-			if ( ! $this->is_token_valid( $decoded->jti ) ) {
+			// Validate token ID
+			if ( ! isset( $decoded->jti ) || ! $this->is_token_valid( $decoded->jti ) ) {
+				$this->log_auth_event( 'TOKEN_INVALID', 'Token is invalid, expired, or revoked' );
 				return new WP_Error(
 					'token_invalid',
-					'Token is invalid or has been revoked.',
+					'Token is invalid, expired, or has been revoked.',
 					array( 'status' => 401 )
+				);
+			}
+
+			// Validate user
+			if ( ! isset( $decoded->user_id ) ) {
+				$this->log_auth_event( 'TOKEN_MALFORMED', 'Token missing user_id claim' );
+				return new WP_Error(
+					'invalid_token',
+					'Token is malformed: missing user_id.',
+					array( 'status' => 403 )
 				);
 			}
 
 			$user = get_user_by( 'id', $decoded->user_id );
 			if ( ! $user ) {
+				$this->log_auth_event( 'USER_NOT_FOUND', "User ID {$decoded->user_id} not found" );
 				return new WP_Error(
 					'invalid_token',
-					'User not found.',
+					'User associated with token no longer exists.',
 					array( 'status' => 403 )
 				);
 			}
 
+			// Set current user
 			wp_set_current_user( $user->ID );
+			$this->log_auth_event( 'JWT_AUTH_SUCCESS', "User {$user->user_login} authenticated via JWT" );
 
 			return true;
+
 		} catch ( Exception $e ) {
+			$this->log_auth_event( 'JWT_DECODE_ERROR', $e->getMessage() );
 			return new WP_Error(
 				'invalid_token',
-				$e->getMessage(),
+				'Token validation failed: ' . $e->getMessage(),
 				array( 'status' => 403 )
 			);
 		}
