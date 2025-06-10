@@ -20,6 +20,9 @@ importers:
       '@wordpress/i18n':
         specifier: ^5.22.0
         version: 5.22.0
+      marked:
+        specifier: ^15.0.12
+        version: 15.0.12
     devDependencies:
       '@wordpress/dependency-extraction-webpack-plugin':
         specifier: ^6.22.0
@@ -4428,6 +4431,11 @@ packages:
   markdownlint@0.25.1:
     resolution: {integrity: sha512-AG7UkLzNa1fxiOv5B+owPsPhtM4D6DoODhsJgiaNg1xowXovrYgOnLqAgOOFQpWOlHFVQUzjMY5ypNNTeov92g==}
     engines: {node: '>=12'}
+
+  marked@15.0.12:
+    resolution: {integrity: sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==}
+    engines: {node: '>= 18'}
+    hasBin: true
 
   marky@1.3.0:
     resolution: {integrity: sha512-ocnPZQLNpvbedwTy9kNrQEsknEfgvcLMvOtz3sFeWApDq1MXH1TqkCIx58xlpESsfwQOnuBO9beyQuNGzVvuhQ==}
@@ -12347,6 +12355,8 @@ snapshots:
   markdownlint@0.25.1:
     dependencies:
       markdown-it: 12.3.2
+
+  marked@15.0.12: {}
 
   marky@1.3.0: {}
 

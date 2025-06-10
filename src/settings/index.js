@@ -11,6 +11,7 @@ import ToolsTab from './ToolsTab';
 import ResourcesTab from './ResourcesTab';
 import PromptsTab from './PromptsTab';
 import AuthenticationTokensTab from './AuthenticationTokensTab';
+import DocumentationTab from './DocumentationTab';
 
 /**
  * Settings App Component
@@ -51,6 +52,11 @@ export const SettingsApp = () => {
 				name: 'authentication-tokens',
 				title: __( 'Authentication Tokens', 'wordpress-mcp' ),
 				className: 'authentication-tokens-tab',
+			},
+			{
+				name: 'documentation',
+				title: __( 'Documentation', 'wordpress-mcp' ),
+				className: 'wordpress-mcp-documentation-tab',
 			},
 			{
 				name: 'tools',
@@ -258,14 +264,16 @@ export const SettingsApp = () => {
 									strings={ strings }
 								/>
 							);
+						case 'authentication-tokens':
+							return <AuthenticationTokensTab />;
+						case 'documentation':
+							return <DocumentationTab />;
 						case 'tools':
 							return <ToolsTab />;
 						case 'resources':
 							return <ResourcesTab />;
 						case 'prompts':
 							return <PromptsTab />;
-						case 'authentication-tokens':
-							return <AuthenticationTokensTab />;
 						default:
 							return null;
 					}

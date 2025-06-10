@@ -10,7 +10,7 @@
     ],
     "homepage": "https://github.com/Automattic/wordpress-mcp",
     "license": "GPL-2.0-or-later",
-    "author": "Automattic AI  (https://automattic.ai)",
+    "author": "Automattic",
     "main": "src/index.js",
     "private": true,
     "files": [
@@ -30,19 +30,12 @@
         "plugin-zip:build": "composer install --no-dev && npm run build && npm run plugin-zip",
         "clean": "rm -rf build"
     },
-    "keywords": [
-        "wordpress",
-        "mcp",
-        "content",
-        "management"
-    ],
-    "author": "Automattic",
-    "license": "GPL-2.0-or-later",
     "dependencies": {
         "@wordpress/api-fetch": "^7.22.0",
         "@wordpress/components": "^29.8.0",
         "@wordpress/element": "^6.22.0",
-        "@wordpress/i18n": "^5.22.0"
+        "@wordpress/i18n": "^5.22.0",
+        "marked": "^15.0.12"
     },
     "prettier": "@wordpress/prettier-config",
     "devDependencies": {
