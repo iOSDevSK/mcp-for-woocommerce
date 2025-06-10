@@ -115,6 +115,7 @@ class Settings {
 				'settings'            => get_option( self::OPTION_NAME, array() ),
 				'toolStates'          => get_option( self::TOOL_STATES_OPTION, array() ),
 				'featureApiAvailable' => $this->is_feature_api_available(),
+				'pluginUrl'           => WORDPRESS_MCP_URL,
 				'strings'             => array(
 					'enableMcp'                        => __( 'Enable MCP functionality', 'wordpress-mcp' ),
 					'enableMcpDescription'             => __( 'Toggle to enable or disable the MCP plugin functionality.', 'wordpress-mcp' ),

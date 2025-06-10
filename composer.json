@@ -13,5 +13,18 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
+    },
+    "require": {
+        "firebase/php-jwt": "^6.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "Automattic\\WordpressMcp\\": "includes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Automattic\\WordpressMcp\\Tests\\": "tests/phpunit/"
+        }
     }
 }

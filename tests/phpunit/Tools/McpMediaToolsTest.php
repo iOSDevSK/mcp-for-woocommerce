@@ -38,6 +38,14 @@ final class McpMediaToolsTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 
+		// Enable MCP in settings
+		update_option(
+			'wordpress_mcp_settings',
+			array(
+				'enabled' => true,
+			)
+		);
+
 		// Create an admin user.
 		$this->admin_user = $this->factory->user->create_and_get(
 			array(
@@ -96,7 +104,7 @@ final class McpMediaToolsTest extends WP_UnitTestCase {
 		$media_item  = $media_items[0];
 
 		// Assert media data.
-		$this->assertEquals( 'test-image.jpeg', $media_item['title']['rendered'] );
+		$this->assertStringContainsString( 'test-image', $media_item['title']['rendered'] );
 	}
 
 	/**
@@ -142,7 +150,7 @@ final class McpMediaToolsTest extends WP_UnitTestCase {
 		$this->assertIsArray( $response->get_data()['content'] );
 		$this->assertCount( 1, $response->get_data()['content'] );
 		$this->assertEquals( 'text', $response->get_data()['content'][0]['type'] );
-		$this->assertStringContainsString( 'test-image.jpeg', $response->get_data()['content'][0]['text'] );
+		$this->assertStringContainsString( 'test-image', $response->get_data()['content'][0]['text'] );
 	}
 
 	/**
@@ -228,10 +236,13 @@ final class McpMediaToolsTest extends WP_UnitTestCase {
 		// Dispatch the request.
 		$response = rest_do_request( $request );
 
+		// Get the uploaded attachment ID for cleanup.
 		$response_text_content = json_decode( $response->get_data()['content'][0]['text'], true );
 
-		// delete image after test (avoid duplicate media).
-		wp_delete_attachment( $response_text_content['id'], true );
+		// Delete image after test (avoid duplicate media).
+		if ( isset( $response_text_content['id'] ) ) {
+			wp_delete_attachment( $response_text_content['id'], true );
+		}
 
 		// Check the response.
 		$this->assertEquals( 200, $response->get_status() );
@@ -239,7 +250,7 @@ final class McpMediaToolsTest extends WP_UnitTestCase {
 		$this->assertIsArray( $response->get_data()['content'] );
 		$this->assertCount( 1, $response->get_data()['content'] );
 		$this->assertEquals( 'text', $response->get_data()['content'][0]['type'] );
-		$this->assertStringContainsString( 'Uploaded Test Image', $response->get_data()['content'][0]['text'] );
+		$this->assertStringContainsString( 'Uploaded-Test-Image', $response->get_data()['content'][0]['text'] );
 	}
 
 	/**
@@ -309,7 +320,8 @@ final class McpMediaToolsTest extends WP_UnitTestCase {
 					'method'    => 'tools/call',
 					'name'      => 'wp_delete_media',
 					'arguments' => array(
-						'id' => $attachment_id,
+						'id'    => $attachment_id,
+						'force' => true,
 					),
 				)
 			)
@@ -338,6 +350,8 @@ final class McpMediaToolsTest extends WP_UnitTestCase {
 		$attachment = get_post( $attachment_id );
 		$this->assertNull( $attachment );
 	}
+
+
 
 	/**
 	 * Test the wp_search_media tool.

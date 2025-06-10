@@ -39,6 +39,14 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 	public function setUp(): void {
 		parent::set_up();
 
+		// Enable MCP in settings
+		update_option(
+			'wordpress_mcp_settings',
+			array(
+				'enabled' => true,
+			)
+		);
+
 		// Create an admin user.
 		$this->admin_user = $this->factory->user->create_and_get(
 			array(
@@ -236,9 +244,16 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 	 * Test the tools/call endpoint with a tool that requires permissions.
 	 */
 	public function test_call_tool_endpoint_with_permissions(): void {
+		// Set the current user to a non-admin user.
+		$non_admin_user = $this->factory->user->create_and_get(
+			array(
+				'role' => 'subscriber',
+			)
+		);
+		
 		add_action(
 			'wordpress_mcp_init',
-			function () {
+			function () use ( $non_admin_user ) {
 				// Register a test tool with permissions.
 				new RegisterMcpTool(
 					array(
@@ -262,24 +277,23 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 			}
 		);
 
+		wp_set_current_user( $non_admin_user->ID );
+
 		do_action( 'wordpress_mcp_init' );
 
 		// Create a REST request.
 		$request = new WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
-		$request->set_body_params(
-			array(
-				'method' => 'tools/call',
-				'name'   => 'permission_tool',
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'method' => 'tools/call',
+					'name'   => 'permission_tool',
+				)
 			)
 		);
 
-		// Set the current user to a non-admin user.
-		$non_admin_user = $this->factory->user->create_and_get(
-			array(
-				'role' => 'subscriber',
-			)
-		);
-		wp_set_current_user( $non_admin_user->ID );
+		// Set content type header.
+		$request->add_header( 'Content-Type', 'application/json' );
 
 		// Dispatch the request.
 		$response = rest_do_request( $request );

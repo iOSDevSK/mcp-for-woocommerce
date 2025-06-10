@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Automattic\WordpressMcp\Utils;
 
 use Automattic\WordpressMcp\Core\WpMcp;
+use Automattic\WordpressMcp\Core\McpErrorHandler;
 use Exception;
 use WP_REST_Request;
 
@@ -32,10 +33,7 @@ class HandleToolsCall {
 		// Check if the tool exists.
 		if ( ! isset( $tools_callbacks[ $tool_name ] ) ) {
 			return array(
-				'error' => array(
-					'code'    => -32601,
-					'message' => 'Method not found: ' . $tool_name,
-				),
+				'error' => McpErrorHandler::tool_not_found( 0, $tool_name ),
 			);
 		}
 
@@ -45,52 +43,61 @@ class HandleToolsCall {
 		// Handle REST API alias if present.
 		if ( isset( $tool_callback['rest_alias'] ) ) {
 			try {
-				$route = $tool_callback['rest_alias']['route'];
-				// Replace route parameters with actual values.
-				foreach ( $args as $key => $value ) {
-					$pattern = '(?P<' . $key . '>[\\d]+)';
-					$route   = str_replace( $pattern, is_array( $value ) ? json_encode( $value ) : (string) $value, $route );
-				}
+				$rest_alias = $tool_callback['rest_alias'];
+				$route      = $rest_alias['route'];
+				$method     = $rest_alias['method'];
 
-				$headers = null;
-				$body    = null;
-				// Run the pre-callback if present.
-				if ( isset( $tool_callback['rest_alias']['preCallback'] ) && is_callable( $tool_callback['rest_alias']['preCallback'] ) ) {
-					$new_params = call_user_func( $tool_callback['rest_alias']['preCallback'], $args );
-					$args       = $new_params['args'];
-					$headers    = $new_params['headers'];
-					$body       = $new_params['body'];
-				}
+				// Substitute route parameters with actual values from arguments.
+				$route = self::substitute_route_params( $route, $args );
 
-				$request = new WP_REST_Request( $tool_callback['rest_alias']['method'], $route );
+				$request = new \WP_REST_Request( $method, $route );
 
-				// Handle headers if present.
-				if ( $headers ) {
-					foreach ( $headers as $header_name => $header_value ) {
-						$request->add_header( $header_name, $header_value[0] );
+				// Execute preCallback if it exists to transform the arguments.
+				$processed_params = array(
+					'args' => $args,
+				);
+
+				if ( isset( $rest_alias['preCallback'] ) && is_callable( $rest_alias['preCallback'] ) ) {
+					try {
+						$processed_params = call_user_func( $rest_alias['preCallback'], $args );
+					} catch ( \Exception $e ) {
+						return array(
+							'error' => McpErrorHandler::create_error_response(
+								0,
+								McpErrorHandler::INTERNAL_ERROR,
+								'Error in preCallback',
+								$e->getMessage()
+							),
+						);
 					}
 				}
 
-				// Handle body if present.
-				if ( $body ) {
-					$request->set_body( $body );
+				// Set any custom headers if they were set by the preCallback.
+				if ( isset( $processed_params['headers'] ) && is_array( $processed_params['headers'] ) ) {
+					foreach ( $processed_params['headers'] as $header => $value ) {
+						$request->set_header( $header, $value );
+					}
 				}
 
-				// Set remaining parameters.
-				foreach ( $args as $key => $value ) {
-					$request->set_param( $key, $value );
+				// Set the raw body if it was set by the preCallback.
+				if ( isset( $processed_params['body'] ) ) {
+					$request->set_body( $processed_params['body'] );
 				}
 
-				if ( isset( $tool_callback['permission_callback'] ) && is_callable( $tool_callback['permission_callback'] ) ) {
-					$permission_result = call_user_func( $tool_callback['permission_callback'], $request );
+				// Use the processed args, falling back to original args if not set.
+				$final_args = $processed_params['args'] ?? $args;
 
-					if ( ! $permission_result ) {
-						return array(
-							'error' => array(
-								'code'    => -32000,
-								'message' => 'Permission denied for tool: ' . $tool_name,
-							),
-						);
+				// Set the arguments as query parameters or body parameters based on method.
+				if ( in_array( $method, array( 'GET', 'DELETE' ), true ) ) {
+					// For GET and DELETE, use query parameters.
+					foreach ( $final_args as $key => $value ) {
+						$request->set_query_params( array_merge( $request->get_query_params(), array( $key => $value ) ) );
+					}
+				} elseif ( ! isset( $processed_params['body'] ) ) {
+					// For POST, PUT, PATCH, use body parameters.
+					// Only set params if we don't have a raw body from preCallback.
+					foreach ( $final_args as $key => $value ) {
+						$request->set_param( $key, $value );
 					}
 				}
 
@@ -98,31 +105,44 @@ class HandleToolsCall {
 
 				if ( $rest_response->is_error() ) {
 					// Handle REST API error.
-					$response = array(
-						'error' => array(
-							'code'    => -32000,
-							'message' => $rest_response->as_error()->get_error_message(),
+					return array(
+						'error' => McpErrorHandler::create_error_response(
+							0,
+							McpErrorHandler::REST_API_ERROR,
+							'REST API error occurred',
+							$rest_response->as_error()->get_error_message()
 						),
 					);
 				} else {
-					$response = $rest_response->get_data();
+					return $rest_response->get_data();
 				}
-			} catch ( Exception $e ) {
-				$response = array(
-					'error' => array(
-						'code'    => -32000,
-						'message' => 'Error executing REST API: ' . $e->getMessage(),
+			} catch ( \Exception $e ) {
+				McpErrorHandler::log_error(
+					'REST API tool execution failed',
+					array(
+						'tool'      => $tool_name,
+						'exception' => $e->getMessage(),
+					)
+				);
+				return array(
+					'error' => McpErrorHandler::create_error_response(
+						0,
+						McpErrorHandler::REST_API_ERROR,
+						'Error executing REST API',
+						$e->getMessage()
 					),
 				);
 			}
 		} else {
+			// Check permissions first.
 			if ( isset( $tool_callback['permission_callback'] ) && is_callable( $tool_callback['permission_callback'] ) ) {
 				$permission_result = call_user_func( $tool_callback['permission_callback'], $args );
 				if ( ! $permission_result ) {
 					return array(
 						'error' => array(
-							'code'    => -32000,
-							'message' => 'Permission denied for tool: ' . $tool_name,
+							'code' => 'rest_forbidden',
+							'message' => 'Permission denied',
+							'data' => array( 'status' => 403 )
 						),
 					);
 				}
@@ -130,17 +150,50 @@ class HandleToolsCall {
 
 			// Execute the tool callback.
 			try {
-				return call_user_func( $tool_callback['callback'], $args );
-			} catch ( Exception $e ) {
-				$response = array(
-					'error' => array(
-						'code'    => -32000,
-						'message' => 'Error executing tool: ' . $e->getMessage(),
+				$result = call_user_func( $tool_callback['callback'], $args );
+				return $result;
+			} catch ( \Exception $e ) {
+				McpErrorHandler::log_error(
+					'Tool execution failed',
+					array(
+						'tool'      => $tool_name,
+						'exception' => $e->getMessage(),
+					)
+				);
+				return array(
+					'error' => McpErrorHandler::create_error_response(
+						0,
+						McpErrorHandler::INTERNAL_ERROR,
+						'Error executing tool',
+						$e->getMessage()
 					),
 				);
 			}
 		}
+	}
 
-		return $response;
+	/**
+	 * Substitute route parameters with actual values from arguments.
+	 *
+	 * @param string $route The route pattern with named parameters.
+	 * @param array  $args  The arguments containing parameter values.
+	 *
+	 * @return string The route with parameters substituted.
+	 */
+	private static function substitute_route_params( string $route, array $args ): string {
+		// Find all named capture groups in the route pattern.
+		if ( preg_match_all( '/\(\?P<([^>]+)>[^)]+\)/', $route, $matches ) ) {
+			$param_names = $matches[1];
+
+			// Replace each parameter with its value from args if available.
+			foreach ( $param_names as $param_name ) {
+				if ( isset( $args[ $param_name ] ) ) {
+					$pattern = '/\(\?P<' . preg_quote( $param_name, '/' ) . '>[^)]+\)/';
+					$route   = preg_replace( $pattern, (string) $args[ $param_name ], $route );
+				}
+			}
+		}
+
+		return $route;
 	}
 }

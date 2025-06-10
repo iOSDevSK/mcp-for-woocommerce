@@ -181,7 +181,7 @@ class McpMediaTools {
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wp_delete_media',
-				'description' => 'Delete a WordPress media item',
+				'description' => 'Delete a WordPress media item permanently (requires force=true)',
 				'type'        => 'delete',
 				'rest_alias'  => array(
 					'route'  => '/wp/v2/media/(?P<id>[\d]+)',

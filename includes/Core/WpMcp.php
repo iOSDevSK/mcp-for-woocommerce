@@ -265,9 +265,9 @@ class WpMcp {
 		$args['tool_enabled']      = $is_tool_enabled;
 
 		$this->all_tools[] = $args;
-		// Check if the tool is enabled
-		if ( ! $is_tool_enabled && ! $is_tool_type_enabled ) {
-			return; // Skip registration if tool is disabled
+		// Check if the tool is enabled.
+		if ( ! $is_tool_enabled || ! $is_tool_type_enabled ) {
+			return; // Skip registration if tool is disabled.
 		}
 
 		// The name should be unique.

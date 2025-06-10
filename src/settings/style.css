@@ -3,7 +3,7 @@
  */
 
 .wordpress-mcp-settings {
-	max-width: 800px;
+	/* max-width: 800px; */
 	margin: 20px 0;
 }
 
@@ -137,4 +137,210 @@
 
 .wordpress-mcp-disabled-tab-notice p:last-child {
 	margin-bottom: 0;
+}
+
+/* JWT Token Generator Styles */
+.mcp-token-section {
+	margin-top: 2rem;
+	padding-top: 1rem;
+	border-top: 1px solid #ddd;
+}
+
+.mcp-token-container {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.mcp-token-container h3 {
+	margin-top: 0;
+	margin-bottom: 1rem;
+}
+
+.mcp-token-container .components-textarea-control__input {
+	font-family: monospace;
+	background: #f8f9fa;
+	border: 1px solid #ddd;
+	padding: 0.75rem;
+	width: 100%;
+	resize: vertical;
+}
+
+.mcp-token-container .components-button {
+	margin-top: 0.5rem;
+}
+
+.mcp-token-container .description {
+	color: #666;
+	font-style: italic;
+	margin: 0.5rem 0 0;
+}
+
+.mcp-error-message {
+	color: #d63638;
+	margin: 1rem 0;
+	padding: 0.75rem;
+	background: #f8d7da;
+	border: 1px solid #f5c6cb;
+	border-radius: 4px;
+}
+
+.mcp-form-field {
+	margin-bottom: 1.5rem;
+}
+
+.mcp-form-field .components-select-control__input {
+	max-width: 400px;
+}
+
+/* Documentation Tab Styles */
+.wordpress-mcp-documentation {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	line-height: 1.6;
+	color: #1e1e1e;
+}
+
+.wordpress-mcp-documentation h1,
+.wordpress-mcp-documentation h2,
+.wordpress-mcp-documentation h3,
+.wordpress-mcp-documentation h4,
+.wordpress-mcp-documentation h5,
+.wordpress-mcp-documentation h6 {
+	margin-top: 24px;
+	margin-bottom: 16px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: #1e1e1e;
+}
+
+.wordpress-mcp-documentation h1 {
+	font-size: 2em;
+	border-bottom: 1px solid #ddd;
+	padding-bottom: 8px;
+}
+
+.wordpress-mcp-documentation h2 {
+	font-size: 1.5em;
+	border-bottom: 1px solid #eee;
+	padding-bottom: 4px;
+}
+
+.wordpress-mcp-documentation h3 {
+	font-size: 1.25em;
+}
+
+.wordpress-mcp-documentation h4 {
+	font-size: 1em;
+}
+
+.wordpress-mcp-documentation p {
+	margin-bottom: 16px;
+}
+
+.wordpress-mcp-documentation ul,
+.wordpress-mcp-documentation ol {
+	margin-bottom: 16px;
+	padding-left: 24px;
+}
+
+.wordpress-mcp-documentation li {
+	margin-bottom: 4px;
+}
+
+.wordpress-mcp-documentation pre {
+	background: #f6f8fa;
+	border-radius: 6px;
+	font-size: 85%;
+	line-height: 1.45;
+	overflow: auto;
+	padding: 16px;
+	margin-bottom: 16px;
+	border: 1px solid #d1d9e0;
+}
+
+.wordpress-mcp-documentation code {
+	background: #f6f8fa;
+	border-radius: 3px;
+	font-size: 85%;
+	margin: 0;
+	padding: 0.2em 0.4em;
+	font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.wordpress-mcp-documentation pre code {
+	background: transparent;
+	border-radius: 0;
+	display: block;
+	font-size: 100%;
+	margin: 0;
+	padding: 0;
+	white-space: pre;
+	word-break: normal;
+	word-wrap: normal;
+}
+
+.wordpress-mcp-documentation blockquote {
+	border-left: 4px solid #ddd;
+	margin: 0 0 16px 0;
+	padding: 0 16px;
+	color: #666;
+}
+
+.wordpress-mcp-documentation table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	margin-bottom: 16px;
+	width: 100%;
+}
+
+.wordpress-mcp-documentation table th,
+.wordpress-mcp-documentation table td {
+	border: 1px solid #ddd;
+	padding: 8px 12px;
+	text-align: left;
+}
+
+.wordpress-mcp-documentation table th {
+	background: #f6f8fa;
+	font-weight: 600;
+}
+
+.wordpress-mcp-documentation a {
+	color: #0073aa;
+	text-decoration: none;
+}
+
+.wordpress-mcp-documentation a:hover {
+	text-decoration: underline;
+}
+
+.wordpress-mcp-documentation strong {
+	font-weight: 600;
+}
+
+.wordpress-mcp-documentation em {
+	font-style: italic;
+}
+
+.documentation-loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 40px;
+	text-align: center;
+}
+
+.documentation-loading .components-spinner {
+	margin-bottom: 16px;
+}
+
+.documentation-error {
+	padding: 20px;
+	text-align: center;
+	color: #d63638;
+	background: #fef7f7;
+	border: 1px solid #f5c6cb;
+	border-radius: 4px;
 }
