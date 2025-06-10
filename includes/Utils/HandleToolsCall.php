@@ -134,6 +134,20 @@ class HandleToolsCall {
 				);
 			}
 		} else {
+			// Check permissions first.
+			if ( isset( $tool_callback['permission_callback'] ) && is_callable( $tool_callback['permission_callback'] ) ) {
+				$permission_result = call_user_func( $tool_callback['permission_callback'], $args );
+				if ( ! $permission_result ) {
+					return array(
+						'error' => array(
+							'code' => 'rest_forbidden',
+							'message' => 'Permission denied',
+							'data' => array( 'status' => 403 )
+						),
+					);
+				}
+			}
+
 			// Execute the tool callback.
 			try {
 				$result = call_user_func( $tool_callback['callback'], $args );
