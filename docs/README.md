@@ -14,12 +14,12 @@ This plugin implements the server-side MCP endpoint within your WordPress instal
 
 Detailed documentation for developers:
 
--   [RegisterMcpTools API](docs/register-mcp-tools.md) - Registering and using MCP tools
--   [RegisterMcpResources API](docs/register-mcp-resources.md) - Registering and using MCP resources
--   [RegisterMcpPrompt API](docs/register-mcp-prompt.md) - Registering and using MCP prompts
--   [Registered Tools](docs/registered-tools.md) - List of default available tools
--   [Registered Resources](docs/registered-resources.md) - List of default available resources
--   [Registered Prompts](docs/registered-prompts.md) - List of default available prompts
+-   [RegisterMcpTools API](register-mcp-tools.md) - Registering and using MCP tools
+-   [RegisterMcpResources API](register-mcp-resources.md) - Registering and using MCP resources
+-   [RegisterMcpPrompt API](register-mcp-prompt.md) - Registering and using MCP prompts
+-   [Registered Tools](registered-tools.md) - List of default available tools
+-   [Registered Resources](registered-resources.md) - List of default available resources
+-   [Registered Prompts](registered-prompts.md) - List of default available prompts
 
 ## Getting Started
 

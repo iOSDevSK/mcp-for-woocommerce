@@ -1,7 +1,16 @@
 {
     "name": "wordpress-mcp",
     "version": "0.1.17",
-    "description": "Wordpress MCP Settings",
+	  "description": "A plugin to integrate WordPress with Model Context Protocol (MCP), providing AI-accessible interfaces to WordPress data and functionality through standardized tools, resources, and prompts. Enables AI assistants to interact with posts, users, site settings, and WooCommerce data.",
+	  "keywords": [
+		  "wordpress",
+		  "mcp",
+		  "content",
+		  "management"
+	  ],
+	  "homepage": "https://github.com/Automattic/wordpress-mcp",
+	  "license": "GPL-2.0-or-later",
+	  "author": "Automattic AI  (https://automattic.ai)",    
     "main": "src/index.js",
     "private": true,
     "files": [
