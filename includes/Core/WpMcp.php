@@ -6,6 +6,7 @@ namespace Automattic\WordpressMcp\Core;
 use Automattic\WordpressMcp\Tools\McpCustomPostTypesTools;
 use Automattic\WordpressMcp\Tools\McpPostsTools;
 use Automattic\WordpressMcp\Resources\McpGeneralSiteInfo;
+use Automattic\WordpressMcp\Tools\McpRestApiCrud;
 use Automattic\WordpressMcp\Tools\McpSiteInfo;
 use Automattic\WordpressMcp\Tools\McpUsersTools;
 use Automattic\WordpressMcp\Tools\McpWooOrders;
@@ -189,6 +190,7 @@ class WpMcp {
 		new McpSettingsTools();
 		new McpMediaTools();
 		new McpCustomPostTypesTools();
+		new McpRestApiCrud();
 	}
 
 	/**
@@ -230,8 +232,8 @@ class WpMcp {
 	 */
 	private function is_tool_type_enabled( string $type ): bool {
 
-		// Read operations are always allowed if MCP is enabled.
-		if ( 'read' === $type ) {
+		// Read operations and action operations are always allowed if MCP is enabled.
+		if ( 'read' === $type || 'action' === $type ) {
 			return true;
 		}
 
@@ -257,14 +259,25 @@ class WpMcp {
 	 * @throws InvalidArgumentException If the tool name is not unique or if the tool type is disabled.
 	 */
 	public function register_tool( array $args ): void {
-
 		$is_tool_type_enabled = $this->is_tool_type_enabled( $args['type'] );
 		$is_tool_enabled      = $this->is_tool_enabled( $args['name'] );
 
+		// Check if REST API CRUD tools are enabled and this tool should be disabled
+		$is_rest_api_crud_enabled = ! empty( $this->mcp_settings['enable_rest_api_crud_tools'] );
+		$has_rest_alias = ! empty( $args['rest_alias'] );
+		$has_disabled_flag = ! empty( $args['disabled_by_rest_crud'] );
+		$is_disabled_by_rest_crud = $is_rest_api_crud_enabled && ( $has_rest_alias || $has_disabled_flag );
+
 		$args['tool_type_enabled'] = $is_tool_type_enabled;
 		$args['tool_enabled']      = $is_tool_enabled;
+		$args['disabled_by_rest_crud'] = $is_disabled_by_rest_crud;
 
 		$this->all_tools[] = $args;
+
+		// Skip actual registration if disabled by REST CRUD setting
+		if ( $is_disabled_by_rest_crud ) {
+			return;
+		}
 		// Check if the tool is enabled.
 		if ( ! $is_tool_enabled || ! $is_tool_type_enabled ) {
 			return; // Skip registration if tool is disabled.
@@ -292,6 +305,7 @@ class WpMcp {
 		unset( $args['callback'] );
 		unset( $args['permission_callback'] );
 		unset( $args['rest_alias'] );
+		unset( $args['disabled_by_rest_crud'] );
 		$this->tools[] = $args;
 	}
 
