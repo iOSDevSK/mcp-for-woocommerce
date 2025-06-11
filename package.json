@@ -17,7 +17,8 @@
         "build",
         "includes",
         "vendor",
-        "wordpress-mcp.php"
+        "wordpress-mcp.php",
+        "docs"
     ],
     "scripts": {
         "build": "wp-scripts build",
