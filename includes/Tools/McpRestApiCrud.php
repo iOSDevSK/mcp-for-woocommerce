@@ -45,18 +45,18 @@ class McpRestApiCrud {
 
 		new RegisterMcpTool(
 			array(
-				'name'        => 'list_wordpress_rest_api_endpoints',
-				'description' => 'List all available WordPress REST API endpoints and their supported HTTP methods. Use this first to discover what API endpoints are available before making specific calls.',
-				'type'        => 'read',
-				'inputSchema' => array(
+				'name'                => 'list_api_functions',
+				'description'         => 'List all available WordPress REST API endpoints that support CRUD operations (Create, Read, Update, Delete). Use this first to discover what API functions are available before inspecting or calling them.',
+				'type'                => 'read',
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => new \stdClass(),
 					'required'   => new \stdClass(),
 				),
-				'callback'    => array( $this, 'get_available_tools' ),
-                'permission_callback' => '__return_true',
-				'annotations' => array(
-					'title'         => 'List REST API Endpoints',
+				'callback'            => array( $this, 'get_available_tools' ),
+				'permission_callback' => '__return_true',
+				'annotations'         => array(
+					'title'         => 'List API Functions',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 				),
@@ -65,28 +65,28 @@ class McpRestApiCrud {
 
 		new RegisterMcpTool(
 			array(
-				'name'        => 'get_wordpress_rest_api_endpoint_schema',
-				'description' => 'Get the complete schema and documentation for a specific WordPress REST API endpoint and HTTP method. Use this to understand what parameters are required and available for an endpoint before making calls.',
-				'type'        => 'read',
-				'inputSchema' => array(
+				'name'                => 'get_function_details',
+				'description'         => 'Get detailed metadata for a specific WordPress REST API endpoint and HTTP method. Includes available parameters, required fields, authentication needs, and expected response structure. Use this to get the details of a specific function before calling it.',
+				'type'                => 'read',
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
-						'route'  => array( 
-							'type' => 'string',
-							'description' => 'The REST API route (e.g., "/wp/v2/posts", "/wp/v2/users")'
+						'route'  => array(
+							'type'        => 'string',
+							'description' => 'The REST API route (e.g., "/wp/v2/posts", "/wp/v2/users")',
 						),
 						'method' => array(
-							'type' => 'string',
-							'enum' => array( 'GET', 'POST', 'PATCH', 'DELETE' ),
-							'description' => 'The HTTP method to get schema for'
+							'type'        => 'string',
+							'enum'        => array( 'GET', 'POST', 'PATCH', 'DELETE' ),
+							'description' => 'The HTTP method to retrieve metadata for',
 						),
 					),
 					'required'   => array( 'route', 'method' ),
 				),
-				'callback'    => array( $this, 'get_tool_details' ),
-                'permission_callback' => '__return_true',
-				'annotations' => array(
-					'title'         => 'Get Endpoint Schema',
+				'callback'            => array( $this, 'get_tool_details' ),
+				'permission_callback' => '__return_true',
+				'annotations'         => array(
+					'title'         => 'Get Function Details',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 				),
@@ -95,32 +95,32 @@ class McpRestApiCrud {
 
 		new RegisterMcpTool(
 			array(
-				'name'        => 'call_wordpress_rest_api',
-				'description' => 'Make a direct call to any WordPress REST API endpoint. Supports GET (read), POST (create), PATCH (update), and DELETE operations. Use this to interact with WordPress content like posts, pages, users, etc.',
-				'type'        => 'action',
-				'inputSchema' => array(
+				'name'                => 'run_api_function',
+				'description'         => 'Execute a specific WordPress REST API function by providing the endpoint route, HTTP method, and any required parameters or request body. Supports standard CRUD operations: GET (read), POST (create), PATCH (update), DELETE (remove).',
+				'type'                => 'action',
+				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
-						'route'  => array( 
-							'type' => 'string',
-							'description' => 'The REST API route (e.g., "/wp/v2/posts", "/wp/v2/users/123")'
+						'route'  => array(
+							'type'        => 'string',
+							'description' => 'The REST API route (e.g., "/wp/v2/posts", "/wp/v2/users/123")',
 						),
 						'method' => array(
-							'type' => 'string',
-							'enum' => array( 'GET', 'POST', 'PATCH', 'DELETE' ),
-							'description' => 'The HTTP method: GET (read), POST (create), PATCH (update), DELETE (remove)'
+							'type'        => 'string',
+							'enum'        => array( 'GET', 'POST', 'PATCH', 'DELETE' ),
+							'description' => 'The HTTP method to use: GET, POST, PATCH, or DELETE',
 						),
-						'data'   => array( 
-							'type' => 'object',
-							'description' => 'Request body data for POST/PATCH requests. Not needed for GET/DELETE.'
+						'data'   => array(
+							'type'        => 'object',
+							'description' => 'Payload for POST or PATCH requests. Not required for GET or DELETE.',
 						),
 					),
 					'required'   => array( 'route', 'method' ),
 				),
-				'callback'    => array( $this, 'handle_tool_run_request' ),
-                'permission_callback' => '__return_true',
-				'annotations' => array(
-					'title'           => 'Call REST API',
+				'callback'            => array( $this, 'handle_tool_run_request' ),
+				'permission_callback' => '__return_true',
+				'annotations'         => array(
+					'title'           => 'Run API Function',
 					'readOnlyHint'    => false,
 					'destructiveHint' => true,
 					'idempotentHint'  => false,
@@ -141,10 +141,10 @@ class McpRestApiCrud {
 		$method = $data['method'];
 		$data   = $data['data'];
 
-		// Get settings to check if operations are enabled
+		// Get settings to check if operations are enabled.
 		$settings = get_option( 'wordpress_mcp_settings', array() );
 
-		// Check if the method is allowed based on settings
+		// Check if the method is allowed based on settings.
 		switch ( $method ) {
 			case 'DELETE':
 				if ( empty( $settings['enable_delete_tools'] ) ) {
@@ -185,10 +185,30 @@ class McpRestApiCrud {
 	 * @return array The routes and methods.
 	 */
 	public function get_available_tools(): array {
-		// content.text.result[key]
-		// get all routes and methods from the WordPress rest api.
+		$exact_ignore_routes       = array(
+			'/',
+			'/batch/v1',
+		);
+		$containing_ignore_strings = array(
+			'oembed',
+			'autosaves',
+			'revisions',
+			'jwt-auth',
+		);
+		// Get all routes and methods from the WordPress REST API.
 		$routes = rest_get_server()->get_routes();
+		$result = array();
 		foreach ( $routes as $route => $methods ) {
+			// Skip if route exactly matches any ignore route.
+			if ( in_array( $route, $exact_ignore_routes, true ) ) {
+				continue;
+			}
+			// Skip if route contains any of the ignore strings.
+			foreach ( $containing_ignore_strings as $ignore_string ) {
+				if ( strpos( $route, $ignore_string ) !== false ) {
+					continue 2;
+				}
+			}
 			foreach ( $methods as $the_methods ) {
 				$result[] = array(
 					'route'  => $route,
