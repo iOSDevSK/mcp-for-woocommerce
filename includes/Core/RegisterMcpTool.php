@@ -68,8 +68,8 @@ class RegisterMcpTool {
 		// maybe use:  rest_get_server()->get_route_options( $route ) );.
 		$rest_route = $routes[ $route ] ?? null;
 		if ( ! $rest_route ) {
-			// translators: %s: Route.
-			throw new InvalidArgumentException( sprintf( esc_html__( 'The route %1$s with method %2$s does not exist.', 'wordpress-mcp' ), $route, $method ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			// Skip registration if the route doesn't exist.
+			return;
 		}
 
 		$rest_api = null;
