@@ -34,7 +34,7 @@ class McpRestApiCrud {
 	 * Example usage: You can extend this to register tools for any custom endpoint.
 	 */
 	public function register_tools(): void {
-		// Check if REST API CRUD tools are enabled in settings
+		// Check if REST API CRUD tools are enabled in settings.
 		$settings = get_option( 'wordpress_mcp_settings', array() );
 		if ( empty( $settings['enable_rest_api_crud_tools'] ) ) {
 			return;
