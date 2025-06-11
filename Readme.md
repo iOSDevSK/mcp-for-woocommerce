@@ -12,6 +12,7 @@ A comprehensive WordPress plugin that implements the [Model Context Protocol (MC
 -   🤖 **AI-Friendly APIs**: JSON-RPC 2.0 compliant endpoints for AI integration
 -   🏗️ **Extensible Architecture**: Custom tools, resources, and prompts support
 -   🔌 **WordPress Feature API**: Adapter for standardized WordPress functionality
+-   🧪 **Experimental REST API CRUD Tools**: Generic tools for any WordPress REST API endpoint
 -   🧪 **Comprehensive Testing**: 200+ test cases covering all protocols and authentication
 -   ⚡ **High Performance**: Optimized routing and caching mechanisms
 -   🔒 **Enterprise Security**: Multi-layer authentication and audit logging
@@ -195,6 +196,42 @@ The streamable transport provides a direct JSON-RPC 2.0 compliant endpoint, whil
 | `prompts/list`   | List available prompts   | Both              |
 | `prompts/get`    | Get prompt template      | Both              |
 
+### 🧪 Experimental REST API CRUD Tools
+
+⚠️ **EXPERIMENTAL FEATURE**: This functionality is experimental and may change or be removed in future versions.
+
+When enabled via `Settings > WordPress MCP > Enable REST API CRUD Tools`, the plugin provides three powerful generic tools that can interact with any WordPress REST API endpoint:
+
+#### Available Tools
+
+| Tool Name              | Description                                         | Type   |
+| ---------------------- | --------------------------------------------------- | ------ |
+| `list_api_functions`   | Discover all available WordPress REST API endpoints | Read   |
+| `get_function_details` | Get detailed metadata for specific endpoint/method  | Read   |
+| `run_api_function`     | Execute any REST API function with CRUD operations  | Action |
+
+#### Usage Workflow
+
+1. **Discovery**: Use `list_api_functions` to see all available endpoints
+2. **Inspection**: Use `get_function_details` to understand required parameters
+3. **Execution**: Use `run_api_function` to perform CRUD operations
+
+#### Security & Permissions
+
+-   **User Capabilities**: All operations respect current user permissions
+-   **Settings Control**: Individual CRUD operations can be disabled in settings:
+    -   Enable Create Tools (POST operations)
+    -   Enable Update Tools (PATCH/PUT operations)
+    -   Enable Delete Tools (DELETE operations)
+-   **Automatic Filtering**: Excludes sensitive endpoints (JWT auth, oembed, autosaves, revisions)
+
+#### Benefits
+
+-   **Universal Access**: Works with any WordPress REST API endpoint, including custom post types and third-party plugins
+-   **AI-Friendly**: Provides discovery and introspection capabilities for AI agents
+-   **Standards Compliant**: Uses standard HTTP methods (GET, POST, PATCH, DELETE)
+-   **Permission Safe**: Inherits WordPress user capabilities and respects endpoint permissions
+
 ## 🔧 Development
 
 ### Project Structure
@@ -322,6 +359,8 @@ npm run start
 -   **Secure Storage**: Never commit tokens to repositories
 -   **Regular Cleanup**: Revoke unused tokens promptly
 -   **Access Control**: Streamable transport requires admin privileges
+-   **CRUD Operations**: Only enable create/update/delete tools when necessary
+-   **Experimental Features**: Use REST API CRUD tools with caution in production environments
 
 ### Security Features
 
@@ -361,7 +400,20 @@ Access via `Settings > WordPress MCP`:
 -   **Enable/Disable MCP**: Toggle plugin functionality
 -   **Transport Configuration**: Configure STDIO/Streamable transports
 -   **Feature Toggles**: Enable/disable specific tools and resources
+-   **CRUD Operation Controls**: Granular control over create, update, and delete operations
+-   **Experimental Features**: Enable REST API CRUD Tools (experimental functionality)
 -   **Authentication Settings**: JWT token management
+
+#### CRUD Operation Settings
+
+The plugin provides granular control over CRUD operations:
+
+-   **Enable Create Tools**: Allow POST operations via MCP tools
+-   **Enable Update Tools**: Allow PATCH/PUT operations via MCP tools
+-   **Enable Delete Tools**: ⚠️ Allow DELETE operations via MCP tools (use with caution)
+-   **Enable REST API CRUD Tools**: 🧪 Enable experimental generic REST API access tools
+
+⚠️ **Security Note**: Delete operations can permanently remove data. Only enable delete tools if you trust all users with MCP access.
 
 ## 🤝 Contributing
 
