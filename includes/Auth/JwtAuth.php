@@ -499,7 +499,7 @@ class JwtAuth {
 		$this->log_auth_event( 'AUTH_REQUIRED', 'No valid authentication method found' );
 		return new WP_Error(
 			'unauthorized',
-			'Authentication required. Please provide a Bearer token or log in as an administrator. Plugin version: ' . WORDPRESS_MCP_VERSION,
+			'Authentication required. Please provide a Bearer token or log in as an administrator.',
 			array( 'status' => 401 )
 		);
 	}
