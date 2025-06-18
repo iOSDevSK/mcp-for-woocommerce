@@ -64,10 +64,10 @@ class RegisterMcpTool {
 		$route  = $this->args['rest_alias']['route'];
 
 		// get a list of all registered rest routes.
-		$routes = rest_get_server()->get_routes();
-		// maybe use:  rest_get_server()->get_route_options( $route ) );.
+		$routes     = rest_get_server()->get_routes();
 		$rest_route = $routes[ $route ] ?? null;
 		if ( ! $rest_route ) {
+			McpErrorHandler::log_error( 'The route does not exist: ' . $route . ' ' . $method . ' Skipping registration.' );
 			// Skip registration if the route doesn't exist.
 			return;
 		}
@@ -82,7 +82,8 @@ class RegisterMcpTool {
 			}
 		}
 		if ( ! $rest_api ) {
-			throw new InvalidArgumentException( esc_html__( 'The method does not exist.', 'wordpress-mcp' ) );
+			McpErrorHandler::log_error( 'The method does not exist: ' . $method . ' in ' . $route . ' Skipping registration.' );
+			return;
 		}
 
 		// Convert REST API args to MCP input schema.
@@ -93,6 +94,13 @@ class RegisterMcpTool {
 		);
 
 		foreach ( $rest_api['args'] as $arg_name => $arg_schema ) {
+
+			if ( ! preg_match( '/^[a-zA-Z0-9_-]{1,64}$/', $arg_name ) ) {
+				// log the invalid parameter name.
+				McpErrorHandler::log_error( 'Invalid parameter name: ' . $arg_name . ' in ' . $route . ' ' . $method . '. The parameter was skipped.' );
+				continue; // Skip invalid parameter names.
+			}
+
 			$type = $arg_schema['type'];
 			if ( is_array( $type ) ) {
 				$type = reset( $type );

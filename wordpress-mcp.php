@@ -23,7 +23,7 @@ use Automattic\WordpressMcp\Core\McpStdioTransport;
 use Automattic\WordpressMcp\Admin\Settings;
 use Automattic\WordpressMcp\Auth\JwtAuth;
 
-define( 'WORDPRESS_MCP_VERSION', '0.1.9' );
+define( 'WORDPRESS_MCP_VERSION', '0.2.2' );
 define( 'WORDPRESS_MCP_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WORDPRESS_MCP_URL', plugin_dir_url( __FILE__ ) );
 

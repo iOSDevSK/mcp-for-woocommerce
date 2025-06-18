@@ -220,8 +220,8 @@ class McpErrorHandler {
 	 * @return void
 	 */
 	public static function log_error( string $message, array $context = array() ): void {
-		if ( function_exists( 'error_log' ) ) {
-			$log_message = '[WordPress MCP] ' . $message;
+		if ( function_exists( 'error_log' ) && defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			$log_message = '[WordPress MCP] [' . gmdate( 'Y-m-d H:i:s' ) . '] ' . $message;
 			if ( ! empty( $context ) ) {
 				$log_message .= ' Context: ' . wp_json_encode( $context );
 			}
