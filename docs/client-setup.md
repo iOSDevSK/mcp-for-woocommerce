@@ -39,7 +39,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
 			"command": "npx",
 			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
 			"env": {
-				"WP_API_URL": "https://your-site.com/",
+				"WP_API_URL": "{{your-website.com}}",
 				"JWT_TOKEN": "your-jwt-token-here",
 				"LOG_FILE": "optional-path-to-log-file"
 			}
@@ -57,7 +57,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
 			"command": "npx",
 			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
 			"env": {
-				"WP_API_URL": "https://your-site.com/",
+				"WP_API_URL": "{{your-website.com}}",
 				"WP_API_USERNAME": "your-username",
 				"WP_API_PASSWORD": "your-application-password",
 				"LOG_FILE": "optional-full-path-to-log-file"
@@ -80,7 +80,7 @@ Add to your Cursor MCP configuration file:
 			"command": "npx",
 			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
 			"env": {
-				"WP_API_URL": "https://your-site.com/",
+				"WP_API_URL": "{{your-website.com}}",
 				"JWT_TOKEN": "your-jwt-token-here",
 				"LOG_FILE": "optional-full-path-to-log-file"
 			}
@@ -100,7 +100,7 @@ Add to your VS Code MCP settings:
 	"servers": {
 		"wordpress-mcp": {
 			"type": "http",
-			"url": "https://your-site.com/wp-json/wp/v2/wpmcp/streamable",
+			"url": "{{your-website.com}}/wp-json/wp/v2/wpmcp/streamable",
 			"headers": {
 				"Authorization": "Bearer your-jwt-token-here"
 			}
@@ -115,7 +115,7 @@ Add to your VS Code MCP settings:
 
 ```bash
 npx @modelcontextprotocol/inspector \
-  -e WP_API_URL=https://your-site.com/ \
+  -e WP_API_URL={{your-website.com}} \
   -e JWT_TOKEN=your-jwt-token-here \
   -e WOO_CUSTOMER_KEY=optional-woo-customer-key \
   -e WOO_CUSTOMER_SECRET=optional-woo-customer-secret \
@@ -127,7 +127,7 @@ npx @modelcontextprotocol/inspector \
 
 ```bash
 npx @modelcontextprotocol/inspector \
-  -e WP_API_URL=https://your-site.com/ \
+  -e WP_API_URL={{your-website.com}} \
   -e WP_API_USERNAME=your-username \
   -e WP_API_PASSWORD=your-application-password \
   -e WOO_CUSTOMER_KEY=optional-woo-customer-key \

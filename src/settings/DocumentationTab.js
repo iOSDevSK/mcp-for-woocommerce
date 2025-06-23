@@ -40,7 +40,15 @@ const DocumentationTab = () => {
 				}
 
 				const markdownText = await response.text();
-				const htmlContent = marked( markdownText );
+				
+				// Replace placeholder with actual site URL
+				const siteUrl = window.location.origin;
+				const processedMarkdown = markdownText.replace(
+					/\{\{your-website\.com\}\}/g,
+					siteUrl
+				);
+				
+				const htmlContent = marked( processedMarkdown );
 				setContent( htmlContent );
 			} catch ( err ) {
 				console.error( 'Error loading documentation:', err );
