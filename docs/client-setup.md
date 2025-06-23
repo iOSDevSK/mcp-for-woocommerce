@@ -26,6 +26,18 @@ WordPress MCP supports two transport protocols:
 
 ## Client Configurations
 
+### Claude Code
+
+#### Using HTTP Transport with JWT Token (Recommended)
+
+Add your WordPress MCP server directly to Claude Code using the HTTP transport:
+
+```bash
+claude mcp add --transport http wordpress-mcp {{your-website.com}}/wp-json/wp/v2/wpmcp/streamable --header "Authorization: Bearer your-jwt-token-here"
+```
+
+For more information about Claude Code MCP configuration, see the [Claude Code MCP documentation](https://docs.anthropic.com/en/docs/claude-code/mcp).
+
 ### Claude Desktop
 
 #### Using JWT Token with mcp-wordpress-remote (Recommended)
