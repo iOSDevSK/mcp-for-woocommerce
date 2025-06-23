@@ -32,11 +32,34 @@ class PromptsHandler {
 	}
 
 	/**
+	 * Check if user has permission to access prompts.
+	 *
+	 * @return array|null Returns error array if permission denied, null if allowed.
+	 */
+	private function check_permission(): ?array {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return array(
+				'error' => array(
+					'code'    => 'rest_forbidden',
+					'message' => 'You do not have permission to access prompts.',
+					'data'    => array( 'status' => 403 ),
+				),
+			);
+		}
+		return null;
+	}
+
+	/**
 	 * Handle the prompts/list request.
 	 *
 	 * @return array
 	 */
 	public function list_prompts(): array {
+		$permission_error = $this->check_permission();
+		if ( $permission_error ) {
+			return $permission_error;
+		}
+
 		return array(
 			'prompts' => array_values( $this->mcp->get_prompts() ),
 		);
@@ -49,6 +72,11 @@ class PromptsHandler {
 	 * @return array
 	 */
 	public function get_prompt( array $params ): array {
+		$permission_error = $this->check_permission();
+		if ( $permission_error ) {
+			return $permission_error;
+		}
+
 		// Handle both direct params and nested params structure.
 		$request_params = $params['params'] ?? $params;
 
