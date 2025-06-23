@@ -70,8 +70,8 @@ class McpStreamableTransport extends McpTransportBase {
 				array( 'status' => 403 )
 			);
 		}
-
-		return current_user_can( 'manage_options' );
+		// check if the user is logged in.
+		return is_user_logged_in();
 	}
 
 	/**
@@ -203,7 +203,7 @@ class McpStreamableTransport extends McpTransportBase {
 	 */
 	private function process_message( array $message ): array {
 		$this->request_id = (int) $message['id'];
-		$params = $message['params'] ?? array();
+		$params           = $message['params'] ?? array();
 
 		// Route the request using the base class
 		$result = $this->route_request( $message['method'], $params, $this->request_id );
