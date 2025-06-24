@@ -156,6 +156,16 @@ class RegisterMcpTool {
 		if ( isset( $this->args['rest_alias']['inputSchemaReplacements'] ) ) {
 			$modifications = $this->args['rest_alias']['inputSchemaReplacements'];
 			$input_schema  = $this->apply_modifications( $input_schema, $modifications );
+
+			// Ensure required field is always an array if it exists.
+			if ( isset( $input_schema['required'] ) && ! is_array( $input_schema['required'] ) ) {
+				// Convert to array if it's not already.
+				if ( is_object( $input_schema['required'] ) ) {
+					$input_schema['required'] = array_values( (array) $input_schema['required'] );
+				} else {
+					$input_schema['required'] = array();
+				}
+			}
 		}
 
 		// Update the args with the converted schema.
@@ -298,6 +308,11 @@ class RegisterMcpTool {
 
 		// Validate the required field if present.
 		if ( isset( $this->args['inputSchema']['required'] ) ) {
+			// Ensure required field is an array.
+			if ( ! is_array( $this->args['inputSchema']['required'] ) ) {
+				throw new InvalidArgumentException( esc_html__( 'The required field must be an array.', 'wordpress-mcp' ) );
+			}
+
 			// Check all required properties exist in properties.
 			foreach ( $this->args['inputSchema']['required'] as $required_property ) {
 				if ( ! isset( $this->args['inputSchema']['properties'][ $required_property ] ) ) {
