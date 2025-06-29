@@ -26,6 +26,8 @@ use Automattic\WordpressMcp\Tools\McpWooCategories;
 use Automattic\WordpressMcp\Tools\McpWooTags;
 use Automattic\WordpressMcp\Tools\McpWooIntentAnalyzer;
 
+use Automattic\WordpressMcp\Resources\McpWooSearchGuide;
+
 /**
  * WordPress MCP
  *
@@ -179,6 +181,7 @@ class WpMcp {
 		new McpThemeInfoResource();
 		new McpUserInfoResource();
 		new McpSiteSettingsResource();
+		new McpWooSearchGuide();
 	}
 
 	/**
