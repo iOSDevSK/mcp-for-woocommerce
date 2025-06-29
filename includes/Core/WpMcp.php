@@ -22,6 +22,10 @@ use Automattic\WordpressMcp\Resources\McpUserInfoResource;
 use Automattic\WordpressMcp\Resources\McpSiteSettingsResource;
 use InvalidArgumentException;
 
+use Automattic\WordpressMcp\Tools\McpWooCategories;
+use Automattic\WordpressMcp\Tools\McpWooTags;
+use Automattic\WordpressMcp\Tools\McpWooIntentAnalyzer;
+
 /**
  * WordPress MCP
  *
@@ -191,6 +195,10 @@ class WpMcp {
 		new McpMediaTools();
 		new McpCustomPostTypesTools();
 		new McpRestApiCrud();
+
+		new McpWooCategories();
+    	new McpWooTags(); 
+    	new McpWooIntentAnalyzer();
 	}
 
 	/**
