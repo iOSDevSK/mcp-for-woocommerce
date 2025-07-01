@@ -44,11 +44,11 @@ class JwtAuth {
 	private const JWT_ACCESS_EXP_MIN = 3600; // 1 hour.
 
 	/**
-	 * Maximum access token expiration time in seconds.
+	 * Default maximum access token expiration time in seconds.
 	 *
 	 * @var int
 	 */
-	private const JWT_ACCESS_EXP_MAX = 31536000; // 365 days.
+	private const JWT_ACCESS_EXP_MAX_DEFAULT = 2592000; // 30 days.
 
 	/**
 	 * Option name for storing active tokens.
@@ -96,6 +96,22 @@ class JwtAuth {
 	}
 
 	/**
+	 * Get the maximum allowed expiration time for JWT tokens.
+	 *
+	 * @return int Maximum expiration time in seconds.
+	 */
+	private function get_max_expiration_time(): int {
+		/**
+		 * Filter the maximum JWT token expiration time.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param int $max_expiration Maximum expiration time in seconds. Default 30 days.
+		 */
+		return (int) apply_filters( 'wpmcp_jwt_max_expiration_time', self::JWT_ACCESS_EXP_MAX_DEFAULT );
+	}
+
+	/**
 	 * Initialize the JWT authentication.
 	 */
 	public function __construct() {
@@ -107,6 +123,7 @@ class JwtAuth {
 	 * Register REST API routes for JWT authentication.
 	 */
 	public function register_routes(): void {
+		$max_expiration = $this->get_max_expiration_time();
 		register_rest_route(
 			'jwt-auth/v1',
 			'/token',
@@ -127,10 +144,10 @@ class JwtAuth {
 					),
 					'expires_in' => array(
 						'type'        => 'integer',
-						'description' => 'Token expiration time in seconds (3600-31536000)',
+						'description' => sprintf( 'Token expiration time in seconds (%d-%d)', self::JWT_ACCESS_EXP_MIN, $max_expiration ),
 						'required'    => false,
 						'minimum'     => self::JWT_ACCESS_EXP_MIN,
-						'maximum'     => self::JWT_ACCESS_EXP_MAX,
+						'maximum'     => $max_expiration,
 						'default'     => self::JWT_ACCESS_EXP_DEFAULT,
 					),
 				),
@@ -174,17 +191,20 @@ class JwtAuth {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function generate_jwt_token( WP_REST_Request $request ) {
-		$params     = $request->get_json_params();
-		$expires_in = isset( $params['expires_in'] ) ? intval( $params['expires_in'] ) : self::JWT_ACCESS_EXP_DEFAULT;
+		$params         = $request->get_json_params();
+		$expires_in     = isset( $params['expires_in'] ) ? intval( $params['expires_in'] ) : self::JWT_ACCESS_EXP_DEFAULT;
+		$max_expiration = $this->get_max_expiration_time();
 
 		// Validate expiration time.
-		if ( $expires_in < self::JWT_ACCESS_EXP_MIN || $expires_in > self::JWT_ACCESS_EXP_MAX ) {
+		if ( $expires_in < self::JWT_ACCESS_EXP_MIN || $expires_in > $max_expiration ) {
+			$max_days = floor( $max_expiration / 86400 );
 			return new WP_Error(
 				'invalid_expiration',
 				sprintf(
-					'Token expiration must be between %d seconds (1 hour) and %d seconds (365 days)',
+					'Token expiration must be between %d seconds (1 hour) and %d seconds (%d days)',
 					self::JWT_ACCESS_EXP_MIN,
-					self::JWT_ACCESS_EXP_MAX
+					$max_expiration,
+					$max_days
 				),
 				array( 'status' => 400 )
 			);
@@ -349,7 +369,13 @@ class JwtAuth {
 			update_option( self::TOKEN_REGISTRY_OPTION, $registry );
 		}
 
-		return rest_ensure_response( $tokens );
+		$response_data = array(
+			'tokens'         => $tokens,
+			'max_expiration' => $this->get_max_expiration_time(),
+			'max_days'       => floor( $this->get_max_expiration_time() / 86400 ),
+		);
+
+		return rest_ensure_response( $response_data );
 	}
 
 	/**
