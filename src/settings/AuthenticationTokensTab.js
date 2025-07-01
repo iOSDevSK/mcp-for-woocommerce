@@ -7,7 +7,7 @@ import {
 	SelectControl,
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { format } from 'date-fns';
 
@@ -20,6 +20,7 @@ const AuthenticationTokensTab = () => {
 	const [ selectedDuration, setSelectedDuration ] = useState( 3600 ); // Default to 1 hour
 	const [ customDays, setCustomDays ] = useState( 1 );
 	const [ showCustomInput, setShowCustomInput ] = useState( false );
+	const [ maxDays, setMaxDays ] = useState( 30 ); // Default to 30 days
 
 	// Duration options for token expiration
 	const durationOptions = [
@@ -46,6 +47,13 @@ const AuthenticationTokensTab = () => {
 		}
 	}, [ copySuccess ] );
 
+	// Adjust custom days if it exceeds the maximum when maxDays is updated
+	useEffect( () => {
+		if ( customDays > maxDays ) {
+			setCustomDays( maxDays );
+		}
+	}, [ maxDays, customDays ] );
+
 	const fetchTokens = async () => {
 		try {
 			const response = await apiFetch( {
@@ -53,7 +61,17 @@ const AuthenticationTokensTab = () => {
 				method: 'GET',
 				includeCredentials: true,
 			} );
-			setTokens( response );
+			
+			// Handle the new response format with nested data
+			if ( response.tokens ) {
+				setTokens( response.tokens );
+				if ( response.max_days ) {
+					setMaxDays( response.max_days );
+				}
+			} else {
+				// Fallback for old response format (just in case)
+				setTokens( response );
+			}
 		} catch ( err ) {
 			setError( __( 'Error fetching tokens', 'wordpress-mcp' ) );
 		}
@@ -364,12 +382,12 @@ const AuthenticationTokensTab = () => {
 							<NumberControl
 								label={ __( 'Custom Duration (Days)', 'wordpress-mcp' ) }
 								value={ customDays }
-								onChange={ ( value ) => setCustomDays( Math.max( 1, parseInt( value ) || 1 ) ) }
+								onChange={ ( value ) => setCustomDays( Math.max( 1, Math.min( maxDays, parseInt( value ) || 1 ) ) ) }
 								min={ 1 }
-								max={ 365 }
-								help={ __(
-									'Enter the number of days (1-365) for token expiration',
-									'wordpress-mcp'
+								max={ maxDays }
+								help={ sprintf(
+									__( 'Enter the number of days (1-%d) for token expiration', 'wordpress-mcp' ),
+									maxDays
 								) }
 							/>
 						</div>
