@@ -3,23 +3,9 @@ declare(strict_types=1);
 
 namespace Automattic\WordpressMcp\Core;
 
-use Automattic\WordpressMcp\Tools\McpCustomPostTypesTools;
-use Automattic\WordpressMcp\Tools\McpPostsTools;
-use Automattic\WordpressMcp\Resources\McpGeneralSiteInfo;
 use Automattic\WordpressMcp\Tools\McpRestApiCrud;
-use Automattic\WordpressMcp\Tools\McpSiteInfo;
-use Automattic\WordpressMcp\Tools\McpUsersTools;
-use Automattic\WordpressMcp\Tools\McpWooOrders;
 use Automattic\WordpressMcp\Tools\McpWooProducts;
-use Automattic\WordpressMcp\Tools\McpPagesTools;
-use Automattic\WordpressMcp\Tools\McpSettingsTools;
-use Automattic\WordpressMcp\Tools\McpMediaTools;
-use Automattic\WordpressMcp\Prompts\McpGetSiteInfo as McpGetSiteInfoPrompt;
 use Automattic\WordpressMcp\Prompts\McpAnalyzeSales;
-use Automattic\WordpressMcp\Resources\McpPluginInfoResource;
-use Automattic\WordpressMcp\Resources\McpThemeInfoResource;
-use Automattic\WordpressMcp\Resources\McpUserInfoResource;
-use Automattic\WordpressMcp\Resources\McpSiteSettingsResource;
 use Automattic\WordpressMcp\Resources\McpWooSearchGuide;
 
 use InvalidArgumentException;
@@ -27,7 +13,6 @@ use InvalidArgumentException;
 use Automattic\WordpressMcp\Tools\McpWooCategories;
 use Automattic\WordpressMcp\Tools\McpWooTags;
 use Automattic\WordpressMcp\Tools\McpWooIntentAnalyzer;
-
 use Automattic\WordpressMcp\Tools\McpWooReviews;
 use Automattic\WordpressMcp\Tools\McpWooAttributes;
 use Automattic\WordpressMcp\Tools\McpWooShipping;
@@ -37,7 +22,7 @@ use Automattic\WordpressMcp\Tools\McpWooSystemStatus;
 use Automattic\WordpressMcp\Tools\McpWooIntelligentSearch;
 
 /**
- * WordPress MCP
+ * WordPress MCP - WooCommerce Only
  *
  * @package WpMcp
  */
@@ -91,7 +76,6 @@ class WpMcp {
 	 * @var string
 	 */
 	private string $namespace = 'wpmcp/v1';
-
 
 	/**
 	 * The instance.
@@ -181,51 +165,40 @@ class WpMcp {
 	}
 
 	/**
-	 * Initialize the default resources.
+	 * Initialize the default resources (WooCommerce only).
 	 */
 	private function init_default_resources(): void {
-		new McpGeneralSiteInfo();
-		new McpPluginInfoResource();
-		new McpThemeInfoResource();
-		new McpUserInfoResource();
-		new McpSiteSettingsResource();
 		new McpWooSearchGuide();
 	}
 
 	/**
-	 * Initialize the default tools.
+	 * Initialize the default tools (WooCommerce only).
 	 */
 	private function init_default_tools(): void {
-		new McpPostsTools();
-		new McpSiteInfo();
-		new McpUsersTools();
+		// Core WooCommerce tools
 		new McpWooProducts();
-		new McpWooOrders();
-		new McpPagesTools();
-		new McpSettingsTools();
-		new McpMediaTools();
-		new McpCustomPostTypesTools();
-		new McpRestApiCrud();
-
 		new McpWooCategories();
-    	new McpWooTags(); 
-    	new McpWooIntentAnalyzer();
+		new McpWooTags(); 
+		new McpWooIntentAnalyzer();
 		new McpWooIntelligentSearch();
-
+		
+		// Additional WooCommerce tools
 		new McpWooReviews();
 		new McpWooAttributes();
 		new McpWooShipping();
 		new McpWooTaxes();
 		new McpWooPaymentGateways();
 		new McpWooSystemStatus();
+		
+		// Keep REST API CRUD for experimental access
+		new McpRestApiCrud();
 	}
 
 	/**
-	 * Initialize the default prompts.
+	 * Initialize the default prompts (WooCommerce only).
 	 */
 	private function init_default_prompts(): void {
-		new McpGetSiteInfoPrompt();
-		new McpAnalyzeSales();
+		new McpAnalyzeSales(); // Only WooCommerce sales analysis
 	}
 
 	/**
