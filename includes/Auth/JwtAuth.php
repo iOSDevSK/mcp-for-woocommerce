@@ -48,7 +48,7 @@ class JwtAuth {
 	 *
 	 * @var int
 	 */
-	private const JWT_ACCESS_EXP_MAX = 86400; // 1 day.
+	private const JWT_ACCESS_EXP_MAX = 31536000; // 365 days.
 
 	/**
 	 * Option name for storing active tokens.
@@ -127,7 +127,7 @@ class JwtAuth {
 					),
 					'expires_in' => array(
 						'type'        => 'integer',
-						'description' => 'Token expiration time in seconds (3600-86400)',
+						'description' => 'Token expiration time in seconds (3600-31536000)',
 						'required'    => false,
 						'minimum'     => self::JWT_ACCESS_EXP_MIN,
 						'maximum'     => self::JWT_ACCESS_EXP_MAX,
@@ -182,7 +182,7 @@ class JwtAuth {
 			return new WP_Error(
 				'invalid_expiration',
 				sprintf(
-					'Token expiration must be between %d seconds (1 hour) and %d seconds (1 day)',
+					'Token expiration must be between %d seconds (1 hour) and %d seconds (365 days)',
 					self::JWT_ACCESS_EXP_MIN,
 					self::JWT_ACCESS_EXP_MAX
 				),

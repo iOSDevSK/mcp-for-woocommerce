@@ -5,6 +5,7 @@ import {
 	Button,
 	TextareaControl,
 	SelectControl,
+	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
@@ -17,6 +18,8 @@ const AuthenticationTokensTab = () => {
 	const [ error, setError ] = useState( null );
 	const [ copySuccess, setCopySuccess ] = useState( false );
 	const [ selectedDuration, setSelectedDuration ] = useState( 3600 ); // Default to 1 hour
+	const [ customDays, setCustomDays ] = useState( 1 );
+	const [ showCustomInput, setShowCustomInput ] = useState( false );
 
 	// Duration options for token expiration
 	const durationOptions = [
@@ -25,6 +28,7 @@ const AuthenticationTokensTab = () => {
 		{ label: __( '6 hours', 'wordpress-mcp' ), value: 21600 },
 		{ label: __( '12 hours', 'wordpress-mcp' ), value: 43200 },
 		{ label: __( '24 hours (1 day)', 'wordpress-mcp' ), value: 86400 },
+		{ label: __( 'More...', 'wordpress-mcp' ), value: 'custom' },
 	];
 
 	useEffect( () => {
@@ -59,12 +63,21 @@ const AuthenticationTokensTab = () => {
 		setLoading( true );
 		setError( null );
 
+		// Calculate the duration based on selection
+		let duration;
+		if ( showCustomInput ) {
+			// Convert days to seconds (days * 24 hours * 60 minutes * 60 seconds)
+			duration = customDays * 24 * 60 * 60;
+		} else {
+			duration = selectedDuration;
+		}
+
 		try {
 			const response = await apiFetch( {
 				path: '/jwt-auth/v1/token',
 				method: 'POST',
 				data: {
-					expires_in: selectedDuration,
+					expires_in: duration,
 				},
 				includeCredentials: true,
 			} );
@@ -159,6 +172,16 @@ const AuthenticationTokensTab = () => {
 		return hours === 1
 			? __( '1 hour', 'wordpress-mcp' )
 			: `${ hours } ${ __( 'hours', 'wordpress-mcp' ) }`;
+	};
+
+	const handleDurationChange = ( value ) => {
+		if ( value === 'custom' ) {
+			setShowCustomInput( true );
+			setSelectedDuration( value );
+		} else {
+			setShowCustomInput( false );
+			setSelectedDuration( parseInt( value ) );
+		}
 	};
 
 	return (
@@ -328,15 +351,29 @@ const AuthenticationTokensTab = () => {
 							label={ __( 'Token Duration', 'wordpress-mcp' ) }
 							value={ selectedDuration }
 							options={ durationOptions }
-							onChange={ ( value ) =>
-								setSelectedDuration( parseInt( value ) )
-							}
+							onChange={ handleDurationChange }
 							help={ __(
 								'Choose how long the token will remain valid',
 								'wordpress-mcp'
 							) }
 						/>
 					</div>
+
+					{ showCustomInput && (
+						<div className="mcp-form-field">
+							<NumberControl
+								label={ __( 'Custom Duration (Days)', 'wordpress-mcp' ) }
+								value={ customDays }
+								onChange={ ( value ) => setCustomDays( Math.max( 1, parseInt( value ) || 1 ) ) }
+								min={ 1 }
+								max={ 365 }
+								help={ __(
+									'Enter the number of days (1-365) for token expiration',
+									'wordpress-mcp'
+								) }
+							/>
+						</div>
+					) }
 
 					<div className="mcp-form-field">
 						<Button
