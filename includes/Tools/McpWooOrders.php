@@ -8,7 +8,7 @@ use Automattic\WordpressMcp\Core\RegisterMcpTool;
 /**
  * Class McpWooOrders
  *
- * Provides WooCommerce-specific tools related to orders for the WordPress MCP plugin.
+ * Provides WooCommerce-specific readonly tools for reports and analytics.
  * Only registers tools if WooCommerce is active.
  */
 class McpWooOrders {
@@ -21,7 +21,7 @@ class McpWooOrders {
 	}
 
 	/**
-	 * Registers WooCommerce-specific tools for orders if WooCommerce is active.
+	 * Registers WooCommerce-specific readonly tools for reports if WooCommerce is active.
 	 *
 	 * @return void
 	 */
@@ -31,25 +31,7 @@ class McpWooOrders {
 			return;
 		}
 
-		// Orders search.
-		new RegisterMcpTool(
-			array(
-				'name'        => 'wc_orders_search',
-				'description' => 'Get a list of WooCommerce orders',
-				'type'        => 'read',
-				'rest_alias'  => array(
-					'route'  => '/wc/v3/orders',
-					'method' => 'GET',
-				),
-				'annotations' => array(
-					'title'         => 'Search Orders',
-					'readOnlyHint'  => true,
-					'openWorldHint' => false,
-				),
-			)
-		);
-
-		// Reports tools.
+		// Reports tools - public analytics data
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wc_reports_coupons_totals',

@@ -20,13 +20,21 @@ use Automattic\WordpressMcp\Resources\McpPluginInfoResource;
 use Automattic\WordpressMcp\Resources\McpThemeInfoResource;
 use Automattic\WordpressMcp\Resources\McpUserInfoResource;
 use Automattic\WordpressMcp\Resources\McpSiteSettingsResource;
+use Automattic\WordpressMcp\Resources\McpWooSearchGuide;
+
 use InvalidArgumentException;
 
 use Automattic\WordpressMcp\Tools\McpWooCategories;
 use Automattic\WordpressMcp\Tools\McpWooTags;
 use Automattic\WordpressMcp\Tools\McpWooIntentAnalyzer;
 
-use Automattic\WordpressMcp\Resources\McpWooSearchGuide;
+use Automattic\WordpressMcp\Tools\McpWooReviews;
+use Automattic\WordpressMcp\Tools\McpWooAttributes;
+use Automattic\WordpressMcp\Tools\McpWooShipping;
+use Automattic\WordpressMcp\Tools\McpWooTaxes;
+use Automattic\WordpressMcp\Tools\McpWooPaymentGateways;
+use Automattic\WordpressMcp\Tools\McpWooSystemStatus;
+use Automattic\WordpressMcp\Tools\McpWooIntelligentSearch;
 
 /**
  * WordPress MCP
@@ -202,6 +210,14 @@ class WpMcp {
 		new McpWooCategories();
     	new McpWooTags(); 
     	new McpWooIntentAnalyzer();
+		new McpWooIntelligentSearch();
+
+		new McpWooReviews();
+		new McpWooAttributes();
+		new McpWooShipping();
+		new McpWooTaxes();
+		new McpWooPaymentGateways();
+		new McpWooSystemStatus();
 	}
 
 	/**
