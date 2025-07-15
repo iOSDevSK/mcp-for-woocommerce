@@ -1,4 +1,4 @@
-# WordPress MCP
+# WordPress MCP - Modified
 
 [![Latest Release](https://img.shields.io/github/v/release/Automattic/wordpress-mcp)](https://github.com/Automattic/wordpress-mcp/releases)
 
