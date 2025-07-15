@@ -2,12 +2,13 @@
 
 [![Latest Release](https://img.shields.io/github/v/release/Automattic/wordpress-mcp)](https://github.com/Automattic/wordpress-mcp/releases)
 
-A comprehensive WordPress plugin that implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) to expose WordPress functionality through standardized interfaces. This plugin enables AI models and applications to interact with WordPress sites securely using multiple transport protocols and enterprise-grade authentication.
+A comprehensive WordPress plugin that implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) to expose WordPress and WooCommerce functionality through standardized interfaces. This plugin enables AI models and applications to interact with WordPress sites and e-commerce stores securely using multiple transport protocols and enterprise-grade authentication.
 
 ## ✨ Features
 
 -   🔄 **Dual Transport Protocols**: STDIO and HTTP-based (Streamable) transports
 -   🔐 **JWT Authentication**: Secure token-based authentication with management UI
+-   🛒 **WooCommerce Integration**: Complete e-commerce management with intelligent search
 -   🎛️ **Admin Interface**: React-based token management and settings dashboard
 -   🤖 **AI-Friendly APIs**: JSON-RPC 2.0 compliant endpoints for AI integration
 -   🏗️ **Extensible Architecture**: Custom tools, resources, and prompts support
@@ -195,6 +196,43 @@ The streamable transport provides a direct JSON-RPC 2.0 compliant endpoint, whil
 | `resources/read` | Read resource content    | Both              |
 | `prompts/list`   | List available prompts   | Both              |
 | `prompts/get`    | Get prompt template      | Both              |
+
+### 🛒 WooCommerce Tools
+
+The plugin provides comprehensive WooCommerce integration with the following tools:
+
+#### Product Management
+- **woo_list_products** - List products with filters and search
+- **woo_get_product** - Get detailed product information
+- **woo_create_product** - Create new products
+- **woo_update_product** - Update existing products
+- **woo_delete_product** - Delete products
+
+#### Order Management
+- **woo_list_orders** - List orders with filtering
+- **woo_get_order** - Get detailed order information
+- **woo_create_order** - Create new orders
+- **woo_update_order** - Update order status and details
+
+#### Taxonomy Management
+- **woo_list_categories** - Manage product categories
+- **woo_list_tags** - Manage product tags
+- **woo_list_attributes** - Manage product attributes
+
+#### Customer & Review Management
+- **woo_list_reviews** - Manage product reviews
+- **woo_create_review** - Create new reviews
+- **woo_update_review** - Update review status
+
+#### Store Configuration
+- **woo_list_shipping_methods** - Manage shipping methods
+- **woo_list_payment_gateways** - Manage payment gateways
+- **woo_list_tax_rates** - Manage tax rates
+- **woo_get_system_status** - Get store health information
+
+#### Advanced Features
+- **woo_intelligent_search** - AI-powered product search and recommendations
+- **woo_analyze_intent** - Analyze customer intent for better product matching
 
 ### 🧪 Experimental REST API CRUD Tools
 
