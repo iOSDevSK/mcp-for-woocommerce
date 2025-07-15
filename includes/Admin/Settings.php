@@ -134,6 +134,13 @@ class Settings {
 					'settingsError'                    => __( 'Error saving settings. Please try again.', 'wordpress-mcp' ),
 					'toolEnabled'                      => __( 'Tool %1$s has been %2$s.', 'wordpress-mcp' ),
 					'toolDisabled'                     => __( 'Tool %1$s has been %2$s.', 'wordpress-mcp' ),
+
+					'neverExpireWarning'               => __( 'Never-expiring tokens pose significant security risks. If compromised, they cannot be invalidated through expiration. Only use this option if you fully understand the security implications and have proper token management procedures in place.', 'wordpress-mcp' ),
+					'neverExpires'                     => __( 'Never expires', 'wordpress-mcp' ),
+					'activeNeverExpires'               => __( 'Active (Never expires)', 'wordpress-mcp' ),
+					'thisTokenNeverExpires'            => __( 'This token never expires', 'wordpress-mcp' ),
+					'securityWarning'                  => __( 'Security Warning', 'wordpress-mcp' ),
+					'neverExpiringTokens'              => __( 'Never-Expiring Tokens:', 'wordpress-mcp' ),
 				),
 			)
 		);

@@ -66,7 +66,7 @@ npm install && npm run build
 ### JWT Token Generation
 
 1. Go to `Settings > WordPress MCP > Authentication Tokens`
-2. Select token duration (1-24 hours)
+2. Select token duration (1-24 hours) or never
 3. Click "Generate New Token"
 4. Copy the token for use in your MCP client
 
@@ -354,7 +354,7 @@ npm run start
 
 ### Best Practices
 
--   **Token Management**: Use shortest expiration time needed (1-24 hours)
+-   **Token Management**: Use shortest expiration time needed (1-24 hours) or never
 -   **User Permissions**: Tokens inherit user capabilities
 -   **Secure Storage**: Never commit tokens to repositories
 -   **Regular Cleanup**: Revoke unused tokens promptly

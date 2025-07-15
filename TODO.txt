@@ -1,0 +1,66 @@
+Na základe analyzácie WooCommerce REST API dokumentácie a tvojho kódu, tu je porovnanie a zistenie duplicít a chýbajúcich endpointov:
+Duplicitné endpointy v tvojich tools:
+V súboroch McpWooProducts.php a McpWooOrders.php máš niektoré endpointy zaregistrované duplicitne s tými, čo už poskytuje WooCommerce REST API:
+1. Product Categories (duplicitné)
+php// V McpWooProducts.php - DUPLICITNÉ s wc_get_categories v McpWooCategories.php
+'wc_list_product_categories' => '/wc/v3/products/categories' (GET)
+'wc_add_product_category' => '/wc/v3/products/categories' (POST)
+'wc_update_product_category' => '/wc/v3/products/categories/{id}' (PUT)
+'wc_delete_product_category' => '/wc/v3/products/categories/{id}' (DELETE)
+2. Product Tags (duplicitné)
+php// V McpWooProducts.php - DUPLICITNÉ s wc_get_tags v McpWooTags.php
+'wc_list_product_tags' => '/wc/v3/products/tags' (GET)
+'wc_add_product_tag' => '/wc/v3/products/tags' (POST)
+'wc_update_product_tag' => '/wc/v3/products/tags/{id}' (PUT)
+'wc_delete_product_tag' => '/wc/v3/products/tags/{id}' (DELETE)
+Chýbajúce bezpečné WooCommerce endpointy:
+Podľa WooCommerce REST API dokumentácie ti chýbajú tieto bezpečné endpointy WoocommerceWoocommerce:
+1. Shipping Zones (bezpečné - len čítanie dopravných informácií)
+php// Chýba ti:
+'/wc/v3/shipping/zones' (GET)
+'/wc/v3/shipping/zones/{id}' (GET)
+'/wc/v3/shipping/zones/{id}/methods' (GET)
+'/wc/v3/shipping/zones/{id}/locations' (GET)
+2. Product Reviews (bezpečné - verejné recenzie)
+php// Chýba ti:
+'/wc/v3/products/reviews' (GET) - môžeš mať aj v McpWooProducts.php
+'/wc/v3/products/reviews/{id}' (GET)
+3. Product Attributes (bezpečné)
+php// Chýba ti:
+'/wc/v3/products/attributes' (GET)
+'/wc/v3/products/attributes/{id}' (GET)
+'/wc/v3/products/attributes/{attribute_id}/terms' (GET)
+4. Tax Classes a Tax Rates (bezpečné - informácie o daniach)
+php// Chýba ti:
+'/wc/v3/taxes/classes' (GET)
+'/wc/v3/taxes' (GET)
+5. Payment Gateways (bezpečné - len info o dostupných platobných metódach)
+php// Chýba ti:
+'/wc/v3/payment_gateways' (GET)
+'/wc/v3/payment_gateways/{id}' (GET)
+6. System Status (užitočné pre debugging)
+php// Chýba ti:
+'/wc/v3/system_status' (GET)
+'/wc/v3/system_status/tools' (GET)
+Odporúčania:
+
+Odstráň duplicity z McpWooProducts.php:
+
+Zmaž wc_list_product_categories, wc_add_product_category, atď.
+Zmaž wc_list_product_tags, wc_add_product_tag, atď.
+Nechaj len tie v McpWooCategories.php a McpWooTags.php
+
+
+Pridaj chýbajúce bezpečné endpointy - vytvor nové súbory:
+
+McpWooShipping.php pre shipping zones
+McpWooReviews.php pre product reviews
+McpWooAttributes.php pre product attributes
+McpWooTaxes.php pre tax info
+McpWooPaymentGateways.php pre payment methods info
+McpWooSystemStatus.php pre system status
+
+
+Zachovaj tvoju existujúcu logiku pre wc_get_categories, wc_get_tags a wc_analyze_search_intent - tieto sú jedinečné a užitočné.
+
+Potrebuješ, aby som ti pomohol s implementáciou niektorých z týchto chýbajúcich endpointov?RetryClaude can make mistakes. Please double-check cited sources.

@@ -1,3 +1,5 @@
+// src/settings/AuthenticationTokensTab.js
+
 import React, { useState, useEffect } from 'react';
 import {
 	Card,
@@ -5,9 +7,8 @@ import {
 	Button,
 	TextareaControl,
 	SelectControl,
-	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { format } from 'date-fns';
 
@@ -18,18 +19,15 @@ const AuthenticationTokensTab = () => {
 	const [ error, setError ] = useState( null );
 	const [ copySuccess, setCopySuccess ] = useState( false );
 	const [ selectedDuration, setSelectedDuration ] = useState( 3600 ); // Default to 1 hour
-	const [ customDays, setCustomDays ] = useState( 1 );
-	const [ showCustomInput, setShowCustomInput ] = useState( false );
-	const [ maxDays, setMaxDays ] = useState( 30 ); // Default to 30 days
 
-	// Duration options for token expiration
+	// UPDATED: Duration options včetně "never"
 	const durationOptions = [
 		{ label: __( '1 hour', 'wordpress-mcp' ), value: 3600 },
 		{ label: __( '2 hours', 'wordpress-mcp' ), value: 7200 },
 		{ label: __( '6 hours', 'wordpress-mcp' ), value: 21600 },
 		{ label: __( '12 hours', 'wordpress-mcp' ), value: 43200 },
 		{ label: __( '24 hours (1 day)', 'wordpress-mcp' ), value: 86400 },
-		{ label: __( 'More...', 'wordpress-mcp' ), value: 'custom' },
+		{ label: __( '⚠️ Never expire (NOT RECOMMENDED)', 'wordpress-mcp' ), value: 'never' },
 	];
 
 	useEffect( () => {
@@ -47,13 +45,6 @@ const AuthenticationTokensTab = () => {
 		}
 	}, [ copySuccess ] );
 
-	// Adjust custom days if it exceeds the maximum when maxDays is updated
-	useEffect( () => {
-		if ( customDays > maxDays ) {
-			setCustomDays( maxDays );
-		}
-	}, [ maxDays, customDays ] );
-
 	const fetchTokens = async () => {
 		try {
 			const response = await apiFetch( {
@@ -61,41 +52,23 @@ const AuthenticationTokensTab = () => {
 				method: 'GET',
 				includeCredentials: true,
 			} );
-			
-			// Handle the new response format with nested data
-			if ( response.tokens ) {
-				setTokens( response.tokens );
-				if ( response.max_days ) {
-					setMaxDays( response.max_days );
-				}
-			} else {
-				// Fallback for old response format (just in case)
-				setTokens( response );
-			}
+			setTokens( response );
 		} catch ( err ) {
 			setError( __( 'Error fetching tokens', 'wordpress-mcp' ) );
 		}
 	};
 
+	// UPDATED: Generate token s podporou "never"
 	const generateToken = async () => {
 		setLoading( true );
 		setError( null );
-
-		// Calculate the duration based on selection
-		let duration;
-		if ( showCustomInput ) {
-			// Convert days to seconds (days * 24 hours * 60 minutes * 60 seconds)
-			duration = customDays * 24 * 60 * 60;
-		} else {
-			duration = selectedDuration;
-		}
 
 		try {
 			const response = await apiFetch( {
 				path: '/jwt-auth/v1/token',
 				method: 'POST',
 				data: {
-					expires_in: duration,
+					expires_in: selectedDuration,
 				},
 				includeCredentials: true,
 			} );
@@ -179,7 +152,17 @@ const AuthenticationTokensTab = () => {
 		return format( new Date( timestamp * 1000 ), 'PPpp' );
 	};
 
-	const formatDuration = ( seconds ) => {
+	// UPDATED: Format duration s podporou "never"
+	const formatDuration = ( value ) => {
+		if ( value === 'never' || value === null ) {
+			return __( 'Never expires', 'wordpress-mcp' );
+		}
+		
+		const seconds = parseInt( value );
+		if ( isNaN( seconds ) ) {
+			return __( 'Never expires', 'wordpress-mcp' );
+		}
+		
 		const hours = Math.floor( seconds / 3600 );
 		if ( hours >= 24 ) {
 			const days = Math.floor( hours / 24 );
@@ -190,16 +173,6 @@ const AuthenticationTokensTab = () => {
 		return hours === 1
 			? __( '1 hour', 'wordpress-mcp' )
 			: `${ hours } ${ __( 'hours', 'wordpress-mcp' ) }`;
-	};
-
-	const handleDurationChange = ( value ) => {
-		if ( value === 'custom' ) {
-			setShowCustomInput( true );
-			setSelectedDuration( value );
-		} else {
-			setShowCustomInput( false );
-			setSelectedDuration( parseInt( value ) );
-		}
 	};
 
 	return (
@@ -317,6 +290,48 @@ const AuthenticationTokensTab = () => {
 							</ul>
 						</div>
 
+						{/* NOVÉ: Never-expiring tokens warning */}
+						<div
+							style={ {
+								padding: '12px',
+								backgroundColor: '#f8d7da',
+								border: '1px solid #f5c6cb',
+								borderRadius: '4px',
+								marginTop: '12px',
+								marginBottom: '12px',
+							} }
+						>
+							<strong>
+								{ __( '🚨 Never-Expiring Tokens:', 'wordpress-mcp' ) }
+							</strong>
+							<ul style={ { marginLeft: '20px', marginTop: '8px' } }>
+								<li>
+									{ __(
+										'Should only be used in highly controlled environments',
+										'wordpress-mcp'
+									) }
+								</li>
+								<li>
+									{ __(
+										'Must be manually revoked if compromised',
+										'wordpress-mcp'
+									) }
+								</li>
+								<li>
+									{ __(
+										'Consider using long-lived tokens (24 hours) instead',
+										'wordpress-mcp'
+									) }
+								</li>
+								<li>
+									{ __(
+										'Regularly audit and rotate never-expiring tokens',
+										'wordpress-mcp'
+									) }
+								</li>
+							</ul>
+						</div>
+
 						<div
 							style={ {
 								padding: '12px',
@@ -369,7 +384,10 @@ const AuthenticationTokensTab = () => {
 							label={ __( 'Token Duration', 'wordpress-mcp' ) }
 							value={ selectedDuration }
 							options={ durationOptions }
-							onChange={ handleDurationChange }
+							onChange={ ( value ) => {
+								// UPDATED: Handle both string and number values
+								setSelectedDuration( value );
+							} }
 							help={ __(
 								'Choose how long the token will remain valid',
 								'wordpress-mcp'
@@ -377,19 +395,29 @@ const AuthenticationTokensTab = () => {
 						/>
 					</div>
 
-					{ showCustomInput && (
-						<div className="mcp-form-field">
-							<NumberControl
-								label={ __( 'Custom Duration (Days)', 'wordpress-mcp' ) }
-								value={ customDays }
-								onChange={ ( value ) => setCustomDays( Math.max( 1, Math.min( maxDays, parseInt( value ) || 1 ) ) ) }
-								min={ 1 }
-								max={ maxDays }
-								help={ sprintf(
-									__( 'Enter the number of days (1-%d) for token expiration', 'wordpress-mcp' ),
-									maxDays
+					{/* NOVÉ: Security warning for never expire */}
+					{ selectedDuration === 'never' && (
+						<div
+							style={ {
+								padding: '12px',
+								backgroundColor: '#fff3cd',
+								border: '1px solid #ffeaa7',
+								borderRadius: '4px',
+								marginBottom: '12px',
+							} }
+						>
+							<strong>
+								{ __(
+									'⚠️ Security Warning:',
+									'wordpress-mcp'
 								) }
-							/>
+							</strong>
+							<p style={ { marginTop: '8px', marginBottom: '0' } }>
+								{ __(
+									'Never-expiring tokens pose significant security risks. If compromised, they cannot be invalidated through expiration. Only use this option if you fully understand the security implications and have proper token management procedures in place.',
+									'wordpress-mcp'
+								) }
+							</p>
 						</div>
 					) }
 
@@ -443,19 +471,22 @@ const AuthenticationTokensTab = () => {
 										</span>
 									) }
 								</div>
+								{/* UPDATED: Token description s podporou never expire */}
 								<p className="description">
-									{ token.expires_in
+									{ token.expires_in === 'never' || token.never_expire
+										? __( 'This token never expires', 'wordpress-mcp' )
+										: token.expires_in
 										? `${ __(
-												'Expires in',
-												'wordpress-mcp'
+											  'Expires in',
+											  'wordpress-mcp'
 										  ) } ${ formatDuration(
-												token.expires_in
+											  token.expires_in
 										  ) }`
 										: __(
-												'Expires in 1 hour',
-												'wordpress-mcp'
+											  'Expires in 1 hour',
+											  'wordpress-mcp'
 										  ) }
-									{ token.expires_at && (
+									{ token.expires_at && ! (token.never_expire || token.expires_in === 'never') && (
 										<span>
 											{ ' (' }
 											{ formatDate( token.expires_at ) }
@@ -498,13 +529,23 @@ const AuthenticationTokensTab = () => {
 										<td>
 											{ formatDate( token.issued_at ) }
 										</td>
+										{/* UPDATED: Expires At column s podporou never expire */}
 										<td>
-											{ formatDate( token.expires_at ) }
+											{ token.never_expire 
+												? __( 'Never expires', 'wordpress-mcp' )
+												: formatDate( token.expires_at ) 
+											}
 										</td>
+										{/* UPDATED: Status column s podporou never expire */}
 										<td>
 											{ token.revoked
 												? __(
 														'Revoked',
+														'wordpress-mcp'
+												  )
+												: token.never_expire
+												? __(
+														'Active (Never expires)',
 														'wordpress-mcp'
 												  )
 												: token.is_expired

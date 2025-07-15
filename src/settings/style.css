@@ -344,3 +344,63 @@
 	border: 1px solid #f5c6cb;
 	border-radius: 4px;
 }
+
+/* src/settings/style.css - pridaj na koniec súboru */
+
+/* Never expire token warnings */
+.mcp-never-expire-warning {
+	padding: 12px;
+	background-color: #f8d7da;
+	border: 1px solid #f5c6cb;
+	border-radius: 4px;
+	margin: 12px 0;
+}
+
+.mcp-never-expire-warning strong {
+	color: #721c24;
+}
+
+.mcp-security-warning {
+	padding: 12px;
+	background-color: #fff3cd;
+	border: 1px solid #ffeaa7;
+	border-radius: 4px;
+	margin: 12px 0;
+}
+
+.mcp-security-warning strong {
+	color: #856404;
+}
+
+/* Token status indicators */
+.mcp-token-status-never {
+	color: #dc3545;
+	font-weight: bold;
+}
+
+.mcp-token-status-active {
+	color: #28a745;
+}
+
+.mcp-token-status-expired {
+	color: #6c757d;
+}
+
+.mcp-token-status-revoked {
+	color: #dc3545;
+}
+
+/* Enhanced table styling for tokens */
+.mcp-tokens-list table td {
+	vertical-align: middle;
+}
+
+.mcp-tokens-list .token-never-expire {
+	background-color: #fff3cd;
+}
+
+/* Warning icon for never expire option */
+.mcp-duration-option-never {
+	color: #dc3545;
+	font-weight: bold;
+}

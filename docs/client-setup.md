@@ -14,7 +14,7 @@ WordPress MCP supports two transport protocols:
 ### JWT Tokens (Recommended)
 
 -   Generate tokens from `Settings > MCP > Authentication Tokens`
--   Tokens expire in 1-24 hours (configurable)
+-   Tokens expire in 1-24 hours (configurable) or never
 -   More secure than application passwords
 -   Required for Streamable transport
 
@@ -250,7 +250,7 @@ npx @modelcontextprotocol/inspector \
 ## Security Best Practices
 
 1. **Use JWT tokens** instead of application passwords when possible
-2. **Set shortest expiration time** needed for your use case (1-24 hours)
+2. **Set shortest expiration time** needed for your use case (1-24 hours) or never
 3. **Revoke unused tokens** promptly from the admin interface
 4. **Never commit tokens** to version control systems
 5. **Use HTTPS** for production environments
