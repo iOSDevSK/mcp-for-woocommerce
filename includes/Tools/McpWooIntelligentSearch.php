@@ -593,28 +593,52 @@ class McpWooIntelligentSearch {
                $product['short_description']
            );
 
+           // Build category text for matching
+           $category_text = '';
+           foreach ( $product['categories'] as $category ) {
+               $category_text .= strtolower( $category['name'] ) . ' ';
+           }
+
            // Score based on search term matches
            foreach ( $search_words as $word ) {
                if ( strlen( $word ) > 2 ) {
+                   $word_matches = 0;
+                   
                    // Title match gets highest score
                    if ( strpos( strtolower( $product['name'] ), $word ) !== false ) {
                        $score += 100;
+                       $word_matches++;
                    }
+                   
                    // Category match gets high score
-                   foreach ( $product['categories'] as $category ) {
-                       if ( strpos( strtolower( $category['name'] ), $word ) !== false ) {
-                           $score += 50;
-                       }
+                   if ( strpos( $category_text, $word ) !== false ) {
+                       $score += 50;
+                       $word_matches++;
                    }
-                   // Description match gets moderate score
-                   if ( strpos( $product_text, $word ) !== false ) {
+                   
+                   // Description match gets moderate score (only if not found in title/category)
+                   if ( $word_matches === 0 && strpos( $product_text, $word ) !== false ) {
                        $score += 10;
+                       $word_matches++;
+                   }
+                   
+                   // Bonus for exact word matches in product name
+                   if ( $this->word_boundary_match( $word, strtolower( $product['name'] ) ) ) {
+                       $score += 50;
+                   }
+                   
+                   // Bonus for exact word matches in category
+                   if ( $this->word_boundary_match( $word, $category_text ) ) {
+                       $score += 30;
                    }
                }
            }
 
-           // Only include products with some relevance
-           if ( $score > 0 ) {
+           // Require minimum relevance for multi-word searches
+           $min_score = count( $search_words ) > 1 ? 50 : 10;
+           
+           // Only include products with sufficient relevance
+           if ( $score >= $min_score ) {
                $scored_products[] = array(
                    'product' => $product,
                    'score' => $score,
