@@ -5,6 +5,7 @@ namespace Automattic\WordpressMcp\Tools;
 
 use Automattic\WordpressMcp\Core\RegisterMcpTool;
 use WP_Error;
+use Exception;
 
 /**
 * Class McpWooIntelligentSearch
@@ -424,7 +425,7 @@ class McpWooIntelligentSearch {
        );
 
        if ( ! empty( $broader_categories ) ) {
-           $params['category'] = array( $broader_categories[0]['id'] );
+           $params['category'] = $broader_categories[0]['id'];
        }
 
        return $params;
