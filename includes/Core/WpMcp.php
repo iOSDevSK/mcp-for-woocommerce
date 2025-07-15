@@ -19,7 +19,7 @@ use Automattic\WordpressMcp\Tools\McpWooShipping;
 use Automattic\WordpressMcp\Tools\McpWooTaxes;
 use Automattic\WordpressMcp\Tools\McpWooPaymentGateways;
 use Automattic\WordpressMcp\Tools\McpWooSystemStatus;
-// use Automattic\WordpressMcp\Tools\McpWooIntelligentSearch;
+use Automattic\WordpressMcp\Tools\McpWooIntelligentSearch;
 
 /**
  * WordPress MCP - WooCommerce Only
@@ -180,7 +180,7 @@ class WpMcp {
 		new McpWooCategories();
 		new McpWooTags(); 
 		new McpWooIntentAnalyzer();
-		// new McpWooIntelligentSearch();
+		new McpWooIntelligentSearch();
 		
 		// Additional WooCommerce tools
 		new McpWooReviews();
