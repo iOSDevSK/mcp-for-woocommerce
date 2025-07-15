@@ -246,7 +246,7 @@ class McpWooIntelligentSearch {
     */
    private function match_categories( string $query, array $categories ): array {
        $matches = array();
-       $query_words = explode( ' ', $query );
+       $query_words = explode( ' ', strtolower( $query ) );
 
        foreach ( $categories as $category ) {
            $category_name = strtolower( $category['name'] ?? '' );
@@ -257,37 +257,59 @@ class McpWooIntelligentSearch {
                continue;
            }
 
-           // Exact match
+           $confidence = 0;
+           $match_type = '';
+
+           // Check for exact word matches
            foreach ( $query_words as $word ) {
                if ( strlen( $word ) > 2 ) {
-                   if ( strpos( $category_name, $word ) !== false || strpos( $category_slug, $word ) !== false ) {
-                       $matches[] = array(
-                           'id' => $category['id'],
-                           'name' => $category['name'],
-                           'slug' => $category['slug'],
-                           'match_type' => 'exact',
-                           'confidence' => 1.0,
-                       );
+                   // Direct exact match (highest confidence)
+                   if ( $word === $category_name || $word === $category_slug ) {
+                       $confidence = 1.0;
+                       $match_type = 'exact';
                        break;
+                   }
+                   // Word boundaries match (high confidence)
+                   elseif ( $this->word_boundary_match( $word, $category_name ) || $this->word_boundary_match( $word, $category_slug ) ) {
+                       $confidence = max( $confidence, 0.9 );
+                       $match_type = 'word_boundary';
+                   }
+                   // Substring match (medium confidence)
+                   elseif ( strpos( $category_name, $word ) !== false || strpos( $category_slug, $word ) !== false ) {
+                       $confidence = max( $confidence, 0.7 );
+                       $match_type = 'substring';
+                   }
+                   // Partial word match (lower confidence)
+                   elseif ( $this->partial_word_match( $word, $category_name ) || $this->partial_word_match( $word, $category_slug ) ) {
+                       $confidence = max( $confidence, 0.6 );
+                       $match_type = 'partial';
                    }
                }
            }
 
-           // Fuzzy match for typos
-           foreach ( $query_words as $word ) {
-               if ( strlen( $word ) > 3 ) {
-                   $similarity = 0;
-                   similar_text( $word, $category_name, $similarity );
-                   if ( $similarity > 60 ) {
-                       $matches[] = array(
-                           'id' => $category['id'],
-                           'name' => $category['name'],
-                           'slug' => $category['slug'],
-                           'match_type' => 'fuzzy',
-                           'confidence' => $similarity / 100,
-                       );
+           // Fuzzy match for typos (only if no better match found)
+           if ( $confidence < 0.6 ) {
+               foreach ( $query_words as $word ) {
+                   if ( strlen( $word ) > 3 ) {
+                       $similarity = 0;
+                       similar_text( $word, $category_name, $similarity );
+                       if ( $similarity > 65 ) {
+                           $confidence = max( $confidence, $similarity / 100 );
+                           $match_type = 'fuzzy';
+                       }
                    }
                }
+           }
+
+           // Only add if we have a reasonable confidence
+           if ( $confidence > 0.5 ) {
+               $matches[] = array(
+                   'id' => $category['id'],
+                   'name' => $category['name'],
+                   'slug' => $category['slug'],
+                   'match_type' => $match_type,
+                   'confidence' => $confidence,
+               );
            }
        }
 
@@ -304,6 +326,26 @@ class McpWooIntelligentSearch {
        } );
 
        return array_slice( $unique_matches, 0, 3 ); // Return top 3 matches
+   }
+
+   /**
+    * Check if word matches at word boundaries
+    */
+   private function word_boundary_match( string $word, string $text ): bool {
+       return preg_match( '/\b' . preg_quote( $word, '/' ) . '\b/i', $text );
+   }
+
+   /**
+    * Check if word partially matches longer words
+    */
+   private function partial_word_match( string $word, string $text ): bool {
+       // Check if word is a meaningful part of a longer word
+       if ( strlen( $word ) < 4 ) {
+           return false;
+       }
+       
+       // Match if word is at the beginning or end of a word
+       return preg_match( '/\b' . preg_quote( $word, '/' ) . '|' . preg_quote( $word, '/' ) . '\b/i', $text );
    }
 
    /**
@@ -435,20 +477,33 @@ class McpWooIntelligentSearch {
     * Build general search parameters
     */
    private function build_general_search( string $query, int $per_page, int $page ): array {
-       return array(
-           'search' => $this->extract_search_terms( $query ),
-           'limit' => $per_page,
+       $search_terms = $this->extract_search_terms( $query );
+       
+       // For general search, also try to match categories if we can identify them
+       $categories = $this->get_categories_safe();
+       $matched_categories = $this->match_categories( $query, $categories );
+       
+       $params = array(
+           'search' => $search_terms,
+           'limit' => $per_page * 2, // Get more results for filtering
            'page' => $page,
            'status' => 'publish',
        );
+       
+       // If we found a category match, prioritize it
+       if ( ! empty( $matched_categories ) && $matched_categories[0]['confidence'] > 0.7 ) {
+           $params['category'] = $matched_categories[0]['id'];
+       }
+       
+       return $params;
    }
 
    /**
     * Extract clean search terms from query
     */
    private function extract_search_terms( string $query ): string {
-       // Remove common filter words
-       $filter_words = array( 'cheapest', 'expensive', 'newest', 'latest', 'on', 'sale', 'discount', 'in', 'with', 'the', 'a', 'an' );
+       // Remove common filter words but preserve important descriptive words like colors
+       $filter_words = array( 'cheapest', 'expensive', 'newest', 'latest', 'on', 'sale', 'discount', 'the', 'a', 'an' );
        $words = explode( ' ', strtolower( $query ) );
        $clean_words = array_diff( $words, $filter_words );
        
@@ -496,6 +551,17 @@ class McpWooIntelligentSearch {
                }
            }
 
+           // Apply relevance filtering if we have search terms
+           if ( isset( $params['search'] ) && ! empty( $params['search'] ) ) {
+               $products_array = $this->filter_by_relevance( $products_array, $params['search'] );
+           }
+
+           // Limit results to requested amount
+           $limit = $params['limit'] ?? 20;
+           if ( $limit < count( $products_array ) ) {
+               $products_array = array_slice( $products_array, 0, $limit );
+           }
+
            return array(
                'products' => $products_array,
                'total' => count( $products_array ),
@@ -510,6 +576,61 @@ class McpWooIntelligentSearch {
                'total_pages' => 0,
            );
        }
+   }
+
+   /**
+    * Filter products by relevance to search terms
+    */
+   private function filter_by_relevance( array $products, string $search_terms ): array {
+       $search_words = explode( ' ', strtolower( $search_terms ) );
+       $scored_products = array();
+
+       foreach ( $products as $product ) {
+           $score = 0;
+           $product_text = strtolower( 
+               $product['name'] . ' ' . 
+               $product['description'] . ' ' . 
+               $product['short_description']
+           );
+
+           // Score based on search term matches
+           foreach ( $search_words as $word ) {
+               if ( strlen( $word ) > 2 ) {
+                   // Title match gets highest score
+                   if ( strpos( strtolower( $product['name'] ), $word ) !== false ) {
+                       $score += 100;
+                   }
+                   // Category match gets high score
+                   foreach ( $product['categories'] as $category ) {
+                       if ( strpos( strtolower( $category['name'] ), $word ) !== false ) {
+                           $score += 50;
+                       }
+                   }
+                   // Description match gets moderate score
+                   if ( strpos( $product_text, $word ) !== false ) {
+                       $score += 10;
+                   }
+               }
+           }
+
+           // Only include products with some relevance
+           if ( $score > 0 ) {
+               $scored_products[] = array(
+                   'product' => $product,
+                   'score' => $score,
+               );
+           }
+       }
+
+       // Sort by score (highest first)
+       usort( $scored_products, function( $a, $b ) {
+           return $b['score'] <=> $a['score'];
+       } );
+
+       // Return only the products (without scores)
+       return array_map( function( $item ) {
+           return $item['product'];
+       }, $scored_products );
    }
 
    /**
