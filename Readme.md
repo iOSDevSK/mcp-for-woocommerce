@@ -2,12 +2,13 @@
 
 [![Latest Release](https://img.shields.io/github/v/release/Automattic/wordpress-mcp)](https://github.com/Automattic/wordpress-mcp/releases)
 
-A comprehensive WordPress plugin that implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) to expose WordPress functionality through standardized interfaces. This plugin enables AI models and applications to interact with WordPress sites securely using multiple transport protocols and enterprise-grade authentication.
+A comprehensive WordPress plugin that implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) to expose WordPress and WooCommerce functionality through standardized interfaces. This plugin enables AI models and applications to interact with WordPress sites and e-commerce stores securely using multiple transport protocols and enterprise-grade authentication.
 
 ## ✨ Features
 
 -   🔄 **Dual Transport Protocols**: STDIO and HTTP-based (Streamable) transports
 -   🔐 **JWT Authentication**: Secure token-based authentication with management UI
+-   🛒 **WooCommerce Integration**: Complete e-commerce management with intelligent search
 -   🎛️ **Admin Interface**: React-based token management and settings dashboard
 -   🤖 **AI-Friendly APIs**: JSON-RPC 2.0 compliant endpoints for AI integration
 -   🏗️ **Extensible Architecture**: Custom tools, resources, and prompts support
@@ -184,6 +185,24 @@ This plugin works seamlessly with MCP-compatible clients in two ways:
 
 The streamable transport provides a direct JSON-RPC 2.0 compliant endpoint, while the proxy offers additional features like WooCommerce integration, enhanced logging, and compatibility with legacy authentication methods.
 
+### 🧠 Intelligent Search System
+
+The plugin features a sophisticated 5-stage fallback search system that ensures **no empty results**:
+
+1. **Stage 1**: Full search with all filters (price, sale, category, intent)
+2. **Stage 2**: Category-only search (removes restrictive filters)
+3. **Stage 3**: Broader/parent category search
+4. **Stage 4**: General text search across all products
+5. **Stage 5**: Show alternatives and suggestions
+
+**Key Features:**
+- 🔍 **Intent Analysis**: Detects price preferences, temporal queries, promotional intent
+- 🌐 **Multi-language Support**: Slovak and English pattern recognition
+- 🎯 **Fuzzy Matching**: Category and tag matching with confidence scores
+- 💰 **Multi-currency Support**: Handles 20+ currencies in price detection
+- 📊 **Progressive Fallback**: Automatically broadens search when no results found
+- 🔗 **Product Links**: Always includes direct product page links (permalink field)
+
 ### Available MCP Methods
 
 | Method           | Description              | Transport Support |
@@ -195,6 +214,65 @@ The streamable transport provides a direct JSON-RPC 2.0 compliant endpoint, whil
 | `resources/read` | Read resource content    | Both              |
 | `prompts/list`   | List available prompts   | Both              |
 | `prompts/get`    | Get prompt template      | Both              |
+
+### 🛒 WooCommerce Tools
+
+The plugin provides comprehensive WooCommerce integration with the following tools:
+
+#### Core Product Tools
+- **wc_products_search** - Search and filter products with pagination
+- **wc_get_product** - Get individual product details by ID
+- **wc_get_product_variations** - Access product variations for variable products
+- **wc_get_product_variation** - Get specific variation details
+
+#### Advanced Product Search
+- **wc_intelligent_search** - 🧠 AI-powered product search with 5-stage fallback strategy
+- **wc_analyze_search_intent_helper** - Analyze user search queries for optimal parameters
+- **wc_get_products_by_brand** - Get products by brand name (auto-detects taxonomy)
+- **wc_get_products_by_category** - Get products by category name or slug
+- **wc_get_products_by_attributes** - Get products by custom attributes (color, size, etc.)
+- **wc_get_products_filtered** - Get products with multiple filters (brand, category, price)
+- **wc_get_product_detailed** - Get single product by ID with complete details
+
+#### Store Taxonomy & Organization
+- **wc_get_categories** - Get all product categories dynamically
+- **wc_get_tags** - Get all product tags dynamically
+- **wc_get_product_attributes** - Get all product attributes (Color, Size, Material, etc.)
+- **wc_get_product_attribute** - Get specific attribute details by ID
+- **wc_get_attribute_terms** - Get attribute terms (e.g., Red, Blue for Color)
+
+#### Customer Reviews
+- **wc_get_product_reviews** - Get product reviews with filtering and pagination
+- **wc_get_product_review** - Get specific review by ID
+
+#### Store Configuration
+- **wc_get_shipping_zones** - Get all shipping zones and coverage areas
+- **wc_get_shipping_zone** - Get specific shipping zone details
+- **wc_get_shipping_methods** - Get shipping methods for zones
+- **wc_get_shipping_locations** - Get shipping locations (countries/states)
+- **wc_get_payment_gateways** - Get all available payment gateways
+- **wc_get_payment_gateway** - Get specific payment gateway details
+- **wc_get_tax_classes** - Get all tax classes
+- **wc_get_tax_rates** - Get tax rates with filtering
+- **wc_get_system_status** - Get WooCommerce system status and environment info
+- **wc_get_system_tools** - Get available system tools and utilities
+
+#### Intelligence & Analytics
+- **wc_analyze_search_intent** - 🎯 Universal intent analysis for search queries
+  - Supports multiple languages (Slovak/English patterns)
+  - Fuzzy category and tag matching with confidence scores
+  - Detects price, temporal, and promotional intent
+  - Returns optimized search parameters
+
+#### Resources & Documentation
+- **woocommerce://search-guide** - 📚 Comprehensive search guide resource
+  - Universal 4-step search workflow
+  - 5-stage fallback strategy documentation
+  - Intent pattern recognition guide
+  - Performance optimization tips
+
+#### Prompts
+- **analyze-sales** - Analyze WooCommerce sales data with time period analysis
 
 ### 🧪 Experimental REST API CRUD Tools
 
@@ -414,6 +492,32 @@ The plugin provides granular control over CRUD operations:
 -   **Enable REST API CRUD Tools**: 🧪 Enable experimental generic REST API access tools
 
 ⚠️ **Security Note**: Delete operations can permanently remove data. Only enable delete tools if you trust all users with MCP access.
+
+## 🏗️ Architecture & Technical Features
+
+### Modern WordPress Integration
+- **Conditional Registration**: All WooCommerce tools auto-register only when WooCommerce is active
+- **Permission Management**: Granular capability-based access control
+- **REST API Integration**: Uses WooCommerce REST API v3 endpoints for standardized data access
+- **Custom Callbacks**: Advanced tools use optimized PHP callbacks for performance
+
+### Performance & Reliability
+- **Error Handling**: Comprehensive error handling with graceful fallbacks
+- **Safe Operations**: All WooCommerce tools are designed for read-only operations
+- **Pagination Support**: Built-in pagination for large datasets
+- **Debug Mode**: Comprehensive debugging capabilities for troubleshooting
+
+### Universal Design Principles
+- **Store Agnostic**: Works with any product type and store configuration
+- **Taxonomy Flexible**: Auto-detects brand implementation (attributes, categories, custom taxonomies)
+- **Multi-language Ready**: Supports multiple languages in search patterns
+- **Currency Universal**: Handles 20+ international currencies in price detection
+
+### Advanced Intelligence Features
+- **Intent Pattern Recognition**: Detects user intent from natural language queries
+- **Fuzzy Category Matching**: Handles spelling variations and similar terms
+- **Progressive Search Strategy**: 5-stage fallback ensures no empty results
+- **Confidence Scoring**: Provides match confidence for better AI decision-making
 
 ## 🤝 Contributing
 
