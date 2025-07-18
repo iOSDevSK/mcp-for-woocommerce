@@ -51,16 +51,16 @@ class McpWooShipping {
             'description' => 'Get details about a specific WooCommerce shipping zone',
             'type' => 'read',
             'rest_alias' => [
-                'route' => self::WC_API_NAMESPACE . '/shipping/zones/(?P<id>[1-9]\d{0,9})',
+                'route' => self::WC_API_NAMESPACE . '/shipping/zones/(?P<id>[0-9]\d{0,9})',
                 'method' => 'GET',
                 'inputSchemaReplacements' => [
                     'required' => ['id'],
                     'properties' => [
                         'id' => [
                             'type' => 'integer',
-                            'minimum' => 1,
+                            'minimum' => 0,
                             'maximum' => 9999999999,
-                            'description' => 'Shipping zone ID (positive integer)'
+                            'description' => 'Shipping zone ID (non-negative integer, 0 for default zone)'
                         ]
                     ]
                 ]
@@ -83,9 +83,9 @@ class McpWooShipping {
                 'properties' => [
                     'zone_id' => [
                         'type' => 'integer',
-                        'minimum' => 1,
+                        'minimum' => 0,
                         'maximum' => 9999999999,
-                        'description' => 'Shipping zone ID (positive integer)'
+                        'description' => 'Shipping zone ID (non-negative integer, 0 for default zone)'
                     ]
                 ],
                 'required' => ['zone_id']
@@ -102,16 +102,16 @@ class McpWooShipping {
             'description' => 'Get all locations (countries/states) covered by a specific shipping zone',
             'type' => 'read',
             'rest_alias' => [
-                'route' => self::WC_API_NAMESPACE . '/shipping/zones/(?P<zone_id>[1-9]\d{0,9})/locations',
+                'route' => self::WC_API_NAMESPACE . '/shipping/zones/(?P<zone_id>[0-9]\d{0,9})/locations',
                 'method' => 'GET',
                 'inputSchemaReplacements' => [
                     'required' => ['zone_id'],
                     'properties' => [
                         'zone_id' => [
                             'type' => 'integer',
-                            'minimum' => 1,
+                            'minimum' => 0,
                             'maximum' => 9999999999,
-                            'description' => 'Shipping zone ID (positive integer)'
+                            'description' => 'Shipping zone ID (non-negative integer, 0 for default zone)'
                         ]
                     ]
                 ]
