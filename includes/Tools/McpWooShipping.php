@@ -201,7 +201,7 @@ class McpWooShipping {
      */
     public function get_all_shipping_methods(): array {
         if (!class_exists('WC_Shipping_Zones')) {
-            return [];
+            throw new \Exception('WooCommerce shipping zones not available');
         }
 
         $all_methods = [];
@@ -267,13 +267,13 @@ class McpWooShipping {
             
             if (!class_exists('WC_Shipping_Zones')) {
                 error_log("McpWooShipping: WC_Shipping_Zones class not found");
-                return [];
+                throw new \Exception('WooCommerce shipping zones not available');
             }
 
             $zone_id = $params['id'] ?? 0;
             if (!is_numeric($zone_id) || $zone_id < 0) {
                 error_log("McpWooShipping: Invalid zone_id: " . $zone_id);
-                return [];
+                throw new \Exception('Invalid zone ID: ' . $zone_id);
             }
 
             $zone_id = (int) $zone_id;
@@ -282,14 +282,14 @@ class McpWooShipping {
             // Check if zone exists
             if (!self::validate_zone_exists($zone_id)) {
                 error_log("McpWooShipping: Zone {$zone_id} does not exist");
-                return [];
+                throw new \Exception('Zone does not exist: ' . $zone_id);
             }
 
             // Get the zone
             $zone = \WC_Shipping_Zones::get_zone($zone_id);
             if (!$zone) {
                 error_log("McpWooShipping: Could not get zone object for zone_id: " . $zone_id);
-                return [];
+                throw new \Exception('Could not get zone object for zone ID: ' . $zone_id);
             }
 
             // Build zone data
@@ -335,13 +335,13 @@ class McpWooShipping {
             
             if (!class_exists('WC_Shipping_Zones')) {
                 error_log("McpWooShipping: WC_Shipping_Zones class not found");
-                return [];
+                throw new \Exception('WooCommerce shipping zones not available');
             }
 
             $zone_id = $params['zone_id'] ?? 0;
             if (!is_numeric($zone_id) || $zone_id < 0) {
                 error_log("McpWooShipping: Invalid zone_id: " . $zone_id);
-                return [];
+                throw new \Exception('Invalid zone ID: ' . $zone_id);
             }
 
             $zone_id = (int) $zone_id;
@@ -350,20 +350,20 @@ class McpWooShipping {
             // Check if zone exists
             if (!self::validate_zone_exists($zone_id)) {
                 error_log("McpWooShipping: Zone {$zone_id} does not exist");
-                return [];
+                throw new \Exception('Zone does not exist: ' . $zone_id);
             }
 
             // Get the zone and its methods
             $zone = \WC_Shipping_Zones::get_zone($zone_id);
             if (!$zone) {
                 error_log("McpWooShipping: Could not get zone object for zone_id: " . $zone_id);
-                return [];
+                throw new \Exception('Could not get zone object for zone ID: ' . $zone_id);
             }
             
             $methods = $zone->get_shipping_methods();
             if (!$methods) {
                 error_log("McpWooShipping: No methods found for zone_id: " . $zone_id);
-                return [];
+                throw new \Exception('No shipping methods found for zone ID: ' . $zone_id);
             }
 
             $shipping_methods = [];
