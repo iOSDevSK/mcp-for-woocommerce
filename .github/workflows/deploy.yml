@@ -17,6 +17,11 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           cd /var/www/html/wp-content/plugins/woo-mcp
+          
+          # Stash any local changes to avoid conflicts
+          git stash push -m "Auto-stash before deployment" || true
+          
+          # Pull latest changes
           git pull origin main
           
           # Clear PHP OPcache to ensure updated code is loaded
