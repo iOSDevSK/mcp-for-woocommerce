@@ -202,7 +202,7 @@ class McpWooShipping {
      */
     public function get_all_shipping_methods(): array {
         if (!class_exists('WC_Shipping_Zones')) {
-            return ['error' => 'WooCommerce Shipping Zones not available'];
+            return [];
         }
 
         $all_methods = [];
@@ -263,42 +263,55 @@ class McpWooShipping {
      * @return array
      */
     public function get_shipping_methods_safe(array $params): array {
-        if (!class_exists('WC_Shipping_Zones')) {
+        try {
+            if (!class_exists('WC_Shipping_Zones')) {
+                return [];
+            }
+
+            $zone_id = $params['zone_id'] ?? 0;
+            if (!is_numeric($zone_id) || $zone_id < 0) {
+                return [];
+            }
+
+            $zone_id = (int) $zone_id;
+
+            // Check if zone exists
+            if (!self::validate_zone_exists($zone_id)) {
+                return [];
+            }
+
+            // Get the zone and its methods
+            $zone = \WC_Shipping_Zones::get_zone($zone_id);
+            if (!$zone) {
+                return [];
+            }
+            
+            $methods = $zone->get_shipping_methods();
+            if (!$methods) {
+                return [];
+            }
+
+            $shipping_methods = [];
+            foreach ($methods as $method) {
+                $shipping_methods[] = [
+                    'id' => $method->id,
+                    'instance_id' => $method->instance_id,
+                    'title' => $method->method_title,
+                    'order' => $method->method_order,
+                    'enabled' => $method->enabled === 'yes',
+                    'method_id' => $method->method_id,
+                    'method_title' => $method->method_title,
+                    'method_description' => $method->method_description,
+                    'settings' => $method->settings
+                ];
+            }
+
+            return $shipping_methods;
+        } catch (\Exception $e) {
+            // Log error but always return empty array to prevent JSON-RPC issues
+            error_log("McpWooShipping: Error in get_shipping_methods_safe: " . $e->getMessage());
             return [];
         }
-
-        $zone_id = $params['zone_id'] ?? 0;
-        if (!is_numeric($zone_id) || $zone_id < 0) {
-            return [];
-        }
-
-        $zone_id = (int) $zone_id;
-
-        // Check if zone exists
-        if (!self::validate_zone_exists($zone_id)) {
-            return [];
-        }
-
-        // Get the zone and its methods
-        $zone = \WC_Shipping_Zones::get_zone($zone_id);
-        $methods = $zone->get_shipping_methods();
-
-        $shipping_methods = [];
-        foreach ($methods as $method) {
-            $shipping_methods[] = [
-                'id' => $method->id,
-                'instance_id' => $method->instance_id,
-                'title' => $method->method_title,
-                'order' => $method->method_order,
-                'enabled' => $method->enabled === 'yes',
-                'method_id' => $method->method_id,
-                'method_title' => $method->method_title,
-                'method_description' => $method->method_description,
-                'settings' => $method->settings
-            ];
-        }
-
-        return $shipping_methods;
     }
 
     /**
@@ -481,10 +494,15 @@ class McpWooShipping {
             return false;
         }
 
-        // Get the zone
-        $zone = \WC_Shipping_Zones::get_zone($zone_id);
-        
-        // Check if zone exists (get_zone returns a valid zone object or null)
-        return $zone && $zone->get_id() === $zone_id;
+        try {
+            // Get the zone
+            $zone = \WC_Shipping_Zones::get_zone($zone_id);
+            
+            // Check if zone exists (get_zone returns a valid zone object or null)
+            return $zone && $zone->get_id() === $zone_id;
+        } catch (\Exception $e) {
+            // If any exception occurs, consider zone as non-existent
+            return false;
+        }
     }
 }
