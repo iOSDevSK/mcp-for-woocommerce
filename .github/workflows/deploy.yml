@@ -18,28 +18,20 @@ jobs:
         script: |
           cd /var/www/html/wp-content/plugins/
           
-          # Temporarily disable plugin by renaming folder
+          # EMERGENCY: Permanently disable plugin until manual recovery
           if [ -d "woo-mcp" ]; then
-            mv woo-mcp woo-mcp-disabled 2>/dev/null || true
+            mv woo-mcp woo-mcp-emergency-disabled 2>/dev/null || true
+            echo "Plugin emergency disabled due to 500 errors"
           fi
           
-          # Re-enable with updated code
-          if [ -d "woo-mcp-disabled" ]; then
-            cd woo-mcp-disabled
-            
-            # Stash any local changes to avoid conflicts
-            git stash push -m "Auto-stash before deployment" || true
-            
-            # Pull latest changes
-            git pull origin main
-            
-            # Clear PHP OPcache to ensure updated code is loaded
-            if command -v php >/dev/null 2>&1; then
-              php -r "if (function_exists('opcache_reset')) opcache_reset();"
-            fi
-            
-            cd ..
-            mv woo-mcp-disabled woo-mcp
+          # Clear PHP OPcache to ensure changes take effect
+          if command -v php >/dev/null 2>&1; then
+            php -r "if (function_exists('opcache_reset')) opcache_reset();"
+          fi
+          
+          # Clear any WordPress caches
+          if command -v wp >/dev/null 2>&1; then
+            wp cache flush --allow-root 2>/dev/null || true
           fi
           
           echo "Deployment completed successfully"
