@@ -25,10 +25,8 @@ class McpWooShipping {
             return;
         }
 
-        // Validate that WooCommerce REST API routes exist
-        if (!$this->validate_woocommerce_routes()) {
-            return;
-        }
+        // Skip route validation during early initialization
+        // WooCommerce routes may not be registered yet at this point
 
         new RegisterMcpTool([
             'name' => 'wc_get_shipping_zones',
