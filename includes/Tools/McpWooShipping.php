@@ -22,8 +22,11 @@ class McpWooShipping {
     public function register_tools(): void {
         // Only register if WooCommerce is active
         if (!class_exists('WooCommerce')) {
+            McpErrorHandler::log_error('WooCommerce not detected. McpWooShipping tools will not be registered.');
             return;
         }
+        
+        McpErrorHandler::log_error('WooCommerce detected. Registering McpWooShipping tools.');
 
         // Skip route validation during early initialization
         // WooCommerce routes may not be registered yet at this point
@@ -261,25 +264,19 @@ class McpWooShipping {
      */
     public function get_shipping_methods_safe(array $params): array {
         if (!class_exists('WC_Shipping_Zones')) {
-            return [
-                'error' => 'WooCommerce Shipping Zones not available'
-            ];
+            return [];
         }
 
         $zone_id = $params['zone_id'] ?? 0;
         if (!is_numeric($zone_id) || $zone_id < 0) {
-            return [
-                'error' => 'Invalid zone ID provided'
-            ];
+            return [];
         }
 
         $zone_id = (int) $zone_id;
 
         // Check if zone exists
         if (!self::validate_zone_exists($zone_id)) {
-            return [
-                'error' => "Shipping zone with ID {$zone_id} not found"
-            ];
+            return [];
         }
 
         // Get the zone and its methods
