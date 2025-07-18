@@ -120,6 +120,25 @@ class McpWooShipping {
                 'openWorldHint' => false
             ]
         ]);
+
+        // Add a tool to get all shipping methods for all zones
+        new RegisterMcpTool([
+            'name' => 'wc_get_all_shipping_methods',
+            'description' => 'Get all shipping methods available across all shipping zones',
+            'type' => 'read',
+            'callback' => [$this, 'get_all_shipping_methods'],
+            'permission_callback' => '__return_true',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [],
+                'required' => []
+            ],
+            'annotations' => [
+                'title' => 'Get All Shipping Methods',
+                'readOnlyHint' => true,
+                'openWorldHint' => false
+            ]
+        ]);
     }
 
     /**
@@ -148,6 +167,67 @@ class McpWooShipping {
         }
 
         return true;
+    }
+
+    /**
+     * Get all shipping methods for all zones.
+     * 
+     * @return array
+     */
+    public function get_all_shipping_methods(): array {
+        if (!class_exists('WC_Shipping_Zones')) {
+            return ['error' => 'WooCommerce Shipping Zones not available'];
+        }
+
+        $all_methods = [];
+        $zones = \WC_Shipping_Zones::get_zones();
+        
+        // Add the default zone (zone 0)
+        $zones[] = [
+            'id' => 0,
+            'zone_name' => 'Locations not covered by your other zones',
+            'zone_locations' => []
+        ];
+
+        foreach ($zones as $zone) {
+            $zone_id = $zone['id'];
+            $zone_name = $zone['zone_name'] ?? 'Unknown Zone';
+            
+            // Get shipping methods for this zone
+            $zone_obj = \WC_Shipping_Zones::get_zone($zone_id);
+            $shipping_methods = $zone_obj->get_shipping_methods();
+            
+            // Get zone locations
+            $locations = [];
+            if (isset($zone['zone_locations'])) {
+                foreach ($zone['zone_locations'] as $location) {
+                    $locations[] = [
+                        'code' => $location->code,
+                        'type' => $location->type
+                    ];
+                }
+            }
+            
+            $zone_methods = [];
+            foreach ($shipping_methods as $method) {
+                $zone_methods[] = [
+                    'id' => $method->id,
+                    'method_id' => $method->method_id,
+                    'method_title' => $method->method_title,
+                    'enabled' => $method->enabled,
+                    'settings' => $method->settings
+                ];
+            }
+            
+            $all_methods[] = [
+                'zone_id' => $zone_id,
+                'zone_name' => $zone_name,
+                'locations' => $locations,
+                'shipping_methods' => $zone_methods
+            ];
+        }
+        
+        return $all_methods;
     }
 
     /**
