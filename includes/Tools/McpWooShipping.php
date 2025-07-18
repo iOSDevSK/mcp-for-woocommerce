@@ -50,20 +50,19 @@ class McpWooShipping {
             'name' => 'wc_get_shipping_zone',
             'description' => 'Get details about a specific WooCommerce shipping zone',
             'type' => 'read',
-            'rest_alias' => [
-                'route' => self::WC_API_NAMESPACE . '/shipping/zones/(?P<id>[0-9]\d{0,9})',
-                'method' => 'GET',
-                'inputSchemaReplacements' => [
-                    'required' => ['id'],
-                    'properties' => [
-                        'id' => [
-                            'type' => 'integer',
-                            'minimum' => 0,
-                            'maximum' => 9999999999,
-                            'description' => 'Shipping zone ID (non-negative integer, 0 for default zone)'
-                        ]
+            'callback' => [$this, 'get_shipping_zone_safe'],
+            'permission_callback' => '__return_true',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'id' => [
+                        'type' => 'integer',
+                        'minimum' => 0,
+                        'maximum' => 9999999999,
+                        'description' => 'Shipping zone ID (non-negative integer, 0 for default zone)'
                     ]
-                ]
+                ],
+                'required' => ['id']
             ],
             'annotations' => [
                 'title' => 'Get Shipping Zone',
@@ -254,6 +253,72 @@ class McpWooShipping {
         }
         
         return $all_methods;
+    }
+
+    /**
+     * Safely get shipping zone details with proper error handling.
+     * 
+     * @param array $params Parameters containing id
+     * @return array
+     */
+    public function get_shipping_zone_safe(array $params): array {
+        try {
+            error_log("McpWooShipping: get_shipping_zone_safe called with params: " . json_encode($params));
+            
+            if (!class_exists('WC_Shipping_Zones')) {
+                error_log("McpWooShipping: WC_Shipping_Zones class not found");
+                return [];
+            }
+
+            $zone_id = $params['id'] ?? 0;
+            if (!is_numeric($zone_id) || $zone_id < 0) {
+                error_log("McpWooShipping: Invalid zone_id: " . $zone_id);
+                return [];
+            }
+
+            $zone_id = (int) $zone_id;
+            error_log("McpWooShipping: Processing zone_id: " . $zone_id);
+
+            // Check if zone exists
+            if (!self::validate_zone_exists($zone_id)) {
+                error_log("McpWooShipping: Zone {$zone_id} does not exist");
+                return [];
+            }
+
+            // Get the zone
+            $zone = \WC_Shipping_Zones::get_zone($zone_id);
+            if (!$zone) {
+                error_log("McpWooShipping: Could not get zone object for zone_id: " . $zone_id);
+                return [];
+            }
+
+            // Build zone data
+            $zone_data = [
+                'id' => $zone->get_id(),
+                'name' => $zone->get_zone_name(),
+                'order' => $zone->get_zone_order(),
+                'locations' => []
+            ];
+
+            // Get zone locations
+            $locations = $zone->get_zone_locations();
+            if ($locations) {
+                foreach ($locations as $location) {
+                    $zone_data['locations'][] = [
+                        'code' => $location->code,
+                        'type' => $location->type
+                    ];
+                }
+            }
+
+            error_log("McpWooShipping: Returning zone data for zone_id: " . $zone_id);
+            return $zone_data;
+        } catch (\Exception $e) {
+            // Log error but always return empty array to prevent JSON-RPC issues
+            error_log("McpWooShipping: Error in get_shipping_zone_safe: " . $e->getMessage());
+            error_log("McpWooShipping: Stack trace: " . $e->getTraceAsString());
+            return [];
+        }
     }
 
     /**
