@@ -314,10 +314,12 @@ class McpWooShipping {
             error_log("McpWooShipping: Returning zone data for zone_id: " . $zone_id);
             return $zone_data;
         } catch (\Exception $e) {
-            // Log error but always return empty array to prevent JSON-RPC issues
+            // Log error for debugging
             error_log("McpWooShipping: Error in get_shipping_zone_safe: " . $e->getMessage());
             error_log("McpWooShipping: Stack trace: " . $e->getTraceAsString());
-            return [];
+            
+            // Re-throw to let framework handle proper JSON-RPC error response
+            throw $e;
         }
     }
 
@@ -382,10 +384,12 @@ class McpWooShipping {
             error_log("McpWooShipping: Returning " . count($shipping_methods) . " shipping methods for zone_id: " . $zone_id);
             return $shipping_methods;
         } catch (\Exception $e) {
-            // Log error but always return empty array to prevent JSON-RPC issues
+            // Log error for debugging
             error_log("McpWooShipping: Error in get_shipping_methods_safe: " . $e->getMessage());
             error_log("McpWooShipping: Stack trace: " . $e->getTraceAsString());
-            return [];
+            
+            // Re-throw to let framework handle proper JSON-RPC error response
+            throw $e;
         }
     }
 
