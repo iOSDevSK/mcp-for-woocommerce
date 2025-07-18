@@ -261,37 +261,40 @@ class McpWooShipping {
      * @return array
      */
     public function check_shipping_to_country(array $params): array {
-        if (!class_exists('WC_Shipping_Zones')) {
+        if (!class_exists('WC_Shipping_Zones') || !class_exists('WC_Countries')) {
             return [
                 'available' => false,
-                'message' => 'WooCommerce Shipping Zones not available'
+                'message' => 'WooCommerce not available'
             ];
         }
 
-        $country = $params['country'] ?? '';
-        if (empty($country)) {
+        $country_input = $params['country'] ?? '';
+        if (empty($country_input)) {
             return [
                 'available' => false,
                 'message' => 'Country parameter is required'
             ];
         }
 
-        // Normalize country input
-        $country = strtolower(trim($country));
-        $country_codes = $this->get_country_codes();
+        // Use WooCommerce's built-in country system
+        $wc_countries = new \WC_Countries();
+        $all_countries = $wc_countries->get_countries();
         
-        // Try to find country code
-        $country_code = $country_codes[$country] ?? strtoupper($country);
+        // Try to find the country code from the input
+        $country_code = $this->find_country_code($country_input, $all_countries);
+        
+        if (!$country_code) {
+            return [
+                'available' => false,
+                'message' => "Country '{$country_input}' not recognized",
+                'country_input' => $country_input
+            ];
+        }
+
+        $country_name = $all_countries[$country_code];
         
         // Get all zones and check if country is covered
         $zones = \WC_Shipping_Zones::get_zones();
-        
-        // Add the default zone (zone 0) which covers locations not covered by other zones
-        $default_zone = [
-            'id' => 0,
-            'zone_name' => 'Locations not covered by your other zones',
-            'zone_locations' => []
-        ];
         
         $found_zone = null;
         $shipping_methods = [];
@@ -309,32 +312,14 @@ class McpWooShipping {
         }
         
         if (!$found_zone) {
-            // Check if default zone has shipping methods
+            // Check if default zone (zone 0) has shipping methods
             $default_zone_obj = \WC_Shipping_Zones::get_zone(0);
             $default_methods = $default_zone_obj->get_shipping_methods();
             
-            if (!empty($default_methods)) {
-                $found_zone = $default_zone;
-                foreach ($default_methods as $method) {
-                    if ($method->enabled === 'yes') {
-                        $shipping_methods[] = [
-                            'id' => $method->id,
-                            'method_id' => $method->method_id,
-                            'title' => $method->method_title,
-                            'cost' => $method->get_option('cost', 'N/A'),
-                            'enabled' => true
-                        ];
-                    }
-                }
-            }
-        } else {
-            // Get shipping methods for found zone
-            $zone_obj = \WC_Shipping_Zones::get_zone($found_zone['id']);
-            $methods = $zone_obj->get_shipping_methods();
-            
-            foreach ($methods as $method) {
+            $enabled_methods = [];
+            foreach ($default_methods as $method) {
                 if ($method->enabled === 'yes') {
-                    $shipping_methods[] = [
+                    $enabled_methods[] = [
                         'id' => $method->id,
                         'method_id' => $method->method_id,
                         'title' => $method->method_title,
@@ -343,71 +328,99 @@ class McpWooShipping {
                     ];
                 }
             }
+            
+            if (!empty($enabled_methods)) {
+                return [
+                    'available' => true,
+                    'message' => "Shipping to {$country_name} is available via default zone",
+                    'country' => $country_name,
+                    'country_code' => $country_code,
+                    'zone' => 'Locations not covered by your other zones',
+                    'zone_id' => 0,
+                    'shipping_methods' => $enabled_methods
+                ];
+            }
+            
+            return [
+                'available' => false,
+                'message' => "Shipping to {$country_name} is not available",
+                'country' => $country_name,
+                'country_code' => $country_code,
+                'reason' => 'No shipping zone configured and no default zone methods available'
+            ];
+        }
+        
+        // Get shipping methods for found zone
+        $zone_obj = \WC_Shipping_Zones::get_zone($found_zone['id']);
+        $methods = $zone_obj->get_shipping_methods();
+        
+        foreach ($methods as $method) {
+            if ($method->enabled === 'yes') {
+                $shipping_methods[] = [
+                    'id' => $method->id,
+                    'method_id' => $method->method_id,
+                    'title' => $method->method_title,
+                    'cost' => $method->get_option('cost', 'N/A'),
+                    'enabled' => true
+                ];
+            }
         }
         
         if (empty($shipping_methods)) {
             return [
                 'available' => false,
-                'message' => "Shipping to " . ucfirst($country) . " is not available",
-                'country' => $country,
-                'country_code' => $country_code
+                'message' => "Shipping to {$country_name} is not available",
+                'country' => $country_name,
+                'country_code' => $country_code,
+                'zone' => $found_zone['zone_name'],
+                'zone_id' => $found_zone['id'],
+                'reason' => 'No enabled shipping methods in the assigned zone'
             ];
         }
         
         return [
             'available' => true,
-            'message' => "Shipping to " . ucfirst($country) . " is available",
-            'country' => $country,
+            'message' => "Shipping to {$country_name} is available",
+            'country' => $country_name,
             'country_code' => $country_code,
-            'zone' => $found_zone ? $found_zone['zone_name'] : 'Default Zone',
+            'zone' => $found_zone['zone_name'],
+            'zone_id' => $found_zone['id'],
             'shipping_methods' => $shipping_methods
         ];
     }
 
     /**
-     * Get country name to code mapping for common countries.
+     * Find country code from user input using WooCommerce's country list.
      * 
-     * @return array
+     * @param string $country_input User input (country name or code)
+     * @param array $all_countries WooCommerce countries array
+     * @return string|null Country code or null if not found
      */
-    private function get_country_codes(): array {
-        return [
-            'australia' => 'AU',
-            'austria' => 'AT',
-            'belgium' => 'BE',
-            'bulgaria' => 'BG',
-            'canada' => 'CA',
-            'croatia' => 'HR',
-            'cyprus' => 'CY',
-            'czech republic' => 'CZ',
-            'denmark' => 'DK',
-            'estonia' => 'EE',
-            'finland' => 'FI',
-            'france' => 'FR',
-            'germany' => 'DE',
-            'greece' => 'GR',
-            'hungary' => 'HU',
-            'ireland' => 'IE',
-            'italy' => 'IT',
-            'latvia' => 'LV',
-            'lithuania' => 'LT',
-            'luxembourg' => 'LU',
-            'malta' => 'MT',
-            'netherlands' => 'NL',
-            'poland' => 'PL',
-            'portugal' => 'PT',
-            'romania' => 'RO',
-            'slovakia' => 'SK',
-            'slovenia' => 'SI',
-            'spain' => 'ES',
-            'sweden' => 'SE',
-            'united kingdom' => 'GB',
-            'uk' => 'GB',
-            'united states' => 'US',
-            'usa' => 'US',
-            'new zealand' => 'NZ',
-            'norway' => 'NO',
-            'switzerland' => 'CH'
-        ];
+    private function find_country_code(string $country_input, array $all_countries): ?string {
+        $country_input = trim($country_input);
+        
+        // First, try as country code (exact match)
+        $country_code = strtoupper($country_input);
+        if (isset($all_countries[$country_code])) {
+            return $country_code;
+        }
+        
+        // Then try as country name (case-insensitive)
+        $country_input_lower = strtolower($country_input);
+        foreach ($all_countries as $code => $name) {
+            if (strtolower($name) === $country_input_lower) {
+                return $code;
+            }
+        }
+        
+        // Finally, try partial match on country name
+        foreach ($all_countries as $code => $name) {
+            if (stripos($name, $country_input) !== false || stripos($country_input, $name) !== false) {
+                return $code;
+            }
+        }
+        
+        return null;
     }
 
     /**
