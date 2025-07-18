@@ -264,30 +264,38 @@ class McpWooShipping {
      */
     public function get_shipping_methods_safe(array $params): array {
         try {
+            error_log("McpWooShipping: get_shipping_methods_safe called with params: " . json_encode($params));
+            
             if (!class_exists('WC_Shipping_Zones')) {
+                error_log("McpWooShipping: WC_Shipping_Zones class not found");
                 return [];
             }
 
             $zone_id = $params['zone_id'] ?? 0;
             if (!is_numeric($zone_id) || $zone_id < 0) {
+                error_log("McpWooShipping: Invalid zone_id: " . $zone_id);
                 return [];
             }
 
             $zone_id = (int) $zone_id;
+            error_log("McpWooShipping: Processing zone_id: " . $zone_id);
 
             // Check if zone exists
             if (!self::validate_zone_exists($zone_id)) {
+                error_log("McpWooShipping: Zone {$zone_id} does not exist");
                 return [];
             }
 
             // Get the zone and its methods
             $zone = \WC_Shipping_Zones::get_zone($zone_id);
             if (!$zone) {
+                error_log("McpWooShipping: Could not get zone object for zone_id: " . $zone_id);
                 return [];
             }
             
             $methods = $zone->get_shipping_methods();
             if (!$methods) {
+                error_log("McpWooShipping: No methods found for zone_id: " . $zone_id);
                 return [];
             }
 
@@ -306,10 +314,12 @@ class McpWooShipping {
                 ];
             }
 
+            error_log("McpWooShipping: Returning " . count($shipping_methods) . " shipping methods for zone_id: " . $zone_id);
             return $shipping_methods;
         } catch (\Exception $e) {
             // Log error but always return empty array to prevent JSON-RPC issues
             error_log("McpWooShipping: Error in get_shipping_methods_safe: " . $e->getMessage());
+            error_log("McpWooShipping: Stack trace: " . $e->getTraceAsString());
             return [];
         }
     }
