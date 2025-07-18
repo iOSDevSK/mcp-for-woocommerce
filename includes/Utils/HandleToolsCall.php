@@ -67,7 +67,7 @@ class HandleToolsCall {
 								McpErrorHandler::INTERNAL_ERROR,
 								'Error in preCallback',
 								$e->getMessage()
-							),
+							)['error'],
 						);
 					}
 				}
@@ -111,7 +111,7 @@ class HandleToolsCall {
 							McpErrorHandler::REST_API_ERROR,
 							'REST API error occurred',
 							$rest_response->as_error()->get_error_message()
-						),
+						)['error'],
 					);
 				} else {
 					return $rest_response->get_data();
@@ -130,7 +130,7 @@ class HandleToolsCall {
 						McpErrorHandler::REST_API_ERROR,
 						'Error executing REST API',
 						$e->getMessage()
-					),
+					)['error'],
 				);
 			}
 		} else {
@@ -166,7 +166,7 @@ class HandleToolsCall {
 						McpErrorHandler::INTERNAL_ERROR,
 						'Error executing tool',
 						$e->getMessage()
-					),
+					)['error'],
 				);
 			}
 		}
