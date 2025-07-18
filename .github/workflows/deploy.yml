@@ -16,17 +16,30 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          cd /var/www/html/wp-content/plugins/woo-mcp
+          cd /var/www/html/wp-content/plugins/
           
-          # Stash any local changes to avoid conflicts
-          git stash push -m "Auto-stash before deployment" || true
+          # Temporarily disable plugin by renaming folder
+          if [ -d "woo-mcp" ]; then
+            mv woo-mcp woo-mcp-disabled 2>/dev/null || true
+          fi
           
-          # Pull latest changes
-          git pull origin main
-          
-          # Clear PHP OPcache to ensure updated code is loaded
-          if command -v php >/dev/null 2>&1; then
-            php -r "if (function_exists('opcache_reset')) opcache_reset();"
+          # Re-enable with updated code
+          if [ -d "woo-mcp-disabled" ]; then
+            cd woo-mcp-disabled
+            
+            # Stash any local changes to avoid conflicts
+            git stash push -m "Auto-stash before deployment" || true
+            
+            # Pull latest changes
+            git pull origin main
+            
+            # Clear PHP OPcache to ensure updated code is loaded
+            if command -v php >/dev/null 2>&1; then
+              php -r "if (function_exists('opcache_reset')) opcache_reset();"
+            fi
+            
+            cd ..
+            mv woo-mcp-disabled woo-mcp
           fi
           
           echo "Deployment completed successfully"
