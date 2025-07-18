@@ -44,7 +44,10 @@ class McpWooShipping {
             'type' => 'read',
             'rest_alias' => [
                 'route' => '/wc/v3/shipping/zones/(?P<id>[\d]+)',
-                'method' => 'GET'
+                'method' => 'GET',
+                'inputSchemaReplacements' => [
+                    'required' => ['id']
+                ]
             ],
             'annotations' => [
                 'title' => 'Get Shipping Zone',
@@ -59,7 +62,10 @@ class McpWooShipping {
             'type' => 'read',
             'rest_alias' => [
                 'route' => '/wc/v3/shipping/zones/(?P<zone_id>[\d]+)/methods',
-                'method' => 'GET'
+                'method' => 'GET',
+                'inputSchemaReplacements' => [
+                    'required' => ['zone_id']
+                ]
             ],
             'annotations' => [
                 'title' => 'Get Shipping Methods',
@@ -74,7 +80,10 @@ class McpWooShipping {
             'type' => 'read',
             'rest_alias' => [
                 'route' => '/wc/v3/shipping/zones/(?P<zone_id>[\d]+)/locations',
-                'method' => 'GET'
+                'method' => 'GET',
+                'inputSchemaReplacements' => [
+                    'required' => ['zone_id']
+                ]
             ],
             'annotations' => [
                 'title' => 'Get Shipping Locations',

@@ -213,6 +213,14 @@ class McpStreamableTransport extends McpTransportBase {
 			return $this->format_error_response( $result, $this->request_id );
 		}
 
+		// Ensure we have a valid result structure
+		if ( ! is_array( $result ) ) {
+			return $this->format_error_response( 
+				array( 'error' => McpErrorHandler::internal_error( $this->request_id, 'Invalid result format' )['error'] ),
+				$this->request_id 
+			);
+		}
+
 		return $this->format_success_response( $result, $this->request_id );
 	}
 
@@ -265,12 +273,18 @@ class McpStreamableTransport extends McpTransportBase {
 	 * @return array
 	 */
 	protected function format_error_response( array $error, int $request_id = 0 ): array {
-		if ( isset( $error['error'] ) ) {
-			return array(
-				'jsonrpc' => '2.0',
-				'id'      => $request_id,
-				'error'   => $error['error'],
-			);
+		// Ensure we have a proper error structure
+		if ( isset( $error['error'] ) && is_array( $error['error'] ) ) {
+			$error_data = $error['error'];
+			
+			// Validate required error fields
+			if ( isset( $error_data['code'] ) && isset( $error_data['message'] ) ) {
+				return array(
+					'jsonrpc' => '2.0',
+					'id'      => $request_id,
+					'error'   => $error_data,
+				);
+			}
 		}
 
 		// If it's not already a proper error response, make it one
