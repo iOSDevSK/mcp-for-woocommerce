@@ -139,6 +139,30 @@ class McpWooShipping {
                 'openWorldHint' => false
             ]
         ]);
+
+        // Add a tool to check shipping availability for a specific country
+        new RegisterMcpTool([
+            'name' => 'wc_check_shipping_to_country',
+            'description' => 'Check if shipping is available to a specific country and get shipping options',
+            'type' => 'read',
+            'callback' => [$this, 'check_shipping_to_country'],
+            'permission_callback' => '__return_true',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'country' => [
+                        'type' => 'string',
+                        'description' => 'Country name or code (e.g., "Australia", "Slovakia", "AU", "SK")'
+                    ]
+                ],
+                'required' => ['country']
+            ],
+            'annotations' => [
+                'title' => 'Check Shipping to Country',
+                'readOnlyHint' => true,
+                'openWorldHint' => false
+            ]
+        ]);
     }
 
     /**
@@ -228,6 +252,162 @@ class McpWooShipping {
         }
         
         return $all_methods;
+    }
+
+    /**
+     * Check if shipping is available to a specific country.
+     * 
+     * @param array $params Parameters containing country
+     * @return array
+     */
+    public function check_shipping_to_country(array $params): array {
+        if (!class_exists('WC_Shipping_Zones')) {
+            return [
+                'available' => false,
+                'message' => 'WooCommerce Shipping Zones not available'
+            ];
+        }
+
+        $country = $params['country'] ?? '';
+        if (empty($country)) {
+            return [
+                'available' => false,
+                'message' => 'Country parameter is required'
+            ];
+        }
+
+        // Normalize country input
+        $country = strtolower(trim($country));
+        $country_codes = $this->get_country_codes();
+        
+        // Try to find country code
+        $country_code = $country_codes[$country] ?? strtoupper($country);
+        
+        // Get all zones and check if country is covered
+        $zones = \WC_Shipping_Zones::get_zones();
+        
+        // Add the default zone (zone 0) which covers locations not covered by other zones
+        $default_zone = [
+            'id' => 0,
+            'zone_name' => 'Locations not covered by your other zones',
+            'zone_locations' => []
+        ];
+        
+        $found_zone = null;
+        $shipping_methods = [];
+        
+        // Check each zone for the country
+        foreach ($zones as $zone) {
+            if (isset($zone['zone_locations'])) {
+                foreach ($zone['zone_locations'] as $location) {
+                    if ($location->type === 'country' && strtoupper($location->code) === strtoupper($country_code)) {
+                        $found_zone = $zone;
+                        break 2;
+                    }
+                }
+            }
+        }
+        
+        if (!$found_zone) {
+            // Check if default zone has shipping methods
+            $default_zone_obj = \WC_Shipping_Zones::get_zone(0);
+            $default_methods = $default_zone_obj->get_shipping_methods();
+            
+            if (!empty($default_methods)) {
+                $found_zone = $default_zone;
+                foreach ($default_methods as $method) {
+                    if ($method->enabled === 'yes') {
+                        $shipping_methods[] = [
+                            'id' => $method->id,
+                            'method_id' => $method->method_id,
+                            'title' => $method->method_title,
+                            'cost' => $method->get_option('cost', 'N/A'),
+                            'enabled' => true
+                        ];
+                    }
+                }
+            }
+        } else {
+            // Get shipping methods for found zone
+            $zone_obj = \WC_Shipping_Zones::get_zone($found_zone['id']);
+            $methods = $zone_obj->get_shipping_methods();
+            
+            foreach ($methods as $method) {
+                if ($method->enabled === 'yes') {
+                    $shipping_methods[] = [
+                        'id' => $method->id,
+                        'method_id' => $method->method_id,
+                        'title' => $method->method_title,
+                        'cost' => $method->get_option('cost', 'N/A'),
+                        'enabled' => true
+                    ];
+                }
+            }
+        }
+        
+        if (empty($shipping_methods)) {
+            return [
+                'available' => false,
+                'message' => "Shipping to " . ucfirst($country) . " is not available",
+                'country' => $country,
+                'country_code' => $country_code
+            ];
+        }
+        
+        return [
+            'available' => true,
+            'message' => "Shipping to " . ucfirst($country) . " is available",
+            'country' => $country,
+            'country_code' => $country_code,
+            'zone' => $found_zone ? $found_zone['zone_name'] : 'Default Zone',
+            'shipping_methods' => $shipping_methods
+        ];
+    }
+
+    /**
+     * Get country name to code mapping for common countries.
+     * 
+     * @return array
+     */
+    private function get_country_codes(): array {
+        return [
+            'australia' => 'AU',
+            'austria' => 'AT',
+            'belgium' => 'BE',
+            'bulgaria' => 'BG',
+            'canada' => 'CA',
+            'croatia' => 'HR',
+            'cyprus' => 'CY',
+            'czech republic' => 'CZ',
+            'denmark' => 'DK',
+            'estonia' => 'EE',
+            'finland' => 'FI',
+            'france' => 'FR',
+            'germany' => 'DE',
+            'greece' => 'GR',
+            'hungary' => 'HU',
+            'ireland' => 'IE',
+            'italy' => 'IT',
+            'latvia' => 'LV',
+            'lithuania' => 'LT',
+            'luxembourg' => 'LU',
+            'malta' => 'MT',
+            'netherlands' => 'NL',
+            'poland' => 'PL',
+            'portugal' => 'PT',
+            'romania' => 'RO',
+            'slovakia' => 'SK',
+            'slovenia' => 'SI',
+            'spain' => 'ES',
+            'sweden' => 'SE',
+            'united kingdom' => 'GB',
+            'uk' => 'GB',
+            'united states' => 'US',
+            'usa' => 'US',
+            'new zealand' => 'NZ',
+            'norway' => 'NO',
+            'switzerland' => 'CH'
+        ];
     }
 
     /**
