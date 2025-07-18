@@ -49,7 +49,7 @@ class McpWooShipping {
         new RegisterMcpTool([
             'name' => 'wc_get_shipping_zone',
             'description' => 'Get details about a specific WooCommerce shipping zone',
-            'type' => 'read',
+            'type' => 'callback',
             'callback' => [$this, 'get_shipping_zone_safe'],
             'permission_callback' => '__return_true',
             'inputSchema' => [
@@ -74,7 +74,7 @@ class McpWooShipping {
         new RegisterMcpTool([
             'name' => 'wc_get_shipping_methods',
             'description' => 'Get all shipping methods available for a specific shipping zone',
-            'type' => 'read',
+            'type' => 'callback',
             'callback' => [$this, 'get_shipping_methods_safe'],
             'permission_callback' => '__return_true',
             'inputSchema' => [
