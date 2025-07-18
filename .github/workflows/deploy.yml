@@ -18,4 +18,16 @@ jobs:
         script: |
           cd /var/www/html/wp-content/plugins/woo-mcp
           git pull origin main
+          
+          # Clear PHP OPcache to ensure updated code is loaded
+          if command -v php >/dev/null 2>&1; then
+            php -r "if (function_exists('opcache_reset')) opcache_reset();"
+          fi
+          
+          # Clear WordPress cache and force plugin reload
+          cd /var/www/html
+          wp cache flush 2>/dev/null || true
+          wp plugin deactivate woo-mcp 2>/dev/null || true
+          wp plugin activate woo-mcp 2>/dev/null || true
+          
           echo "Deployment completed successfully"
