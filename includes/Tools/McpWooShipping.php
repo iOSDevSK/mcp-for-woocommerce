@@ -73,20 +73,19 @@ class McpWooShipping {
             'name' => 'wc_get_shipping_methods',
             'description' => 'Get all shipping methods available for a specific shipping zone',
             'type' => 'read',
-            'rest_alias' => [
-                'route' => self::WC_API_NAMESPACE . '/shipping/zones/(?P<zone_id>[1-9]\d{0,9})/methods',
-                'method' => 'GET',
-                'inputSchemaReplacements' => [
-                    'required' => ['zone_id'],
-                    'properties' => [
-                        'zone_id' => [
-                            'type' => 'integer',
-                            'minimum' => 1,
-                            'maximum' => 9999999999,
-                            'description' => 'Shipping zone ID (positive integer)'
-                        ]
+            'callback' => [$this, 'get_shipping_methods_safe'],
+            'permission_callback' => '__return_true',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'zone_id' => [
+                        'type' => 'integer',
+                        'minimum' => 1,
+                        'maximum' => 9999999999,
+                        'description' => 'Shipping zone ID (positive integer)'
                     ]
-                ]
+                ],
+                'required' => ['zone_id']
             ],
             'annotations' => [
                 'title' => 'Get Shipping Methods',
@@ -252,6 +251,57 @@ class McpWooShipping {
         }
         
         return $all_methods;
+    }
+
+    /**
+     * Safely get shipping methods for a zone with proper error handling.
+     * 
+     * @param array $params Parameters containing zone_id
+     * @return array
+     */
+    public function get_shipping_methods_safe(array $params): array {
+        if (!class_exists('WC_Shipping_Zones')) {
+            return [
+                'error' => 'WooCommerce Shipping Zones not available'
+            ];
+        }
+
+        $zone_id = $params['zone_id'] ?? 0;
+        if (!is_numeric($zone_id) || $zone_id < 0) {
+            return [
+                'error' => 'Invalid zone ID provided'
+            ];
+        }
+
+        $zone_id = (int) $zone_id;
+
+        // Check if zone exists
+        if (!self::validate_zone_exists($zone_id)) {
+            return [
+                'error' => "Shipping zone with ID {$zone_id} not found"
+            ];
+        }
+
+        // Get the zone and its methods
+        $zone = \WC_Shipping_Zones::get_zone($zone_id);
+        $methods = $zone->get_shipping_methods();
+
+        $shipping_methods = [];
+        foreach ($methods as $method) {
+            $shipping_methods[] = [
+                'id' => $method->id,
+                'instance_id' => $method->instance_id,
+                'title' => $method->method_title,
+                'order' => $method->method_order,
+                'enabled' => $method->enabled === 'yes',
+                'method_id' => $method->method_id,
+                'method_title' => $method->method_title,
+                'method_description' => $method->method_description,
+                'settings' => $method->settings
+            ];
+        }
+
+        return $shipping_methods;
     }
 
     /**
