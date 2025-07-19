@@ -26,26 +26,16 @@ jobs:
           # Navigate to plugins directory
           cd /var/www/html/wp-content/plugins/
           
-          # Backup existing plugin if it exists
+          # Remove existing plugin if it exists
           if [ -d "woo-mcp" ]; then
-            echo "Creating backup of existing plugin..."
-            BACKUP_NAME="woo-mcp-backup-$(date +%Y%m%d-%H%M%S)"
-            if ! mv woo-mcp "$BACKUP_NAME"; then
-              echo "Failed to create backup, aborting deployment"
-              exit 1
-            fi
-            echo "Backup created: $BACKUP_NAME"
+            echo "Removing existing plugin..."
+            rm -rf woo-mcp
           fi
           
           # Clone repository
           echo "Cloning repository from $REPO_URL..."
           if ! git clone "$REPO_URL" woo-mcp; then
             echo "Failed to clone repository"
-            # Restore backup if clone fails
-            if [ -d "$BACKUP_NAME" ]; then
-              mv "$BACKUP_NAME" woo-mcp
-              echo "Restored backup due to clone failure"
-            fi
             exit 1
           fi
           
