@@ -1,0 +1,3 @@
+import type { SlotFillProviderProps } from '../types';
+export default function SlotFillProvider({ children, }: SlotFillProviderProps): import("react").JSX.Element;
+//# sourceMappingURL=slot-fill-provider.d.ts.map

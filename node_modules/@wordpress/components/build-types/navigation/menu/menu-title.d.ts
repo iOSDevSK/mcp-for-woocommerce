@@ -1,0 +1,3 @@
+import type { NavigationMenuTitleProps } from '../types';
+export default function NavigationMenuTitle({ hasSearch, onSearch, search, title, titleAction, }: NavigationMenuTitleProps): import("react").JSX.Element | null;
+//# sourceMappingURL=menu-title.d.ts.map

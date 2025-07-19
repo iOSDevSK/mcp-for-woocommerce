@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/custom-select-control-v2/index.tsx"],"names":[],"mappings":"AAQA,OAAO,KAAK,EAAE,iBAAiB,EAAE,MAAM,SAAS,CAAC;AACjD,OAAO,KAAK,EAAE,uBAAuB,EAAE,MAAM,YAAY,CAAC;AAG1D,iBAAS,qBAAqB,CAC7B,KAAK,EAAE,uBAAuB,CAAE,iBAAiB,EAAE,QAAQ,EAAE,KAAK,CAAE,+BAWpE;kBAZQ,qBAAqB;;;AAgB9B,eAAe,qBAAqB,CAAC"}

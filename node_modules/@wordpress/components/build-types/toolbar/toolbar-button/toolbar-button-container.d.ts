@@ -1,0 +1,7 @@
+/**
+ * Internal dependencies
+ */
+import type { ToolbarButtonContainerProps } from './types';
+declare const ToolbarButtonContainer: ({ children, className, }: ToolbarButtonContainerProps) => import("react").JSX.Element;
+export default ToolbarButtonContainer;
+//# sourceMappingURL=toolbar-button-container.d.ts.map

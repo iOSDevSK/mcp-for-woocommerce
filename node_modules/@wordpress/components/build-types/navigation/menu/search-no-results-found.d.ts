@@ -1,0 +1,3 @@
+import type { NavigationSearchNoResultsFoundProps } from '../types';
+export default function NavigationSearchNoResultsFound({ search, }: NavigationSearchNoResultsFoundProps): import("react").JSX.Element | null;
+//# sourceMappingURL=search-no-results-found.d.ts.map
