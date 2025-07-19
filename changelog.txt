@@ -4,6 +4,12 @@
 
 **CRITICAL FIXES & EMERGENCY PATCHES**
 
+* #000007 - Update plugin branding to WooCommerce MCP  
+  Date: July 19, 2025 @ 15:10 CET
+  - Updated server name from "WordPress MCP Server" to "WooCommerce MCP Server"
+  - Updated server instructions to reference "WooCommerce store" instead of "WordPress site"
+  - Enhanced branding consistency across MCP server identification
+
 * #000006 - CRITICAL FIX: Add function checks to prevent fatal errors in McpWooIntelligentSearch
   Date: July 19, 2025 @ 14:30 CET
   - Fixed fatal "Call to undefined function" errors during plugin initialization
