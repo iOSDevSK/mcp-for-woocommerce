@@ -81,6 +81,41 @@ jobs:
             wp cache flush --allow-root 2>/dev/null && echo "WordPress cache cleared" || echo "WordPress cache clear failed (non-critical)"
           fi
           
+          # Install dependencies and build
+          echo "Installing dependencies..."
+          
+          # Install Composer dependencies
+          if [ -f "composer.json" ]; then
+            echo "Running composer install..."
+            if command -v composer >/dev/null 2>&1; then
+              composer install --no-dev --optimize-autoloader || echo "Composer install failed"
+            else
+              echo "Composer not found, skipping composer install"
+            fi
+          else
+            echo "No composer.json found, skipping composer install"
+          fi
+          
+          # Install npm dependencies
+          if [ -f "package.json" ]; then
+            echo "Running npm install..."
+            if command -v npm >/dev/null 2>&1; then
+              npm install --production || echo "npm install failed"
+            else
+              echo "npm not found, skipping npm install"
+            fi
+          else
+            echo "No package.json found, skipping npm install"
+          fi
+          
+          # Build assets
+          if [ -f "package.json" ] && command -v npm >/dev/null 2>&1; then
+            echo "Running npm run build..."
+            npm run build || echo "npm run build failed"
+          else
+            echo "Skipping npm run build (no package.json or npm not available)"
+          fi
+          
           # Verify deployment
           echo "Verifying deployment..."
           ls -la "$PLUGIN_DIR/wordpress-mcp.php" || echo "Main plugin file check failed"
