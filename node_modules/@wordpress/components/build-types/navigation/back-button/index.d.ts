@@ -1,0 +1,7 @@
+import type { NavigationBackButtonProps } from '../types';
+/**
+ * @deprecated Use `Navigator` instead.
+ */
+export declare const NavigationBackButton: import("react").ForwardRefExoticComponent<NavigationBackButtonProps & import("react").RefAttributes<HTMLAnchorElement | HTMLButtonElement>>;
+export default NavigationBackButton;
+//# sourceMappingURL=index.d.ts.map

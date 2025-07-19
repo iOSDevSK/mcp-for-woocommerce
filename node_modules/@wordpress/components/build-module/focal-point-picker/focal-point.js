@@ -1,0 +1,25 @@
+/**
+ * Internal dependencies
+ */
+import { PointerCircle } from './styles/focal-point-style';
+
+/**
+ * External dependencies
+ */
+import { jsx as _jsx } from "react/jsx-runtime";
+export default function FocalPoint({
+  left = '50%',
+  top = '50%',
+  ...props
+}) {
+  const style = {
+    left,
+    top
+  };
+  return /*#__PURE__*/_jsx(PointerCircle, {
+    ...props,
+    className: "components-focal-point-picker__icon_container",
+    style: style
+  });
+}
+//# sourceMappingURL=focal-point.js.map

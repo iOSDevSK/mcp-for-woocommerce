@@ -1,0 +1,14 @@
+/**
+ * Internal dependencies
+ */
+import type { ComparableObject } from '.';
+/**
+ * Returns true if the two objects are shallow equal, or false otherwise.
+ *
+ * @param a First object to compare.
+ * @param b Second object to compare.
+ *
+ * @return Whether the two objects are shallow equal.
+ */
+export default function isShallowEqualObjects(a: ComparableObject, b: ComparableObject): boolean;
+//# sourceMappingURL=objects.d.ts.map

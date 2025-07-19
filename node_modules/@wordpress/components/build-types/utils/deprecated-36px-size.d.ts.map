@@ -1,0 +1,1 @@
+{"version":3,"file":"deprecated-36px-size.d.ts","sourceRoot":"","sources":["../../src/utils/deprecated-36px-size.ts"],"names":[],"mappings":"AAKA,wBAAgB,2BAA2B,CAAE,EAC5C,aAAa,EACb,qBAAqB,EACrB,IAAI,EACJ,iCAAiC,GACjC,EAAE;IACF,aAAa,EAAE,MAAM,CAAC;IACtB,qBAAqB,EAAE,OAAO,GAAG,SAAS,CAAC;IAC3C,IAAI,EAAE,MAAM,GAAG,SAAS,CAAC;IACzB,iCAAiC,CAAC,EAAE,OAAO,CAAC;CAC5C,QAcA"}

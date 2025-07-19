@@ -1,0 +1,3 @@
+import type { CategorySelectProps } from './types';
+export default function CategorySelect({ __next40pxDefaultSize, label, noOptionLabel, categoriesList, selectedCategoryId, onChange: onChangeProp, ...props }: CategorySelectProps): import("react").JSX.Element;
+//# sourceMappingURL=category-select.d.ts.map

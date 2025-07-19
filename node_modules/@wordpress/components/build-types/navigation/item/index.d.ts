@@ -1,0 +1,7 @@
+import type { NavigationItemProps } from '../types';
+/**
+ * @deprecated Use `Navigator` instead.
+ */
+export declare function NavigationItem(props: NavigationItemProps): import("react").JSX.Element | null;
+export default NavigationItem;
+//# sourceMappingURL=index.d.ts.map

@@ -1,0 +1,3 @@
+import type { ColorInputProps } from './types';
+export declare const ColorInput: ({ colorType, color, onChange, enableAlpha, }: ColorInputProps) => import("react").JSX.Element;
+//# sourceMappingURL=color-input.d.ts.map

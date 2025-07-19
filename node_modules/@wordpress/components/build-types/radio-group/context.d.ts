@@ -1,0 +1,9 @@
+/**
+ * External dependencies
+ */
+import type * as Ariakit from '@ariakit/react';
+export declare const RadioGroupContext: import("react").Context<{
+    store?: Ariakit.RadioStore;
+    disabled?: boolean;
+}>;
+//# sourceMappingURL=context.d.ts.map
