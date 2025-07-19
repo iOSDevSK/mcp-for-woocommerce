@@ -1,16 +1,18 @@
 === WooCommerce MCP Plugin Changelog ===
 
-= Version 0.2.3 - July 2025 =
+= Version 0.2.3 - Release #000001 - July 19, 2025 @ 14:45 CET =
 
 **CRITICAL FIXES & EMERGENCY PATCHES**
 
-* CRITICAL FIX: Add function checks to prevent fatal errors in McpWooIntelligentSearch
+* #000006 - CRITICAL FIX: Add function checks to prevent fatal errors in McpWooIntelligentSearch
+  Date: July 19, 2025 @ 14:30 CET
   - Fixed fatal "Call to undefined function" errors during plugin initialization
   - Added function_exists() checks for wc_get_products() and get_terms()
   - Ensures graceful degradation when WooCommerce/WordPress functions not available
   - Resolves "Critical error on this website" message
 
-* EMERGENCY FIX: Resolve plugin 500 errors and restore functionality
+* #000005 - EMERGENCY FIX: Resolve plugin 500 errors and restore functionality  
+  Date: July 19, 2025 @ 13:15 CET
   - Added function check before calling rest_get_server() in RegisterMcpTool.php
   - Removed problematic test files that caused WordPress loading errors
   - Updated deployment workflow to re-enable plugin after fixes applied
@@ -18,7 +20,8 @@
 
 **DEPLOYMENT & INFRASTRUCTURE**
 
-* Add GitHub Actions deployment workflow - Updated
+* #000004 - Add GitHub Actions deployment workflow - Updated
+  Date: July 19, 2025 @ 13:00 CET
   - Enhanced deployment workflow with emergency recovery features
   - Added git stash for local changes handling
   - Implemented plugin re-enabling after fixes
@@ -27,14 +30,16 @@
 
 **FEATURES & ENHANCEMENTS**
 
-* Fix JSON-RPC validation errors in shipping tools
+* #000003 - Fix JSON-RPC validation errors in shipping tools
+  Date: July 19, 2025 @ 12:45 CET
   - Enhanced error response formatting for JSON-RPC 2.0 compliance
   - Added result validation to prevent malformed responses
   - Improved shipping zone tools with required parameter validation
   - All shipping tools now use callback methods for better error handling
   - Fixed parameter requirements for wc_get_shipping_zone, wc_get_shipping_methods, wc_get_shipping_locations
 
-* Uncommented intelligent search
+* #000002 - Uncommented intelligent search
+  Date: July 19, 2025 @ 12:30 CET
   - Enabled McpWooIntelligentSearch tool for AI-powered product search
   - Provides advanced search capabilities with relevance scoring
   - Supports intent analysis and category/tag matching
