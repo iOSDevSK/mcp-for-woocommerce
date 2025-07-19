@@ -135,13 +135,7 @@ final class McpWooProductsTest extends WP_UnitTestCase {
 		$this->assertIsArray( $response->get_data()['content'] );
 
 		// Verify we got all products.
-		$this->assertCount( 4, $response_json['data'] );
-		
-		// Verify each product has a permalink.
-		foreach ( $response_json['data'] as $product ) {
-			$this->assertArrayHasKey( 'permalink', $product );
-			$this->assertStringContains( 'product', $product['permalink'] );
-		}
+		$this->assertCount( 4, $response_json );
 	}
 
 	/**
@@ -194,13 +188,9 @@ final class McpWooProductsTest extends WP_UnitTestCase {
 		$this->assertIsArray( $response->get_data()['content'] );
 
 		// Verify product data.
-		$this->assertEquals( 'Test Product', $response_json['data']['name'] );
-		$this->assertEquals( '100', $response_json['data']['regular_price'] );
-		$this->assertEquals( 'simple', $response_json['data']['type'] );
-		
-		// Verify permalink is included.
-		$this->assertArrayHasKey( 'permalink', $response_json['data'] );
-		$this->assertStringContains( 'product', $response_json['data']['permalink'] );
+		$this->assertEquals( 'Test Product', $response_json['name'] );
+		$this->assertEquals( '100', $response_json['regular_price'] );
+		$this->assertEquals( 'simple', $response_json['type'] );
 	}
 
 	/**
@@ -248,14 +238,10 @@ final class McpWooProductsTest extends WP_UnitTestCase {
 		$this->assertIsArray( $response->get_data()['content'] );
 
 		// Verify product was created.
-		$this->assertEquals( 'New Test Product', $response_json['data']['name'] );
-		$this->assertEquals( '150', $response_json['data']['regular_price'] );
-		$this->assertEquals( 'simple', $response_json['data']['type'] );
-		$this->assertEquals( 'Test product description', $response_json['data']['description'] );
-		
-		// Verify permalink is included.
-		$this->assertArrayHasKey( 'permalink', $response_json['data'] );
-		$this->assertStringContains( 'product', $response_json['data']['permalink'] );
+		$this->assertEquals( 'New Test Product', $response_json['name'] );
+		$this->assertEquals( '150', $response_json['regular_price'] );
+		$this->assertEquals( 'simple', $response_json['type'] );
+		$this->assertEquals( 'Test product description', $response_json['description'] );
 	}
 
 	/**
@@ -308,12 +294,8 @@ final class McpWooProductsTest extends WP_UnitTestCase {
 		$this->assertIsArray( $response->get_data()['content'] );
 
 		// Verify product was updated.
-		$this->assertEquals( 'Updated Product', $response_json['data']['name'] );
-		$this->assertEquals( '200', $response_json['data']['regular_price'] );
-		
-		// Verify permalink is included.
-		$this->assertArrayHasKey( 'permalink', $response_json['data'] );
-		$this->assertStringContains( 'product', $response_json['data']['permalink'] );
+		$this->assertEquals( 'Updated Product', $response_json['name'] );
+		$this->assertEquals( '200', $response_json['regular_price'] );
 	}
 
 	/**

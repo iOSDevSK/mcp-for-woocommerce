@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Automattic\WordpressMcp\Core;
 
+use Automattic\WordpressMcp\Tools\McpWordPressPosts;
+use Automattic\WordpressMcp\Tools\McpWordPressPages;
+
 use Automattic\WordpressMcp\Tools\McpRestApiCrud;
 use Automattic\WordpressMcp\Tools\McpWooProducts;
 use Automattic\WordpressMcp\Prompts\McpAnalyzeSales;
@@ -189,6 +192,10 @@ class WpMcp {
 		new McpWooTaxes();
 		new McpWooPaymentGateways();
 		new McpWooSystemStatus();
+
+		// WordPress Core tools - READ ONLY
+    	new McpWordPressPosts();
+    	new McpWordPressPages();
 		
 		// Keep REST API CRUD for experimental access
 		new McpRestApiCrud();
