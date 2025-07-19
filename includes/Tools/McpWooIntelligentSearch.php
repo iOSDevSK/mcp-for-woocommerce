@@ -27,7 +27,7 @@ class McpWooIntelligentSearch {
         new RegisterMcpTool(
             array(
                 'name'        => 'wc_intelligent_search',
-                'description' => 'Intelligent product search with automatic fallback to categories, broader terms, and alternatives when no products found. Never returns empty results. IMPORTANT: Each product includes a "permalink" field with the direct link to the product page - ALWAYS include these links when presenting products to users.',
+                'description' => 'Universal intelligent product search for ANY store type (electronics, food, pets, pharmacy, automotive, etc.) with automatic fallback strategies. Handles multiple products with same name. Never returns empty results. WORKFLOW: 1) Use this tool to search for products, 2) Get specific product details using the returned product IDs, 3) Get variations if needed. IMPORTANT: Each product includes a "permalink" field with the direct link to the product page - ALWAYS include these links when presenting products to users.',
                 'type'        => 'read',
                 'callback'    => array( $this, 'intelligent_search' ),
                 'permission_callback' => '__return_true',
@@ -268,7 +268,10 @@ class McpWooIntelligentSearch {
     public function intelligent_search( array $params ): array {
         if ( ! class_exists( 'WooCommerce' ) || ! function_exists( 'wc_get_products' ) ) {
             return array(
-                'error' => 'WooCommerce is not active or not properly loaded',
+                'error' => array(
+                    'code' => -32000,
+                    'message' => 'WooCommerce is not active or not properly loaded'
+                ),
                 'debug' => array(
                     'woocommerce_class_exists' => class_exists( 'WooCommerce' ),
                     'wc_get_products_exists' => function_exists( 'wc_get_products' ),
@@ -289,7 +292,10 @@ class McpWooIntelligentSearch {
 
         if ( empty( $query ) ) {
             return array(
-                'error' => 'Search query is required',
+                'error' => array(
+                    'code' => -32001, // MISSING_PARAMETER
+                    'message' => 'Search query is required'
+                ),
                 'suggestion' => 'Try searching for products like "electronics", "clothing", or "books"',
             );
         }
@@ -1040,7 +1046,12 @@ class McpWooIntelligentSearch {
         $page = intval( $params['page'] ?? 1 );
 
         if ( empty( $brand_name ) ) {
-            return array( 'error' => 'Brand name is required' );
+            return array( 
+                'error' => array(
+                    'code' => -32001, // MISSING_PARAMETER
+                    'message' => 'Brand name is required'
+                )
+            );
         }
 
         $taxonomies = array( 'pa_brand', 'product_brand', 'product_cat' );
@@ -1091,7 +1102,10 @@ class McpWooIntelligentSearch {
 
         if ( empty( $category ) ) {
             return array( 
-                'error' => 'Category parameter is required',
+                'error' => array(
+                    'code' => -32001, // MISSING_PARAMETER
+                    'message' => 'Category parameter is required'
+                ),
                 'received_params' => array_keys( $params ),
                 'expected' => 'category or query parameter with category name/slug'
             );
@@ -1311,12 +1325,22 @@ class McpWooIntelligentSearch {
     public function get_product_by_id( array $params ): array {
         $product_id = intval( $params['id'] ?? $params['query'] ?? 0 );
         if ( empty( $product_id ) ) {
-            return array( 'error' => 'Product ID required' );
+            return array( 
+                'error' => array(
+                    'code' => -32001, // MISSING_PARAMETER
+                    'message' => 'Product ID required'
+                )
+            );
         }
 
         $product = wc_get_product( $product_id );
         if ( ! $product ) {
-            return array( 'error' => 'Product not found' );
+            return array( 
+                'error' => array(
+                    'code' => -32002, // RESOURCE_NOT_FOUND
+                    'message' => 'Product not found'
+                )
+            );
         }
 
         $product_data = $this->convert_product_to_array( $product );
