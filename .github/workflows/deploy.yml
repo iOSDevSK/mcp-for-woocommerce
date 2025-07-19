@@ -17,21 +17,26 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           # Navigate to the specific plugin directory
-          cd /var/www/html/wp-content/plugins/woo-mcp/
+          cd /var/www/html/wp-content/plugins/
           
-          # Initialize git repository if it doesn't exist
-          if [ ! -d ".git" ]; then
-            git init
-            git remote add origin https://github.com/iOSDevSK/woo-mcp.git
-            echo "Initialized git repository"
+          # Remove existing directory if it exists
+          if [ -d "woo-mcp" ]; then
+            echo "Backing up existing plugin..."
+            mv woo-mcp woo-mcp-backup-$(date +%Y%m%d-%H%M%S) 2>/dev/null || true
           fi
           
-          # Stash any local changes
-          git stash 2>/dev/null || true
+          # Fresh clone of the repository
+          echo "Cloning fresh copy from repository..."
+          git clone https://github.com/iOSDevSK/woo-mcp.git woo-mcp
+          cd woo-mcp
           
-          # Fetch and reset to latest
-          git fetch origin main
-          git reset --hard origin/main
+          # Verify we have the latest commit
+          echo "Current commit:"
+          git log --oneline -1
+          
+          # Check if the correct branding is in place
+          echo "Checking plugin branding:"
+          grep "Plugin name:" wordpress-mcp.php
           
           # Re-enable the plugin (fixes have been applied)
           if [ -d "/var/www/html/wp-content/plugins/woo-mcp-emergency-disabled" ]; then
