@@ -1,5 +1,19 @@
 === Woo - MCP Plugin Changelog ===
 
+= Version 0.2.5 - Release #000003 - July 19, 2025 @ 17:45 CET =
+
+**CRITICAL JSON-RPC PROTOCOL FIX**
+
+* #000010 - CRITICAL FIX: Resolve JSON-RPC validation errors in streamable transport
+  Date: July 19, 2025 @ 17:45 CET
+  - FIXED: JSON-RPC validation errors causing "5 validation errors for JSONRPCMessage" 
+  - FIXED: Malformed error responses in create_method_not_found_error() and handle_exception()
+  - FIXED: Error response formatting inconsistencies in McpStreamableTransport.php
+  - ADDED: Comprehensive validation logging for incoming and outgoing JSON-RPC messages
+  - ENHANCED: Error response validation with proper field checking (code, message)
+  - PREVENTS: Client-side JSON parsing failures during agent execution step 2
+  - RESOLVES: Agent failures when calling wc_get_shipping_zone and other tools
+
 = Version 0.2.4 - Release #000002 - July 19, 2025 @ 16:30 CET =
 
 **CRITICAL FIXES & AI AGENT IMPROVEMENTS**
