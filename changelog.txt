@@ -1,5 +1,20 @@
 === Woo - MCP Plugin Changelog ===
 
+= Version 0.2.4 - Release #000002 - July 19, 2025 @ 16:30 CET =
+
+**CRITICAL FIXES & AI AGENT IMPROVEMENTS**
+
+* #000009 - Fix AI agent product search workflow and JSON-RPC protocol errors
+  Date: July 19, 2025 @ 16:30 CET
+  - FIXED: AI agents using hardcoded product ID 42 instead of correct product IDs
+  - FIXED: JSON-RPC protocol errors causing client parsing failures
+  - ADDED: Universal store type support (electronics, food, pets, pharmacy, automotive, etc.)
+  - ADDED: Comprehensive product variations workflow in search guide
+  - IMPROVED: Tool descriptions with critical workflow warnings
+  - ENHANCED: Multiple product handling (Men/Women versions)
+  - UPDATED: Search guide with step-by-step product variations workflow
+  - PREVENTED: Hardcoded product ID usage with explicit AI agent warnings
+
 = Version 0.2.3 - Release #000001 - July 19, 2025 @ 14:45 CET =
 
 **CRITICAL FIXES & EMERGENCY PATCHES**
@@ -57,6 +72,32 @@
   - Provides advanced search capabilities with relevance scoring
   - Supports intent analysis and category/tag matching
 
+**AI AGENT WORKFLOW FIXES**
+
+* Product Search Workflow Improvements
+  - Enforces proper search sequence: wc_products_search → wc_get_product_variations
+  - Prevents AI agents from skipping search step and using wrong product IDs
+  - Clear workflow guidance for finding products with multiple variations
+  - Explicit warnings against common AI agent mistakes
+
+* JSON-RPC Error Response Standardization
+  - Fixed 6 malformed error responses in McpWooIntelligentSearch.php
+  - All errors now follow JSON-RPC 2.0 specification with proper error codes
+  - Prevents client-side JSON parsing errors and protocol violations
+  - Improved error codes: -32001 (MISSING_PARAMETER), -32002 (RESOURCE_NOT_FOUND)
+
+* Universal Store Type Support
+  - Enhanced descriptions to support ANY WooCommerce store type
+  - Works across electronics, food, pets, pharmacy, automotive, clothing, books, etc.
+  - Universal product search patterns and examples for all industries
+  - Scalable architecture for diverse product catalogs
+
+* Product Variations Workflow
+  - Step-by-step guidance for getting product colors, sizes, and attributes
+  - Clear differentiation between global attributes and product-specific variations
+  - Examples for clothing, electronics, food, and automotive industries
+  - Prevents confusion between wc_get_product_attributes and wc_get_product_variations
+
 **TECHNICAL IMPROVEMENTS**
 
 * Enhanced error handling across all tools
@@ -79,6 +120,9 @@
 
 **BUG FIXES**
 
+* Fixed AI agent product ID confusion preventing correct product variations lookup
+* Fixed JSON-RPC protocol validation errors causing client communication failures
+* Fixed tool descriptions leading to incorrect AI agent workflow sequences
 * Fixed REST API initialization timing issues
 * Removed debug files that could cause production errors
 * Fixed WooCommerce dependency checking
@@ -95,6 +139,9 @@
 
 **DEVELOPER EXPERIENCE**
 
+* Enhanced AI agent development workflow with clear tool usage patterns
+* Comprehensive search guide with universal examples for all store types
+* Detailed product variations workflow documentation
 * Improved error logging and debugging information
 * Better documentation of critical functions
 * Enhanced development workflow with emergency recovery
@@ -104,6 +151,7 @@
 ---
 
 **Emergency Deployment History:**
+- 4e39c3c: FIX: AI agent product search workflow and JSON-RPC error handling
 - 5a3dc06: EMERGENCY: Disable plugin permanently due to 500 errors
 - aca2771: EMERGENCY: Add plugin disable/enable to deployment  
 - b95e749: HOTFIX: Remove WordPress commands causing site crash
