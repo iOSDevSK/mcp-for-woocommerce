@@ -5,7 +5,7 @@
  * Version:           0.2.3
  * Requires at least: 6.4
  * Requires PHP:      8.0
- * Author:            Automattic AI, Ovidiu Galatan <ovidiu.galatan@a8c.com>
+ * Author:            Automattic AI, Ovidiu Galatan, Filip Dvoran, Claude
  * Author URI:        https://automattic.com
  * License:           GPL-2.0-or-later
  * License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
