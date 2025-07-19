@@ -78,7 +78,7 @@ jobs:
           if [ -f "composer.json" ]; then
             echo "Running composer install..."
             if command -v composer >/dev/null 2>&1; then
-              composer install --no-dev --optimize-autoloader || echo "Composer install failed"
+              echo "yes" | composer install --no-dev --optimize-autoloader || echo "Composer install failed"
             else
               echo "Composer not found, skipping composer install"
             fi
