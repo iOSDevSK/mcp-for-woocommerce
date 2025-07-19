@@ -42,7 +42,7 @@ class InitializeHandler {
 		);
 
 		$server_info = array(
-			'name'     => 'WooCommerce MCP Server',
+			'name'     => 'Woo - MCP Server',
 			'version'  => WORDPRESS_MCP_VERSION,
 			'siteInfo' => $site_info,
 		);
@@ -76,7 +76,7 @@ class InitializeHandler {
 			'protocolVersion' => '2025-03-26',
 			'serverInfo'      => $server_info,
 			'capabilities'    => (object) $capabilities,
-			'instructions'    => 'This is a WooCommerce MCP Server implementation that provides tools, resources, and prompts for interacting with the WooCommerce store ' . get_bloginfo( 'name' ) . ' (' . get_bloginfo( 'url' ) . ').',
+			'instructions'    => 'This is a Woo - MCP Server implementation that provides tools, resources, and prompts for interacting with the WooCommerce store ' . get_bloginfo( 'name' ) . ' (' . get_bloginfo( 'url' ) . ').',
 		);
 	}
 }
