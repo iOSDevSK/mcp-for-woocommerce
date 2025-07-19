@@ -145,6 +145,13 @@ class McpStreamableTransport extends McpTransportBase {
 			foreach ( $messages as $message ) {
 				$validation_result = McpErrorHandler::validate_jsonrpc_message( $message );
 				if ( true !== $validation_result ) {
+					McpErrorHandler::log_error( 
+						'JSON-RPC validation failed for incoming message', 
+						array( 
+							'message' => $message, 
+							'validation_error' => $validation_result 
+						) 
+					);
 					return new WP_REST_Response( $validation_result, 400 );
 				}
 
@@ -176,6 +183,23 @@ class McpStreamableTransport extends McpTransportBase {
 
 			// Return single result or batch
 			$response_body = count( $results ) === 1 ? $results[0] : $results;
+
+			// Validate outgoing response
+			if ( is_array( $response_body ) ) {
+				$responses_to_validate = isset( $response_body[0] ) ? $response_body : array( $response_body );
+				foreach ( $responses_to_validate as $response ) {
+					$validation_result = McpErrorHandler::validate_jsonrpc_message( $response );
+					if ( true !== $validation_result ) {
+						McpErrorHandler::log_error( 
+							'Invalid JSON-RPC response being sent', 
+							array( 
+								'response' => $response,
+								'validation_error' => $validation_result
+							) 
+						);
+					}
+				}
+			}
 
 			$headers = array(
 				'Content-Type'                 => 'application/json',
@@ -224,8 +248,9 @@ class McpStreamableTransport extends McpTransportBase {
 	 * @return array
 	 */
 	protected function create_method_not_found_error( string $method, int $request_id ): array {
+		$error_response = McpErrorHandler::method_not_found( $request_id, $method );
 		return array(
-			'error' => McpErrorHandler::method_not_found( $request_id, $method )['error'],
+			'error' => $error_response['error'],
 		);
 	}
 
@@ -237,7 +262,10 @@ class McpStreamableTransport extends McpTransportBase {
 	 * @return array
 	 */
 	protected function handle_exception( \Throwable $exception, int $request_id ): array {
-		return McpErrorHandler::handle_exception( $exception, $request_id );
+		$error_response = McpErrorHandler::handle_exception( $exception, $request_id );
+		return array(
+			'error' => $error_response['error'],
+		);
 	}
 
 	/**
@@ -265,14 +293,32 @@ class McpStreamableTransport extends McpTransportBase {
 	 * @return array
 	 */
 	protected function format_error_response( array $error, int $request_id = 0 ): array {
-		if ( isset( $error['error'] ) ) {
-			return array(
+		// If the error already contains a proper error structure
+		if ( isset( $error['error'] ) && is_array( $error['error'] ) ) {
+			$response = array(
 				'jsonrpc' => '2.0',
 				'id'      => $request_id,
 				'error'   => $error['error'],
 			);
+			
+			// Validate the error structure has required fields
+			if ( ! isset( $error['error']['code'] ) || ! isset( $error['error']['message'] ) ) {
+				McpErrorHandler::log_error( 
+					'Error response missing required fields', 
+					array( 'error' => $error['error'] ) 
+				);
+				return McpErrorHandler::internal_error( $request_id, 'Invalid error response format' );
+			}
+			
+			return $response;
 		}
 
+		// Log the invalid error format for debugging
+		McpErrorHandler::log_error( 
+			'Invalid error response format received', 
+			array( 'error' => $error ) 
+		);
+		
 		// If it's not already a proper error response, make it one
 		return McpErrorHandler::internal_error( $request_id, 'Invalid error response format' );
 	}
