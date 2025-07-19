@@ -1,8 +1,15 @@
-=== WooCommerce MCP Plugin Changelog ===
+=== Woo - MCP Plugin Changelog ===
 
 = Version 0.2.3 - Release #000001 - July 19, 2025 @ 14:45 CET =
 
 **CRITICAL FIXES & EMERGENCY PATCHES**
+
+* #000008 - Update plugin branding to Woo - MCP
+  Date: July 19, 2025 @ 15:25 CET
+  - Updated plugin name from "WooCommerce MCP" to "Woo - MCP"
+  - Updated server name to "Woo - MCP Server"
+  - Updated server instructions and package documentation
+  - Simplified branding for better recognition
 
 * #000007 - Update plugin branding to WooCommerce MCP  
   Date: July 19, 2025 @ 15:10 CET
