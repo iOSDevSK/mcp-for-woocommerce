@@ -1,0 +1,98 @@
+=== WooCommerce MCP Plugin Changelog ===
+
+= Version 0.2.3 - July 2025 =
+
+**CRITICAL FIXES & EMERGENCY PATCHES**
+
+* CRITICAL FIX: Add function checks to prevent fatal errors in McpWooIntelligentSearch
+  - Fixed fatal "Call to undefined function" errors during plugin initialization
+  - Added function_exists() checks for wc_get_products() and get_terms()
+  - Ensures graceful degradation when WooCommerce/WordPress functions not available
+  - Resolves "Critical error on this website" message
+
+* EMERGENCY FIX: Resolve plugin 500 errors and restore functionality
+  - Added function check before calling rest_get_server() in RegisterMcpTool.php
+  - Removed problematic test files that caused WordPress loading errors
+  - Updated deployment workflow to re-enable plugin after fixes applied
+  - Prevents fatal errors when REST API not fully initialized
+
+**DEPLOYMENT & INFRASTRUCTURE**
+
+* Add GitHub Actions deployment workflow - Updated
+  - Enhanced deployment workflow with emergency recovery features
+  - Added git stash for local changes handling
+  - Implemented plugin re-enabling after fixes
+  - Added PHP OPcache clearing and WordPress cache flushing
+  - Improved error handling and recovery mechanisms
+
+**FEATURES & ENHANCEMENTS**
+
+* Fix JSON-RPC validation errors in shipping tools
+  - Enhanced error response formatting for JSON-RPC 2.0 compliance
+  - Added result validation to prevent malformed responses
+  - Improved shipping zone tools with required parameter validation
+  - All shipping tools now use callback methods for better error handling
+  - Fixed parameter requirements for wc_get_shipping_zone, wc_get_shipping_methods, wc_get_shipping_locations
+
+* Uncommented intelligent search
+  - Enabled McpWooIntelligentSearch tool for AI-powered product search
+  - Provides advanced search capabilities with relevance scoring
+  - Supports intent analysis and category/tag matching
+
+**TECHNICAL IMPROVEMENTS**
+
+* Enhanced error handling across all tools
+  - Added comprehensive function existence checks
+  - Improved graceful degradation when dependencies unavailable
+  - Better error logging and debugging capabilities
+  - Consistent error response formatting
+
+* Shipping tools enhancements
+  - Safe callback methods for zone validation
+  - Support for zone ID 0 (default zone) handling
+  - Comprehensive country shipping availability checker
+  - Dynamic shipping method detection using WooCommerce settings
+
+* Plugin architecture improvements
+  - Better initialization timing and dependency management
+  - Enhanced REST API route validation
+  - Improved tool registration safety checks
+  - More robust error recovery mechanisms
+
+**BUG FIXES**
+
+* Fixed REST API initialization timing issues
+* Removed debug files that could cause production errors
+* Fixed WooCommerce dependency checking
+* Improved plugin activation and deactivation handling
+* Enhanced compatibility with WordPress core functions
+
+**SECURITY & STABILITY**
+
+* Added comprehensive input validation
+* Enhanced error boundaries to prevent fatal crashes
+* Improved plugin isolation and error containment
+* Better handling of edge cases and malformed requests
+* Strengthened plugin recovery mechanisms
+
+**DEVELOPER EXPERIENCE**
+
+* Improved error logging and debugging information
+* Better documentation of critical functions
+* Enhanced development workflow with emergency recovery
+* Comprehensive testing patterns for shipping functionality
+* Clear separation of concerns in tool architecture
+
+---
+
+**Emergency Deployment History:**
+- 5a3dc06: EMERGENCY: Disable plugin permanently due to 500 errors
+- aca2771: EMERGENCY: Add plugin disable/enable to deployment  
+- b95e749: HOTFIX: Remove WordPress commands causing site crash
+- c74503f: EMERGENCY FIX: Resolve plugin 500 errors and restore functionality
+- 24f5713: CRITICAL FIX: Add function checks to prevent fatal errors in McpWooIntelligentSearch
+
+**Plugin Status:** Stable and fully functional with comprehensive error handling
+**WordPress Compatibility:** 6.4+
+**WooCommerce Compatibility:** 3.0+
+**PHP Requirements:** 8.0+
