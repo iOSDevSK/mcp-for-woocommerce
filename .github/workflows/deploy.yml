@@ -18,10 +18,16 @@ jobs:
         script: |
           cd /var/www/html/wp-content/plugins/
           
-          # EMERGENCY: Permanently disable plugin until manual recovery
-          if [ -d "woo-mcp" ]; then
-            mv woo-mcp woo-mcp-emergency-disabled 2>/dev/null || true
-            echo "Plugin emergency disabled due to 500 errors"
+          # Stash any local changes
+          git stash 2>/dev/null || true
+          
+          # Update the plugin
+          git pull origin main
+          
+          # Re-enable the plugin (fixes have been applied)
+          if [ -d "woo-mcp-emergency-disabled" ]; then
+            mv woo-mcp-emergency-disabled woo-mcp 2>/dev/null || true
+            echo "Plugin re-enabled after emergency fixes"
           fi
           
           # Clear PHP OPcache to ensure changes take effect

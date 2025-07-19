@@ -63,6 +63,12 @@ class RegisterMcpTool {
 		$method = $this->args['rest_alias']['method'];
 		$route  = $this->args['rest_alias']['route'];
 
+		// Check if REST API server is available.
+		if ( ! function_exists( 'rest_get_server' ) ) {
+			McpErrorHandler::log_error( 'REST API server not available. Skipping registration for: ' . $route . ' ' . $method );
+			return;
+		}
+
 		// get a list of all registered rest routes.
 		$routes     = rest_get_server()->get_routes();
 		$rest_route = $routes[ $route ] ?? null;
