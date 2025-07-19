@@ -1,8 +1,16 @@
-# WordPress MCP - Modified
+# Woo - MCP
 
-[![Latest Release](https://img.shields.io/github/v/release/Automattic/wordpress-mcp)](https://github.com/Automattic/wordpress-mcp/releases)
+[![Latest Release](https://img.shields.io/github/v/release/iOSDevSK/woo-mcp)](https://github.com/iOSDevSK/woo-mcp/releases)
 
 A comprehensive WordPress plugin that implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) to expose WordPress and WooCommerce functionality through standardized interfaces. This plugin enables AI models and applications to interact with WordPress sites and e-commerce stores securely using multiple transport protocols and enterprise-grade authentication.
+
+## 🚀 Latest Updates
+
+- **Enhanced Deployment**: Streamlined deployment workflow with automated dependency installation
+- **Production Ready**: Composer and npm dependencies are automatically installed and built on deployment
+- **Simplified Branding**: Updated to "Woo - MCP" for better recognition and clarity
+- **Security Improvements**: Enhanced deployment security with proper error handling and validation
+- **Performance Optimization**: Removed backup creation for faster, cleaner deployments
 
 ## ✨ Features
 
@@ -47,19 +55,23 @@ WordPress MCP Plugin
 
 ### Quick Install
 
-1. Download `wordpress-mcp.zip` from [releases](https://github.com/Automattic/wordpress-mcp/releases/)
-2. Upload to `/wp-content/plugins/wordpress-mcp` directory
+1. Download `woo-mcp.zip` from [releases](https://github.com/iOSDevSK/woo-mcp/releases/)
+2. Upload to `/wp-content/plugins/woo-mcp` directory
 3. Activate through WordPress admin 'Plugins' menu
 4. Navigate to `Settings > WordPress MCP` to configure
 
-### Composer Install (Development)
+### Automated Deployment
+
+The plugin includes automated deployment with dependency management:
 
 ```bash
 cd wp-content/plugins/
-git clone https://github.com/Automattic/wordpress-mcp.git
-cd wordpress-mcp
-composer install --no-dev
-npm install && npm run build
+git clone https://github.com/iOSDevSK/woo-mcp.git
+cd woo-mcp
+# Dependencies are automatically installed via deployment workflow
+# composer install --no-dev --optimize-autoloader
+# npm install --production  
+# npm run build
 ```
 
 ## 🔐 Authentication Setup
@@ -553,4 +565,4 @@ This project is licensed under the [GPL v2 or later](LICENSE).
 
 ---
 
-Built with ❤️ by [Automattic](https://automattic.com) for the WordPress and AI communities.
+Built with ❤️ by [iOSDevSK](https://github.com/iOSDevSK) based on [Automattic's WordPress MCP](https://github.com/Automattic/wordpress-mcp) for the WordPress and AI communities.
