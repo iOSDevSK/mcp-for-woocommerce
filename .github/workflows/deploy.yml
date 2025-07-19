@@ -16,19 +16,38 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          cd /var/www/html/wp-content/plugins/
+          # Navigate to the specific plugin directory
+          cd /var/www/html/wp-content/plugins/woo-mcp/
+          
+          # Initialize git repository if it doesn't exist
+          if [ ! -d ".git" ]; then
+            git init
+            git remote add origin https://github.com/iOSDevSK/woo-mcp.git
+            echo "Initialized git repository"
+          fi
           
           # Stash any local changes
           git stash 2>/dev/null || true
           
-          # Update the plugin
-          git pull origin main
+          # Fetch and reset to latest
+          git fetch origin main
+          git reset --hard origin/main
           
           # Re-enable the plugin (fixes have been applied)
-          if [ -d "woo-mcp-emergency-disabled" ]; then
-            mv woo-mcp-emergency-disabled woo-mcp 2>/dev/null || true
+          if [ -d "/var/www/html/wp-content/plugins/woo-mcp-emergency-disabled" ]; then
+            mv /var/www/html/wp-content/plugins/woo-mcp-emergency-disabled /var/www/html/wp-content/plugins/woo-mcp 2>/dev/null || true
             echo "Plugin re-enabled after emergency fixes"
           fi
+          
+          # Set proper permissions
+          chown -R www-data:www-data /var/www/html/wp-content/plugins/woo-mcp/
+          chmod -R 755 /var/www/html/wp-content/plugins/woo-mcp/
+          
+          # Verify deployment
+          echo "Checking deployed files:"
+          ls -la /var/www/html/wp-content/plugins/woo-mcp/
+          echo "Checking for changelog.txt:"
+          ls -la /var/www/html/wp-content/plugins/woo-mcp/changelog.txt || echo "changelog.txt not found"
           
           # Clear PHP OPcache to ensure changes take effect
           if command -v php >/dev/null 2>&1; then
