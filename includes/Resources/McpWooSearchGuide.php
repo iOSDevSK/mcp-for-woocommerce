@@ -37,11 +37,13 @@ class McpWooSearchGuide {
       return [
           'title' => 'WooCommerce Universal Search Guide',
           'version' => '2.0',
-          'description' => 'Universal step-by-step guide for AI assistants to perform optimal product searches with automatic fallback strategies for any product type',
+          'description' => 'Universal step-by-step guide for AI assistants to perform optimal product searches with automatic fallback strategies for ANY store type: electronics, food, pets, pharmacy, automotive, clothing, books, tools, beauty, sports, etc. Handles multiple products with same name.',
           
           'workflow' => [
               'overview' => 'Always follow this 4-step process for ANY product search query with intelligent fallbacks',
-              'universal_principle' => 'This guide works for all product types: electronics, clothing, books, food, tools, beauty, sports, etc.',
+              'universal_principle' => 'This guide works for ALL store types: electronics, food, pets, pharmacy, automotive, clothing, books, tools, beauty, sports, home & garden, toys, etc.',
+              'critical_workflow_rule' => 'ALWAYS search for products by name using wc_products_search FIRST to get correct product IDs. NEVER use hardcoded IDs.',
+              'multiple_products_handling' => 'If multiple products have same name (e.g., Men vs Women versions), present all options to user with their differences.',
               'steps' => [
                   [
                       'step' => 1,
@@ -192,6 +194,10 @@ class McpWooSearchGuide {
           ],
 
           'best_practices' => [
+              'always_search_first' => 'CRITICAL: Always use wc_products_search FIRST to find products by name before using any other tools',
+              'never_hardcode_ids' => 'NEVER use hardcoded product IDs - always get IDs from search results',
+              'handle_multiple_products' => 'If search returns multiple products with same name, present all options to user',
+              'get_variations_correctly' => 'To get product colors/sizes: 1) Search for product, 2) Use wc_get_product_variations with the found product_id',
               'always_get_categories_first' => 'Categories change dynamically, never assume what categories exist',
               'use_intent_analyzer' => 'Always analyze user intent before searching - it provides optimized parameters',
               'combine_multiple_intents' => 'Users often combine price + category + promotional intent in one query',
@@ -200,7 +206,7 @@ class McpWooSearchGuide {
               'progressive_filter_removal' => 'Remove most restrictive filters first (sale, price) then broader filters',
               'inform_user_of_strategy' => 'Tell user which search strategy worked (e.g., "Found products in [category] instead")',
               'handle_no_results_gracefully' => 'Always explain what was searched and offer alternatives',
-              'universal_approach' => 'This strategy works for any product category: electronics, clothing, books, tools, etc.'
+              'universal_approach' => 'This strategy works for ANY store type: electronics, food, pets, pharmacy, automotive, clothing, books, tools, beauty, sports, etc.'
           ],
 
           'common_patterns' => [
@@ -311,6 +317,46 @@ class McpWooSearchGuide {
                       '4. Stage 2: Search all [products] (remove sale filter) → Show available [products]',
                       '5. Inform user: "No [products] currently on sale, but here are available [products]"'
                   ]
+              ]
+          ],
+
+          'product_variations_workflow' => [
+              'description' => 'How to get product colors, sizes, and other variations correctly',
+              'critical_rule' => 'NEVER use hardcoded product IDs - always search first',
+              'correct_workflow' => [
+                  'step_1' => [
+                      'action' => 'Search for the product by name',
+                      'tool' => 'wc_products_search',
+                      'example' => 'search="Ramie Shirt with Pockets"',
+                      'result' => 'Returns product(s) with correct ID(s)'
+                  ],
+                  'step_2' => [
+                      'action' => 'Handle multiple products if found',
+                      'description' => 'If multiple products have same name (e.g., Men/Women versions), present all options',
+                      'example' => 'Found 2 "Ramie Shirt with Pockets": ID 1169 (Men), ID 1170 (Women)'
+                  ],
+                  'step_3' => [
+                      'action' => 'Get variations for each relevant product',
+                      'tool' => 'wc_get_product_variations',
+                      'parameter' => 'product_id from search results',
+                      'example' => 'wc_get_product_variations(product_id=1169) for Men version'
+                  ],
+                  'step_4' => [
+                      'action' => 'Present colors/sizes to user',
+                      'description' => 'Show available options with prices and stock status',
+                      'example' => 'Men Ramie Shirt available in: White (€39.99), Yellow (€39.99)'
+                  ]
+              ],
+              'wrong_approaches' => [
+                  'using_global_attributes' => 'wc_get_product_attributes shows global attribute types, not specific product colors',
+                  'hardcoded_ids' => 'Using product_id=42 or any hardcoded ID without searching first',
+                  'skipping_search' => 'Going directly to variations without finding the correct product first'
+              ],
+              'universal_examples' => [
+                  'clothing' => 'Search "Blue Jeans" → Get product ID → Get variations for sizes/styles',
+                  'electronics' => 'Search "iPhone 15" → Get product ID → Get variations for colors/storage',
+                  'food' => 'Search "Organic Coffee" → Get product ID → Get variations for sizes/flavors',
+                  'automotive' => 'Search "Car Tires" → Get product ID → Get variations for sizes/brands'
               ]
           ],
 

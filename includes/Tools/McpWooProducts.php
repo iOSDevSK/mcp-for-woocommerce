@@ -35,7 +35,7 @@ class McpWooProducts {
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wc_products_search',
-				'description' => 'Search and filter WooCommerce products with pagination',
+				'description' => 'Universal product search for ANY store type (electronics, food, pets, pharmacy, automotive, etc.). CRITICAL: When searching for specific products by name, ALWAYS use this tool FIRST to get the correct product ID, then use other tools with that ID. DO NOT use hardcoded product IDs.',
 				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products',
@@ -70,7 +70,7 @@ class McpWooProducts {
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wc_get_product_variations',
-				'description' => 'Get all variations for a variable WooCommerce product',
+				'description' => 'Get all variations (colors, sizes, etc.) for a variable WooCommerce product. CRITICAL: You MUST get the product_id from wc_products_search first. DO NOT use hardcoded product IDs like 42. Each variation includes specific attributes like color, size, price, and stock status.',
 				'type'        => 'read',
 				'rest_alias'  => array(
 					'route'  => '/wc/v3/products/(?P<product_id>[\d]+)/variations',

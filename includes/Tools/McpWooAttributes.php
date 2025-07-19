@@ -25,7 +25,7 @@ class McpWooAttributes {
 
         new RegisterMcpTool([
             'name' => 'wc_get_product_attributes',
-            'description' => 'Get all WooCommerce product attributes (like Color, Size, Material)',
+            'description' => 'Get all GLOBAL product attribute definitions (like Color, Size, Material) available in the store. WARNING: This shows attribute types, NOT specific product colors/sizes. To get available colors/sizes for a specific product, use: 1) wc_products_search to find the product, 2) wc_get_product_variations with that product ID.',
             'type' => 'read',
             'rest_alias' => [
                 'route' => '/wc/v3/products/attributes',
