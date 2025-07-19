@@ -515,6 +515,16 @@ class McpWooIntelligentSearch {
     */
    private function search_products( array $params ): array {
        try {
+           // Check if WooCommerce function is available
+           if ( ! function_exists( 'wc_get_products' ) ) {
+               return array( 
+                   'products' => array(), 
+                   'error' => 'WooCommerce not fully loaded',
+                   'total' => 0,
+                   'total_pages' => 0,
+               );
+           }
+           
            // Use WooCommerce's wc_get_products function
            $products = wc_get_products( $params );
            
@@ -798,6 +808,11 @@ class McpWooIntelligentSearch {
     */
    private function get_categories_safe(): array {
        try {
+           // Check if WordPress function is available
+           if ( ! function_exists( 'get_terms' ) ) {
+               return array();
+           }
+           
            $categories = get_terms( array(
                'taxonomy' => 'product_cat',
                'hide_empty' => false,
@@ -832,6 +847,11 @@ class McpWooIntelligentSearch {
     */
    private function get_tags_safe(): array {
        try {
+           // Check if WordPress function is available  
+           if ( ! function_exists( 'get_terms' ) ) {
+               return array();
+           }
+           
            $tags = get_terms( array(
                'taxonomy' => 'product_tag',
                'hide_empty' => false,
