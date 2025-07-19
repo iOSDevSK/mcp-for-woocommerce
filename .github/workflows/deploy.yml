@@ -38,6 +38,10 @@ jobs:
           echo "Checking plugin branding:"
           grep "Plugin name:" wordpress-mcp.php
           
+          # Force deployment timestamp
+          echo "Deployment completed at: $(date)"
+          echo "Latest commit deployed: $(git log --oneline -1)"
+          
           # Re-enable the plugin (fixes have been applied)
           if [ -d "/var/www/html/wp-content/plugins/woo-mcp-emergency-disabled" ]; then
             mv /var/www/html/wp-content/plugins/woo-mcp-emergency-disabled /var/www/html/wp-content/plugins/woo-mcp 2>/dev/null || true
