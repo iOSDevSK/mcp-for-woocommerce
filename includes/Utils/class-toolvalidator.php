@@ -1,6 +1,6 @@
 <?php
 /**
- * Tool Validator
+ * Enhanced Tool Validator with multiple validation levels
  *
  * @package WordPressMCP
  * @subpackage Utils
@@ -9,11 +9,12 @@
 namespace WordPressMCP\Utils;
 
 use InvalidArgumentException;
+use WP_Error;
 
 /**
  * Class ToolValidator
  *
- * Validates tools against a provided schema.
+ * Validates tools against a provided schema with multiple validation levels.
  */
 class ToolValidator {
 	/**
@@ -24,37 +25,107 @@ class ToolValidator {
 	private array $schema;
 
 	/**
+	 * Validation level: 'strict', 'extended', or 'permissive'
+	 *
+	 * @var string
+	 */
+	private string $validation_level;
+
+	/**
+	 * Validation errors collected during validation
+	 *
+	 * @var array
+	 */
+	private array $validation_errors = array();
+
+	/**
 	 * Constructor.
 	 *
-	 * @param array $schema The schema to validate against.
+	 * @param array  $schema The schema to validate against.
+	 * @param string $validation_level Validation level: 'strict', 'extended', 'permissive'.
 	 */
-	public function __construct( array $schema ) {
-		$this->schema = $schema;
+	public function __construct( array $schema, string $validation_level = 'extended' ) {
+		$this->schema           = $schema;
+		$this->validation_level = $validation_level;
 	}
 
 	/**
 	 * Validates a tool against the schema.
 	 *
 	 * @param array $tool The tool to validate.
-	 * @return bool True if valid, throws exception if invalid.
-	 * @throws InvalidArgumentException If validation fails.
+	 * @return bool|WP_Error True if valid, WP_Error object if validation fails.
 	 */
-	public function validate( array $tool ): bool {
-		// Validate required fields.
-		$this->validateRequiredFields( $tool );
+	public function validate( array $tool ) {
+		$this->validation_errors = array();
 
-		// Validate name format.
-		$this->validateName( $tool['name'] );
+		try {
+			// Validate required fields.
+			$this->validateRequiredFields( $tool );
 
-		// Validate input schema.
-		$this->validateInputSchema( $tool['inputSchema'] );
+			// Validate name format.
+			$this->validateName( $tool['name'] );
 
-		// Validate annotations if present.
-		if ( isset( $tool['annotations'] ) ) {
-			$this->validateAnnotations( $tool['annotations'] );
+			// Validate input schema.
+			$this->validateInputSchema( $tool['inputSchema'] );
+
+			// Validate annotations if present.
+			if ( isset( $tool['annotations'] ) ) {
+				$this->validateAnnotations( $tool['annotations'] );
+			}
+
+			// Validate callback if present (extended/strict modes)
+			if ( in_array( $this->validation_level, array( 'extended', 'strict' ), true ) ) {
+				$this->validateCallback( $tool );
+			}
+
+			// Validate tool enablement (strict mode only)
+			if ( 'strict' === $this->validation_level ) {
+				$this->validateToolEnabledStatus( $tool );
+			}
+
+			return empty( $this->validation_errors ) ? true : new WP_Error( 'validation_failed', 'Tool validation failed', $this->validation_errors );
+
+		} catch ( InvalidArgumentException $e ) {
+			$this->validation_errors[] = $e->getMessage();
+			return new WP_Error( 'validation_exception', $e->getMessage(), $this->validation_errors );
 		}
+	}
 
-		return true;
+	/**
+	 * Strict MCP compliance validation
+	 *
+	 * @param array $tool The tool to validate.
+	 * @return bool|WP_Error True if valid, WP_Error object if validation fails.
+	 */
+	public function validate_mcp_strict( array $tool ) {
+		$old_level              = $this->validation_level;
+		$this->validation_level = 'strict';
+		$result                 = $this->validate( $tool );
+		$this->validation_level = $old_level;
+		return $result;
+	}
+
+	/**
+	 * WordPress-specific extended validation
+	 *
+	 * @param array $tool The tool to validate.
+	 * @return bool|WP_Error True if valid, WP_Error object if validation fails.
+	 */
+	public function validate_wordpress_extended( array $tool ) {
+		$old_level              = $this->validation_level;
+		$this->validation_level = 'extended';
+		$result                 = $this->validate( $tool );
+		$this->validation_level = $old_level;
+		return $result;
+	}
+
+	/**
+	 * Get validation errors
+	 *
+	 * @return array Array of validation error messages.
+	 */
+	public function get_validation_errors(): array {
+		return $this->validation_errors;
 	}
 
 	/**
@@ -163,6 +234,65 @@ class ToolValidator {
 
 			if ( $actualType !== $expectedType ) {
 				throw new InvalidArgumentException( "Annotation '{$key}' must be of type {$expectedType}, got {$actualType}." );
+			}
+		}
+	}
+
+	/**
+	 * Validates tool callback function exists and is callable
+	 *
+	 * @param array $tool The tool to validate.
+	 * @throws InvalidArgumentException If callback is invalid.
+	 */
+	private function validateCallback( array $tool ): void {
+		if ( ! isset( $tool['callback'] ) ) {
+			$this->validation_errors[] = 'Tool callback is missing.';
+			return;
+		}
+
+		if ( ! is_callable( $tool['callback'] ) ) {
+			$this->validation_errors[] = 'Tool callback is not callable.';
+		}
+	}
+
+	/**
+	 * Validates tool enablement status
+	 *
+	 * @param array $tool The tool to validate.
+	 * @throws InvalidArgumentException If enablement status is invalid.
+	 */
+	private function validateToolEnabledStatus( array $tool ): void {
+		if ( isset( $tool['enabled'] ) && ! is_bool( $tool['enabled'] ) ) {
+			$this->validation_errors[] = 'Tool enabled status must be boolean.';
+		}
+	}
+
+	/**
+	 * Enhanced input schema validation with deeper type checking
+	 *
+	 * @param array $inputSchema The input schema to validate.
+	 * @throws InvalidArgumentException If input schema is invalid.
+	 */
+	private function validateInputSchemaEnhanced( array $inputSchema ): void {
+		$this->validateInputSchema( $inputSchema );
+
+		// Additional validations for strict mode
+		if ( 'strict' === $this->validation_level ) {
+			// Validate schema format compliance
+			if ( isset( $inputSchema['$schema'] ) ) {
+				$validSchemas = array(
+					'https://json-schema.org/draft/2020-12/schema',
+					'http://json-schema.org/draft-07/schema#',
+				);
+
+				if ( ! in_array( $inputSchema['$schema'], $validSchemas, true ) ) {
+					$this->validation_errors[] = 'Unsupported JSON schema version.';
+				}
+			}
+
+			// Validate additional constraints
+			if ( isset( $inputSchema['additionalProperties'] ) && ! is_bool( $inputSchema['additionalProperties'] ) ) {
+				$this->validation_errors[] = 'additionalProperties must be boolean.';
 			}
 		}
 	}
