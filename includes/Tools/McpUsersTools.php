@@ -66,70 +66,7 @@ class McpUsersTools {
 			)
 		);
 
-		new RegisterMcpTool(
-			array(
-				'name'        => 'wp_add_user',
-				'description' => 'Add a new WordPress user',
-				'type'        => 'create',
-				'rest_alias'  => array(
-					'route'                   => '/wp/v2/users',
-					'method'                  => 'POST',
-					'inputSchemaReplacements' => array(
-						'properties' => array(
-							'locale' => null,
-						),
-						'required'   => array(
-							'context',
-						),
-					),
-				),
-				'annotations' => array(
-					'title'           => 'Add User',
-					'readOnlyHint'    => false,
-					'destructiveHint' => false,
-					'idempotentHint'  => false,
-					'openWorldHint'   => false,
-				),
-			)
-		);
-
-		new RegisterMcpTool(
-			array(
-				'name'        => 'wp_update_user',
-				'description' => 'Update a WordPress user by ID',
-				'type'        => 'update',
-				'rest_alias'  => array(
-					'route'  => '/wp/v2/users/(?P<id>[\d]+)',
-					'method' => 'PUT',
-				),
-				'annotations' => array(
-					'title'           => 'Update User',
-					'readOnlyHint'    => false,
-					'destructiveHint' => false,
-					'idempotentHint'  => true,
-					'openWorldHint'   => false,
-				),
-			)
-		);
-
-		new RegisterMcpTool(
-			array(
-				'name'        => 'wp_delete_user',
-				'description' => 'Delete a WordPress user by ID',
-				'type'        => 'delete',
-				'rest_alias'  => array(
-					'route'  => '/wp/v2/users/(?P<id>[\d]+)',
-					'method' => 'DELETE',
-				),
-				'annotations' => array(
-					'title'           => 'Delete User',
-					'readOnlyHint'    => false,
-					'destructiveHint' => true,
-					'idempotentHint'  => true,
-					'openWorldHint'   => false,
-				),
-			)
-		);
+		// Removed wp_add_user, wp_update_user, wp_delete_user for security reasons
 
 		// Get current user.
 		new RegisterMcpTool(
@@ -149,24 +86,6 @@ class McpUsersTools {
 			)
 		);
 
-		// Update current user.
-		new RegisterMcpTool(
-			array(
-				'name'        => 'wp_update_current_user',
-				'description' => 'Update the current logged-in user',
-				'type'        => 'update',
-				'rest_alias'  => array(
-					'route'  => '/wp/v2/users/me',
-					'method' => 'PUT',
-				),
-				'annotations' => array(
-					'title'           => 'Update Current User',
-					'readOnlyHint'    => false,
-					'destructiveHint' => false,
-					'idempotentHint'  => true,
-					'openWorldHint'   => false,
-				),
-			)
-		);
+		// Removed wp_update_current_user for security reasons
 	}
 }

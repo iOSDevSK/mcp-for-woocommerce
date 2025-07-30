@@ -1,5 +1,26 @@
 === Woo - MCP Plugin Changelog ===
 
+= Version 0.2.6 - Release #000004 - July 30, 2025 @ 12:00 CET =
+
+**CRITICAL SECURITY FIX - READ-ONLY MODE ENFORCED**
+
+* #000011 - CRITICAL SECURITY: Remove all write/delete operations for production safety
+  Date: July 30, 2025 @ 12:00 CET
+  - REMOVED: All create/update/delete operations from MCP tools for security
+  - FIXED: Critical authentication bypass in McpRestApiCrud.php (permission_callback: '__return_true')
+  - FIXED: Dangerous CORS configuration allowing all origins ('*') 
+  - SECURED: REST API access now requires user authentication ('is_user_logged_in')
+  - RESTRICTED: McpRestApiCrud now supports only GET operations (read-only)
+  - REMOVED: User management tools (wp_add_user, wp_update_user, wp_delete_user)
+  - REMOVED: Content modification tools (wp_add_post, wp_update_post, wp_delete_post)
+  - REMOVED: Category/tag modification tools (wp_add_category, wp_update_category, wp_delete_category)
+  - REMOVED: Custom post type modification tools (wp_add_cpt, wp_update_cpt, wp_delete_cpt)
+  - REMOVED: Settings modification tools (wp_update_general_settings)
+  - REMOVED: Page modification tools (wp_add_page, wp_update_page, wp_delete_page)
+  - REMOVED: Media upload/modification tools (wp_upload_media, wp_update_media, wp_delete_media)
+  - MAINTAINED: All read-only functionality intact (search, retrieve, view operations)
+  - SECURITY: Plugin now 100% safe for customer installations
+
 = Version 0.2.5 - Release #000003 - July 19, 2025 @ 17:45 CET =
 
 **CRITICAL JSON-RPC PROTOCOL FIX**
