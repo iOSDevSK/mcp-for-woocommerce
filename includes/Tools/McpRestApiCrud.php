@@ -96,8 +96,8 @@ class McpRestApiCrud {
 		new RegisterMcpTool(
 			array(
 				'name'                => 'run_api_function',
-				'description'         => 'Execute a specific WordPress REST API function by providing the endpoint route, HTTP method, and any required parameters or request body. Supports standard CRUD operations: GET (read), POST (create), PATCH (update), DELETE (remove).',
-				'type'                => 'action',
+				'description'         => 'Execute read-only WordPress REST API functions by providing the endpoint route. Only supports GET operations for security reasons.',
+				'type'                => 'read',
 				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
@@ -107,23 +107,23 @@ class McpRestApiCrud {
 						),
 						'method' => array(
 							'type'        => 'string',
-							'enum'        => array( 'GET', 'POST', 'PATCH', 'DELETE' ),
-							'description' => 'The HTTP method to use: GET, POST, PATCH, or DELETE',
+							'enum'        => array( 'GET' ),
+							'description' => 'The HTTP method to use: Only GET is allowed',
 						),
 						'data'   => array(
 							'type'        => 'object',
-							'description' => 'Payload for POST or PATCH requests. Not required for GET or DELETE.',
+							'description' => 'Query parameters for GET requests.',
 						),
 					),
 					'required'   => array( 'route', 'method' ),
 				),
 				'callback'            => array( $this, 'handle_tool_run_request' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => 'is_user_logged_in',
 				'annotations'         => array(
-					'title'           => 'Run API Function',
-					'readOnlyHint'    => false,
-					'destructiveHint' => true,
-					'idempotentHint'  => false,
+					'title'           => 'Run API Function (Read Only)',
+					'readOnlyHint'    => true,
+					'destructiveHint' => false,
+					'idempotentHint'  => true,
 					'openWorldHint'   => false,
 				),
 			)
@@ -131,7 +131,7 @@ class McpRestApiCrud {
 	}
 
 	/**
-	 * Handle a REST API request.
+	 * Handle a REST API request (read-only).
 	 *
 	 * @param array $data The request data.
 	 * @return array The response data.
@@ -139,42 +139,26 @@ class McpRestApiCrud {
 	public function handle_tool_run_request( array $data ): array {
 		$route  = $data['route'];
 		$method = $data['method'];
-		$data   = $data['data'];
+		$params = $data['data'] ?? array();
 
-		// Get settings to check if operations are enabled.
-		$settings = get_option( 'wordpress_mcp_settings', array() );
+		// Only allow GET requests for security
+		if ( $method !== 'GET' ) {
+			return array(
+				'error' => 'Only GET (read) operations are allowed for security reasons.',
+				'code'  => 'method_not_allowed',
+			);
+		}
 
-		// Check if the method is allowed based on settings.
-		switch ( $method ) {
-			case 'DELETE':
-				if ( empty( $settings['enable_delete_tools'] ) ) {
-					return array(
-						'error' => 'Delete operations are disabled in MCP settings.',
-						'code'  => 'operation_disabled',
-					);
-				}
-				break;
-			case 'POST':
-				if ( empty( $settings['enable_create_tools'] ) ) {
-					return array(
-						'error' => 'Create operations are disabled in MCP settings.',
-						'code'  => 'operation_disabled',
-					);
-				}
-				break;
-			case 'PATCH':
-			case 'PUT':
-				if ( empty( $settings['enable_update_tools'] ) ) {
-					return array(
-						'error' => 'Update operations are disabled in MCP settings.',
-						'code'  => 'operation_disabled',
-					);
-				}
-				break;
+		// Check if user is logged in
+		if ( ! is_user_logged_in() ) {
+			return array(
+				'error' => 'Authentication required.',
+				'code'  => 'unauthorized',
+			);
 		}
 
 		$rest_request = new WP_REST_Request( $method, $route );
-		$rest_request->set_body_params( $data );
+		$rest_request->set_query_params( $params );
 		$response = rest_do_request( $rest_request );
 		return $response->get_data();
 	}

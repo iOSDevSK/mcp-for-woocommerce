@@ -203,8 +203,7 @@ class McpStreamableTransport extends McpTransportBase {
 
 			$headers = array(
 				'Content-Type'                 => 'application/json',
-				'Access-Control-Allow-Origin'  => '*',
-				'Access-Control-Allow-Methods' => 'OPTIONS, GET, POST, PUT, PATCH, DELETE',
+				// Removed dangerous CORS headers for security
 			);
 
 			return new WP_REST_Response( $response_body, 200, $headers );
