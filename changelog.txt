@@ -1,5 +1,17 @@
 === Woo - MCP Plugin Changelog ===
 
+= Version 0.2.7 - Release #000005 - July 30, 2025 @ 14:30 CET =
+
+**DEPLOYMENT & INFRASTRUCTURE UPDATES**
+
+* #000012 - Update deployment workflow and composer dependencies
+  Date: July 30, 2025 @ 14:30 CET
+  - UPDATED: Composer dependency management and version tracking
+  - IMPROVED: Branch reference tracking from trunk to main
+  - ENHANCED: Deployment workflow with debugging and force refresh capabilities
+  - FIXED: Git reference synchronization between local and remote repositories
+  - MAINTAINED: Production safety with read-only security model intact
+
 = Version 0.2.6 - Release #000004 - July 30, 2025 @ 12:00 CET =
 
 **CRITICAL SECURITY FIX - READ-ONLY MODE ENFORCED**
