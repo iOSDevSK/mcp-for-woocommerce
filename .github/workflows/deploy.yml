@@ -32,14 +32,28 @@ jobs:
             rm -rf woo-mcp
           fi
           
-          # Clone repository
+          # Clone repository with force refresh
           echo "Cloning repository from $REPO_URL..."
-          if ! git clone "$REPO_URL" woo-mcp; then
+          if ! git clone --depth=1 "$REPO_URL" woo-mcp; then
             echo "Failed to clone repository"
             exit 1
           fi
           
           cd woo-mcp
+          
+          # Verify we got the latest changes
+          echo "Current HEAD commit: $(git rev-parse HEAD)"
+          echo "Current branch: $(git branch --show-current)"
+          
+          # Install composer dependencies if composer.json exists
+          if [ -f "composer.json" ]; then
+            echo "Installing composer dependencies..."
+            if command -v composer >/dev/null 2>&1; then
+              composer install --no-dev --optimize-autoloader
+            else
+              echo "Composer not found, skipping dependency installation"
+            fi
+          fi
           
           # Verify we're on the correct commit
           DEPLOYED_COMMIT=$(git rev-parse HEAD)
@@ -74,6 +88,14 @@ jobs:
           # Verify deployment
           echo "Verifying deployment..."
           ls -la "$PLUGIN_DIR/wordpress-mcp.php" || echo "Main plugin file check failed"
+          
+          # Check changelog to verify we have latest changes
+          if [ -f "$PLUGIN_DIR/changelog.txt" ]; then
+            echo "Changelog verification:"
+            head -10 "$PLUGIN_DIR/changelog.txt"
+          else
+            echo "Changelog file not found!"
+          fi
           
           echo "Deployment completed successfully at $(date)"
           echo "Repository: ${{ github.repository }}"
