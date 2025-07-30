@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'automattic/wordpress-mcp',
-        'pretty_version' => 'dev-trunk',
-        'version' => 'dev-trunk',
-        'reference' => '52d1d0901120efd54c8469ffa26d9f4b453324b1',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '3cbc472cf8c11d8b77a670930813b8da6ce9ff66',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'automattic/wordpress-mcp' => array(
-            'pretty_version' => 'dev-trunk',
-            'version' => 'dev-trunk',
-            'reference' => '52d1d0901120efd54c8469ffa26d9f4b453324b1',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '3cbc472cf8c11d8b77a670930813b8da6ce9ff66',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

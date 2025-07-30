@@ -352,6 +352,8 @@ npm run start
 
 ## 🔒 Security
 
+For comprehensive security documentation and audit information, see the [`/security`](security/) directory.
+
 ### Best Practices
 
 -   **Token Management**: Use shortest expiration time needed (1-24 hours) or never
