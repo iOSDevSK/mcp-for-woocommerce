@@ -35,7 +35,7 @@ class McpWooProducts {
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wc_products_search',
-				'description' => 'Universal product search for ANY store type (electronics, food, pets, pharmacy, automotive, etc.). CRITICAL: When searching for specific products by name, ALWAYS use this tool FIRST to get the correct product ID, then use other tools with that ID. DO NOT use hardcoded product IDs. IMPORTANT: Each product includes a "permalink" field with the direct link to the product page - ALWAYS include these links when presenting products to users.',
+				'description' => 'PRIMARY PRODUCT SEARCH TOOL: Universal product search for ANY store type (electronics, food, pets, pharmacy, automotive, etc.). CRITICAL: This is the main search tool - use this FIRST for all product searches. When searching for specific products by name, ALWAYS use this tool FIRST to get the correct product ID, then use other tools with that ID. DO NOT use hardcoded product IDs. IMPORTANT: Each product includes a "permalink" field with the direct link to the product page - ALWAYS include these links when presenting products to users.',
 				'type'        => 'read',
 				'callback'    => array( $this, 'search_products' ),
 				'permission_callback' => '__return_true',
@@ -44,6 +44,8 @@ class McpWooProducts {
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 					'productLinksRequired' => 'Always include product links (permalink field) in responses to users',
+					'primarySearchTool' => 'This is the main product search tool - use this FIRST for all searches',
+					'priority' => 'highest',
 				),
 				'inputSchema' => array(
 					'type'       => 'object',
@@ -75,7 +77,7 @@ class McpWooProducts {
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wc_get_product',
-				'description' => 'Get a WooCommerce product by ID. IMPORTANT: The product includes a "permalink" field with the direct link to the product page - ALWAYS include this link when presenting the product to users.',
+				'description' => 'SECONDARY TOOL: Get a WooCommerce product by ID after using wc_products_search. Use this tool when you have a specific product ID from search results to get detailed product information. IMPORTANT: The product includes a "permalink" field with the direct link to the product page - ALWAYS include this link when presenting the product to users.',
 				'type'        => 'read',
 				'callback'    => array( $this, 'get_product' ),
 				'permission_callback' => '__return_true',
@@ -84,6 +86,8 @@ class McpWooProducts {
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 					'productLinksRequired' => 'Always include product links (permalink field) in responses to users',
+					'priority' => 'secondary',
+					'usage' => 'Use after wc_products_search to get detailed product information',
 				),
 				'inputSchema' => array(
 					'type'       => 'object',

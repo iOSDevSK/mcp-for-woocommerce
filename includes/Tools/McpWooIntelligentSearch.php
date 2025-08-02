@@ -27,7 +27,7 @@ class McpWooIntelligentSearch {
         new RegisterMcpTool(
             array(
                 'name'        => 'wc_intelligent_search',
-                'description' => 'PRIMARY PRODUCT SEARCH TOOL: Universal intelligent product search for ANY store type (electronics, food, pets, pharmacy, automotive, etc.) with automatic fallback strategies. Handles multiple products with same name. Never returns empty results. ALWAYS USE THIS FOR PRODUCT SEARCHES instead of wc_products_search. WORKFLOW: 1) Use this tool to search for products, 2) Get specific product details using the returned product IDs, 3) Get variations if needed. CRITICAL: Each product includes a "permalink" field with the direct link to the product page - ALWAYS include these links when presenting products to users.',
+                'description' => 'FALLBACK SEARCH TOOL: Advanced intelligent product search with automatic fallback strategies. Use this tool ONLY when wc_products_search and wc_get_product do not provide satisfactory results. This tool handles complex queries and multiple fallback strategies but should be used as a last resort. WORKFLOW: 1) Try wc_products_search first, 2) Use wc_get_product for details, 3) Only use this tool if needed. CRITICAL: Each product includes a "permalink" field with the direct link to the product page - ALWAYS include these links when presenting products to users.',
                 'type'        => 'read',
                 'callback'    => array( $this, 'intelligent_search' ),
                 'permission_callback' => '__return_true',
@@ -36,8 +36,9 @@ class McpWooIntelligentSearch {
                     'readOnlyHint'  => true,
                     'openWorldHint' => false,
                     'productLinksRequired' => 'Always include product links (permalink field) in responses to users',
-                    'primarySearchTool' => 'This is the main product search tool - use instead of wc_products_search',
-                    'mandatoryLinks' => 'Product links are mandatory for user responses',
+                    'fallbackTool' => 'Use only when basic search tools do not provide satisfactory results',
+                    'priority' => 'lowest',
+                    'usage' => 'Fallback tool - use after trying wc_products_search and wc_get_product',
                 ),
                 'inputSchema' => array(
                     'type'       => 'object',
