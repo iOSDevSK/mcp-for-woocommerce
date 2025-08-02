@@ -102,36 +102,43 @@ class McpWooProducts {
 	 */
 	public function search_products( array $params ): array {
 		try {
-			// Use WooCommerce API but add permalink data
-			$request = new \WP_REST_Request( 'GET', '/wc/v3/products' );
-			foreach ( $params as $key => $value ) {
-				$request->set_param( $key, $value );
+			$args = array(
+				'post_type'      => 'product',
+				'post_status'    => 'publish',
+				'posts_per_page' => isset( $params['per_page'] ) ? (int) $params['per_page'] : 10,
+				'paged'          => isset( $params['page'] ) ? (int) $params['page'] : 1,
+			);
+
+			if ( isset( $params['search'] ) && ! empty( $params['search'] ) ) {
+				$args['s'] = sanitize_text_field( $params['search'] );
 			}
-			
-			$api = new \WC_REST_Products_Controller();
-			$response = $api->get_items( $request );
-			
-			if ( is_wp_error( $response ) ) {
-				return array( 'error' => $response->get_error_message() );
+
+			if ( isset( $params['category'] ) && ! empty( $params['category'] ) ) {
+				$args['tax_query'] = array(
+					array(
+						'taxonomy' => 'product_cat',
+						'field'    => 'slug',
+						'terms'    => sanitize_text_field( $params['category'] ),
+					),
+				);
 			}
-			
-			$products = $response->get_data();
-			
-			// Add permalink to each product
-			foreach ( $products as &$product ) {
-				if ( isset( $product['id'] ) ) {
-					$wc_product = wc_get_product( $product['id'] );
-					if ( $wc_product ) {
-						$product['permalink'] = $wc_product->get_permalink();
-					}
+
+			$query = new \WP_Query( $args );
+			$products = array();
+
+			foreach ( $query->posts as $post ) {
+				$product = wc_get_product( $post->ID );
+				if ( $product ) {
+					$products[] = $this->convert_product_to_array( $product );
 				}
 			}
-			
+
 			return array(
 				'products' => $products,
+				'total'    => $query->found_posts,
+				'pages'    => $query->max_num_pages,
 				'instructions_for_ai' => 'CRITICAL: When presenting these products to users, you MUST include the product links from the "permalink" field for each product. Users need clickable links to access products. This is mandatory - do not skip the links.',
 			);
-			
 		} catch ( \Exception $e ) {
 			return array(
 				'error' => 'Error searching products: ' . $e->getMessage(),
@@ -151,24 +158,13 @@ class McpWooProducts {
 				return array( 'error' => 'Product ID is required' );
 			}
 
-			$request = new \WP_REST_Request( 'GET', '/wc/v3/products/' . $params['id'] );
-			$api = new \WC_REST_Products_Controller();
-			$response = $api->get_item( $request );
-			
-			if ( is_wp_error( $response ) ) {
-				return array( 'error' => $response->get_error_message() );
+			$product = wc_get_product( (int) $params['id'] );
+			if ( ! $product ) {
+				return array( 'error' => 'Product not found' );
 			}
-			
-			$product_data = $response->get_data();
-			
-			// Add permalink
-			$wc_product = wc_get_product( $params['id'] );
-			if ( $wc_product ) {
-				$product_data['permalink'] = $wc_product->get_permalink();
-			}
-			
+
 			return array(
-				'product' => $product_data,
+				'product' => $this->convert_product_to_array( $product ),
 				'instructions_for_ai' => 'CRITICAL: When presenting this product to users, you MUST include the product link from the "permalink" field. Users need clickable links to access products.',
 			);
 		} catch ( \Exception $e ) {
@@ -190,34 +186,22 @@ class McpWooProducts {
 				return array( 'error' => 'Product ID is required' );
 			}
 
-			$request = new \WP_REST_Request( 'GET', '/wc/v3/products/' . $params['product_id'] . '/variations' );
-			foreach ( $params as $key => $value ) {
-				if ( $key !== 'product_id' ) {
-					$request->set_param( $key, $value );
+			$product = wc_get_product( (int) $params['product_id'] );
+			if ( ! $product || ! $product->is_type( 'variable' ) ) {
+				return array( 'error' => 'Variable product not found' );
+			}
+
+			$variations = array();
+			foreach ( $product->get_children() as $child_id ) {
+				$variation = wc_get_product( $child_id );
+				if ( $variation ) {
+					$variations[] = $this->convert_product_to_array( $variation );
 				}
 			}
-			
-			$api = new \WC_REST_Product_Variations_Controller();
-			$response = $api->get_items( $request );
-			
-			if ( is_wp_error( $response ) ) {
-				return array( 'error' => $response->get_error_message() );
-			}
-			
-			$variations = $response->get_data();
-			
-			// Add permalink to each variation
-			foreach ( $variations as &$variation ) {
-				if ( isset( $variation['id'] ) ) {
-					$wc_variation = wc_get_product( $variation['id'] );
-					if ( $wc_variation ) {
-						$variation['permalink'] = $wc_variation->get_permalink();
-					}
-				}
-			}
-			
+
 			return array(
 				'variations' => $variations,
+				'total'      => count( $variations ),
 				'instructions_for_ai' => 'CRITICAL: When presenting these variations to users, you MUST include the variation links from the "permalink" field for each variation. Users need clickable links to access products.',
 			);
 		} catch ( \Exception $e ) {
@@ -239,24 +223,13 @@ class McpWooProducts {
 				return array( 'error' => 'Product ID and variation ID are required' );
 			}
 
-			$request = new \WP_REST_Request( 'GET', '/wc/v3/products/' . $params['product_id'] . '/variations/' . $params['id'] );
-			$api = new \WC_REST_Product_Variations_Controller();
-			$response = $api->get_item( $request );
-			
-			if ( is_wp_error( $response ) ) {
-				return array( 'error' => $response->get_error_message() );
+			$variation = wc_get_product( (int) $params['id'] );
+			if ( ! $variation || $variation->get_parent_id() !== (int) $params['product_id'] ) {
+				return array( 'error' => 'Variation not found' );
 			}
-			
-			$variation_data = $response->get_data();
-			
-			// Add permalink
-			$wc_variation = wc_get_product( $params['id'] );
-			if ( $wc_variation ) {
-				$variation_data['permalink'] = $wc_variation->get_permalink();
-			}
-			
+
 			return array(
-				'variation' => $variation_data,
+				'variation' => $this->convert_product_to_array( $variation ),
 				'instructions_for_ai' => 'CRITICAL: When presenting this variation to users, you MUST include the variation link from the "permalink" field. Users need clickable links to access products.',
 			);
 		} catch ( \Exception $e ) {
@@ -264,6 +237,46 @@ class McpWooProducts {
 				'error' => 'Error getting variation: ' . $e->getMessage(),
 			);
 		}
+	}
+
+	/**
+	 * Convert WooCommerce product to array with permalink.
+	 *
+	 * @param \WC_Product $product WooCommerce product object.
+	 * @return array Product data array with permalink.
+	 */
+	private function convert_product_to_array( \WC_Product $product ): array {
+		return array(
+			'id'                => $product->get_id(),
+			'name'              => $product->get_name(),
+			'slug'              => $product->get_slug(),
+			'permalink'         => $product->get_permalink(),
+			'date_created'      => $product->get_date_created() ? $product->get_date_created()->date( 'c' ) : '',
+			'date_modified'     => $product->get_date_modified() ? $product->get_date_modified()->date( 'c' ) : '',
+			'type'              => $product->get_type(),
+			'status'            => $product->get_status(),
+			'featured'          => $product->get_featured(),
+			'catalog_visibility' => $product->get_catalog_visibility(),
+			'description'       => $product->get_description(),
+			'short_description' => $product->get_short_description(),
+			'sku'               => $product->get_sku(),
+			'price'             => $product->get_price(),
+			'regular_price'     => $product->get_regular_price(),
+			'sale_price'        => $product->get_sale_price(),
+			'on_sale'           => $product->is_on_sale(),
+			'price_html'        => $product->get_price_html(),
+			'currency'          => get_woocommerce_currency(),
+			'currency_symbol'   => get_woocommerce_currency_symbol(),
+			'stock_status'      => $product->get_stock_status(),
+			'stock_quantity'    => $product->get_stock_quantity(),
+			'manage_stock'      => $product->get_manage_stock(),
+			'weight'            => $product->get_weight(),
+			'dimensions'        => array(
+				'length' => $product->get_length(),
+				'width'  => $product->get_width(),
+				'height' => $product->get_height(),
+			),
+		);
 	}
 
 	/**
