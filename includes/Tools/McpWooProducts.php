@@ -31,18 +31,43 @@ class McpWooProducts {
 			return;
 		}
 
-		// Products - readonly only
+		// Products - readonly with permalink support
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wc_products_search',
 				'description' => 'Universal product search for ANY store type (electronics, food, pets, pharmacy, automotive, etc.). CRITICAL: When searching for specific products by name, ALWAYS use this tool FIRST to get the correct product ID, then use other tools with that ID. DO NOT use hardcoded product IDs. IMPORTANT: Each product includes a "permalink" field with the direct link to the product page - ALWAYS include these links when presenting products to users.',
 				'type'        => 'read',
 				'callback'    => array( $this, 'search_products' ),
+				'permission_callback' => '__return_true',
 				'annotations' => array(
 					'title'         => 'Search Products',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 					'productLinksRequired' => 'Always include product links (permalink field) in responses to users',
+				),
+				'inputSchema' => array(
+					'type'       => 'object',
+					'properties' => array(
+						'search' => array(
+							'type'        => 'string',
+							'description' => 'Search term for product name or description',
+						),
+						'category' => array(
+							'type'        => 'string',
+							'description' => 'Product category slug',
+						),
+						'per_page' => array(
+							'type'        => 'integer',
+							'description' => 'Number of products per page (default: 10)',
+							'minimum'     => 1,
+							'maximum'     => 100,
+						),
+						'page' => array(
+							'type'        => 'integer',
+							'description' => 'Page number (default: 1)',
+							'minimum'     => 1,
+						),
+					),
 				),
 			)
 		);
@@ -53,27 +78,51 @@ class McpWooProducts {
 				'description' => 'Get a WooCommerce product by ID. IMPORTANT: The product includes a "permalink" field with the direct link to the product page - ALWAYS include this link when presenting the product to users.',
 				'type'        => 'read',
 				'callback'    => array( $this, 'get_product' ),
+				'permission_callback' => '__return_true',
 				'annotations' => array(
 					'title'         => 'Get WooCommerce Product',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 					'productLinksRequired' => 'Always include product links (permalink field) in responses to users',
 				),
+				'inputSchema' => array(
+					'type'       => 'object',
+					'properties' => array(
+						'id' => array(
+							'type'        => 'integer',
+							'description' => 'Product ID',
+							'required'    => true,
+						),
+					),
+					'required' => array( 'id' ),
+				),
 			)
 		);
 
-		// Product Variations - readonly
+		// Product Variations - readonly with permalink support
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wc_get_product_variations',
 				'description' => 'Get all variations (colors, sizes, etc.) for a variable WooCommerce product. CRITICAL: You MUST get the product_id from wc_products_search first. DO NOT use hardcoded product IDs like 42. Each variation includes specific attributes like color, size, price, and stock status. IMPORTANT: Each variation includes a "permalink" field with the direct link to the variation page - ALWAYS include these links when presenting variations to users.',
 				'type'        => 'read',
 				'callback'    => array( $this, 'get_product_variations' ),
+				'permission_callback' => '__return_true',
 				'annotations' => array(
 					'title'         => 'Get Product Variations',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 					'productLinksRequired' => 'Always include product links (permalink field) in responses to users',
+				),
+				'inputSchema' => array(
+					'type'       => 'object',
+					'properties' => array(
+						'product_id' => array(
+							'type'        => 'integer',
+							'description' => 'Variable product ID',
+							'required'    => true,
+						),
+					),
+					'required' => array( 'product_id' ),
 				),
 			)
 		);
@@ -84,11 +133,28 @@ class McpWooProducts {
 				'description' => 'Get a specific product variation by ID. IMPORTANT: The variation includes a "permalink" field with the direct link to the variation page - ALWAYS include this link when presenting the variation to users.',
 				'type'        => 'read',
 				'callback'    => array( $this, 'get_product_variation' ),
+				'permission_callback' => '__return_true',
 				'annotations' => array(
 					'title'         => 'Get Product Variation',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
 					'productLinksRequired' => 'Always include product links (permalink field) in responses to users',
+				),
+				'inputSchema' => array(
+					'type'       => 'object',
+					'properties' => array(
+						'product_id' => array(
+							'type'        => 'integer',
+							'description' => 'Parent product ID',
+							'required'    => true,
+						),
+						'id' => array(
+							'type'        => 'integer',
+							'description' => 'Variation ID',
+							'required'    => true,
+						),
+					),
+					'required' => array( 'product_id', 'id' ),
 				),
 			)
 		);
@@ -101,6 +167,11 @@ class McpWooProducts {
 	 * @return array Search results with product links.
 	 */
 	public function search_products( array $params ): array {
+		// Safety check for WooCommerce functions
+		if ( ! function_exists( 'wc_get_product' ) || ! function_exists( 'get_woocommerce_currency' ) ) {
+			return array( 'error' => 'WooCommerce functions not available' );
+		}
+		
 		try {
 			$args = array(
 				'post_type'      => 'product',
@@ -153,6 +224,11 @@ class McpWooProducts {
 	 * @return array Product data with link.
 	 */
 	public function get_product( array $params ): array {
+		// Safety check for WooCommerce functions
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			return array( 'error' => 'WooCommerce functions not available' );
+		}
+		
 		try {
 			if ( ! isset( $params['id'] ) ) {
 				return array( 'error' => 'Product ID is required' );
@@ -181,6 +257,11 @@ class McpWooProducts {
 	 * @return array Variations data with links.
 	 */
 	public function get_product_variations( array $params ): array {
+		// Safety check for WooCommerce functions
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			return array( 'error' => 'WooCommerce functions not available' );
+		}
+		
 		try {
 			if ( ! isset( $params['product_id'] ) ) {
 				return array( 'error' => 'Product ID is required' );
@@ -218,6 +299,11 @@ class McpWooProducts {
 	 * @return array Variation data with link.
 	 */
 	public function get_product_variation( array $params ): array {
+		// Safety check for WooCommerce functions
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			return array( 'error' => 'WooCommerce functions not available' );
+		}
+		
 		try {
 			if ( ! isset( $params['product_id'] ) || ! isset( $params['id'] ) ) {
 				return array( 'error' => 'Product ID and variation ID are required' );
@@ -246,37 +332,47 @@ class McpWooProducts {
 	 * @return array Product data array with permalink.
 	 */
 	private function convert_product_to_array( \WC_Product $product ): array {
-		return array(
-			'id'                => $product->get_id(),
-			'name'              => $product->get_name(),
-			'slug'              => $product->get_slug(),
-			'permalink'         => $product->get_permalink(),
-			'date_created'      => $product->get_date_created() ? $product->get_date_created()->date( 'c' ) : '',
-			'date_modified'     => $product->get_date_modified() ? $product->get_date_modified()->date( 'c' ) : '',
-			'type'              => $product->get_type(),
-			'status'            => $product->get_status(),
-			'featured'          => $product->get_featured(),
-			'catalog_visibility' => $product->get_catalog_visibility(),
-			'description'       => $product->get_description(),
-			'short_description' => $product->get_short_description(),
-			'sku'               => $product->get_sku(),
-			'price'             => $product->get_price(),
-			'regular_price'     => $product->get_regular_price(),
-			'sale_price'        => $product->get_sale_price(),
-			'on_sale'           => $product->is_on_sale(),
-			'price_html'        => $product->get_price_html(),
-			'currency'          => get_woocommerce_currency(),
-			'currency_symbol'   => get_woocommerce_currency_symbol(),
-			'stock_status'      => $product->get_stock_status(),
-			'stock_quantity'    => $product->get_stock_quantity(),
-			'manage_stock'      => $product->get_manage_stock(),
-			'weight'            => $product->get_weight(),
-			'dimensions'        => array(
-				'length' => $product->get_length(),
-				'width'  => $product->get_width(),
-				'height' => $product->get_height(),
-			),
-		);
+		try {
+			return array(
+				'id'                => $product->get_id(),
+				'name'              => $product->get_name(),
+				'slug'              => $product->get_slug(),
+				'permalink'         => $product->get_permalink(),
+				'date_created'      => $product->get_date_created() ? $product->get_date_created()->date( 'c' ) : '',
+				'date_modified'     => $product->get_date_modified() ? $product->get_date_modified()->date( 'c' ) : '',
+				'type'              => $product->get_type(),
+				'status'            => $product->get_status(),
+				'featured'          => $product->get_featured(),
+				'catalog_visibility' => $product->get_catalog_visibility(),
+				'description'       => $product->get_description(),
+				'short_description' => $product->get_short_description(),
+				'sku'               => $product->get_sku(),
+				'price'             => $product->get_price(),
+				'regular_price'     => $product->get_regular_price(),
+				'sale_price'        => $product->get_sale_price(),
+				'on_sale'           => $product->is_on_sale(),
+				'price_html'        => $product->get_price_html(),
+				'currency'          => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : '',
+				'currency_symbol'   => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '',
+				'stock_status'      => $product->get_stock_status(),
+				'stock_quantity'    => $product->get_stock_quantity(),
+				'manage_stock'      => $product->get_manage_stock(),
+				'weight'            => $product->get_weight(),
+				'dimensions'        => array(
+					'length' => $product->get_length(),
+					'width'  => $product->get_width(),
+					'height' => $product->get_height(),
+				),
+			);
+		} catch ( \Exception $e ) {
+			error_log( "Error converting product to array: " . $e->getMessage() );
+			return array(
+				'id'        => $product->get_id(),
+				'name'      => $product->get_name(),
+				'permalink' => $product->get_permalink(),
+				'error'     => 'Partial product data due to error',
+			);
+		}
 	}
 
 	/**

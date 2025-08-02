@@ -44,3 +44,12 @@ vendor/bin/phpunit
 
 - v0.2.8: Implemented comprehensive product links across all WooCommerce tools
 - Fixed critical errors by replacing REST API controllers with safe WordPress functions
+- v0.2.8.1: CRITICAL FIX - Removed unused callback methods causing admin context errors
+  - Cleaned up McpWooProducts.php to use only REST API aliases
+  - Removed all unused methods: search_products, get_product, get_product_variations, get_product_variation, convert_product_to_array
+  - Established wc_intelligent_search as primary tool with permalink support
+- v0.2.9: COMPLETE PERMALINK IMPLEMENTATION - Added product links to all basic WooCommerce tools
+  - Converted all basic tools back to custom callbacks with proper permission_callback: '__return_true'
+  - All tools now include permalink field with direct product/variation links
+  - Enhanced AI instructions for mandatory link display across all product tools
+  - Unified permalink support: both basic tools and intelligent search now provide product links
