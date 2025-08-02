@@ -1027,7 +1027,7 @@ class McpWooIntelligentSearch {
             'total_products' => $results['total'] ?? count( $results['products'] ),
             'total_pages' => $results['total_pages'] ?? 1,
             'message' => sprintf( 'Found %d products (showing %d)', count( $results['products'] ), count( $products ) ),
-            'instructions_for_ai' => 'IMPORTANT: When presenting these products to users, ALWAYS include the product links from the "permalink" field.',
+            'instructions_for_ai' => 'CRITICAL: When presenting these products to users, you MUST include the product links from the "permalink" field for each product. Format each product with its direct link. Users need clickable links to access products. This is mandatory - do not skip the links.',
         );
 
         if ( $debug ) {
