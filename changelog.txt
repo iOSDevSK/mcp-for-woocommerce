@@ -1,5 +1,22 @@
 === Woo - MCP Plugin Changelog ===
 
+= Version 0.2.8 - Release #000006 - August 2, 2025 @ 12:00 CET =
+
+**PRODUCT LINKS ENHANCEMENT**
+
+* #000013 - Implement consistent product links across all WooCommerce tools
+  Date: August 2, 2025 @ 12:00 CET
+  - ENHANCED: All product-related tools now include permalink field with direct product links
+  - UPDATED: wc_products_search - now includes product permalinks in search results
+  - UPDATED: wc_get_product - now includes permalink field for single product retrieval
+  - UPDATED: wc_get_product_variations - now includes permalinks for all product variations
+  - UPDATED: wc_get_product_variation - now includes permalink for specific variation
+  - IMPROVED: Consistent product link generation using convert_product_to_array() method
+  - ADDED: Clear AI instructions to always include product links when presenting products
+  - PREVENTED: Duplicate link generation across different tools
+  - STANDARDIZED: Product data format with permalink field across all WooCommerce tools
+  - ENHANCED: User experience with direct access to product pages from search results
+
 = Version 0.2.7 - Release #000005 - July 30, 2025 @ 14:30 CET =
 
 **DEPLOYMENT & INFRASTRUCTURE UPDATES**

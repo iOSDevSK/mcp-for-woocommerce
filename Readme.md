@@ -1,11 +1,15 @@
-# WordPress MCP
+# WOO MCP
 
 [![Latest Release](https://img.shields.io/github/v/release/Automattic/wordpress-mcp)](https://github.com/Automattic/wordpress-mcp/releases)
 
-A comprehensive WordPress plugin that implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) to expose WordPress functionality through standardized interfaces. This plugin enables AI models and applications to interact with WordPress sites securely using multiple transport protocols and enterprise-grade authentication.
+A specialized WooCommerce-focused MCP plugin based on the official [WordPress MCP by Automattic](https://github.com/Automattic/wordpress-mcp). This enhanced version implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) specifically optimized for WooCommerce stores, providing AI models with comprehensive e-commerce functionality through standardized interfaces.
+
+**🔧 Based on Official Automattic Plugin**: This is a customized version of the official WordPress MCP plugin by Automattic, specifically enhanced and optimized for WooCommerce functionality, including intelligent product search, enhanced product data with direct links, and specialized e-commerce tools.
 
 ## ✨ Features
 
+-   🛒 **WooCommerce Specialized**: Enhanced e-commerce tools with intelligent product search
+-   🔗 **Product Links**: All product tools include direct permalinks for seamless user experience
 -   🔄 **Dual Transport Protocols**: STDIO and HTTP-based (Streamable) transports
 -   🔐 **JWT Authentication**: Secure token-based authentication with management UI
 -   🎛️ **Admin Interface**: React-based token management and settings dashboard
@@ -22,12 +26,17 @@ A comprehensive WordPress plugin that implements the [Model Context Protocol (MC
 The plugin implements a dual transport architecture:
 
 ```
-WordPress MCP Plugin
+WOO MCP Plugin
 ├── Transport Layer
 │   ├── McpStdioTransport (/wp/v2/wpmcp)
 │   └── McpStreamableTransport (/wp/v2/wpmcp/streamable)
 ├── Authentication
 │   └── JWT Authentication System
+├── WooCommerce Tools
+│   ├── Intelligent Product Search
+│   ├── Product Management with Links
+│   ├── Category & Brand Tools
+│   └── Enhanced E-commerce Features
 ├── Method Handlers
 │   ├── Tools, Resources, Prompts
 │   └── System & Initialization
@@ -49,7 +58,7 @@ WordPress MCP Plugin
 1. Download `wordpress-mcp.zip` from [releases](https://github.com/Automattic/wordpress-mcp/releases/)
 2. Upload to `/wp-content/plugins/wordpress-mcp` directory
 3. Activate through WordPress admin 'Plugins' menu
-4. Navigate to `Settings > WordPress MCP` to configure
+4. Navigate to `Settings > WOO MCP` to configure
 
 ### Composer Install (Development)
 
@@ -65,7 +74,7 @@ npm install && npm run build
 
 ### JWT Token Generation
 
-1. Go to `Settings > WordPress MCP > Authentication Tokens`
+1. Go to `Settings > WOO MCP > Authentication Tokens`
 2. Select token duration (1-24 hours) or never
 3. Click "Generate New Token"
 4. Copy the token for use in your MCP client
@@ -79,7 +88,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
 ```json
 {
 	"mcpServers": {
-		"wordpress-mcp": {
+		"woo-mcp": {
 			"command": "npx",
 			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
 			"env": {
@@ -97,7 +106,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
 ```json
 {
 	"mcpServers": {
-		"wordpress-mcp": {
+		"woo-mcp": {
 			"command": "npx",
 			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
 			"env": {
@@ -118,7 +127,7 @@ Add to your VS Code MCP settings:
 ```json
 {
 	"servers": {
-		"wordpress-mcp": {
+		"woo-mcp": {
 			"type": "http",
 			"url": "https://your-site.com/wp-json/wp/v2/wpmcp/streamable",
 			"headers": {
@@ -151,7 +160,7 @@ npx @modelcontextprotocol/inspector \
 ```json
 {
 	"mcpServers": {
-		"wordpress-local": {
+		"woo-local": {
 			"command": "node",
 			"args": [ "/path/to/mcp-wordpress-remote/dist/proxy.js" ],
 			"env": {
@@ -200,7 +209,7 @@ The streamable transport provides a direct JSON-RPC 2.0 compliant endpoint, whil
 
 ⚠️ **EXPERIMENTAL FEATURE**: This functionality is experimental and may change or be removed in future versions.
 
-When enabled via `Settings > WordPress MCP > Enable REST API CRUD Tools`, the plugin provides three powerful generic tools that can interact with any WordPress REST API endpoint:
+When enabled via `Settings > WOO MCP > Enable REST API CRUD Tools`, the plugin provides three powerful generic tools that can interact with any WordPress REST API endpoint:
 
 #### Available Tools
 
@@ -397,7 +406,7 @@ define('WPMCP_DEBUG', true); // Enable debug logging
 
 ### Plugin Settings
 
-Access via `Settings > WordPress MCP`:
+Access via `Settings > WOO MCP`:
 
 -   **Enable/Disable MCP**: Toggle plugin functionality
 -   **Transport Configuration**: Configure STDIO/Streamable transports
