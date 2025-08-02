@@ -1,5 +1,24 @@
 === Woo - MCP Plugin Changelog ===
 
+= Version 1.0.2 - beta - Release #000008 - August 2, 2025 @ 22:00 CET =
+
+**CRITICAL FIXES AND TOOL PRIORITY REORDERING**
+
+* #000015 - Fix critical PHP Fatal Error in WooCommerce product search tools
+  Date: August 2, 2025 @ 22:00 CET
+  - FIXED: Replaced undefined esc_like() function with sanitize_text_field()
+  - RESOLVED: PHP Fatal Error that was causing "Internal error: Failed to execute tool"
+  - TESTED: German product search queries now work correctly (e.g., "Gläser unter 100 Euro")
+  - RESTORED: Proper product search functionality with links
+
+* #000016 - Reorder MCP tool priority for optimal search workflow
+  Date: August 2, 2025 @ 22:00 CET
+  - CHANGED: wc_products_search is now PRIMARY PRODUCT SEARCH TOOL (highest priority)
+  - CHANGED: wc_get_product is now SECONDARY TOOL (use after search for details)  
+  - CHANGED: wc_intelligent_search is now FALLBACK SEARCH TOOL (lowest priority)
+  - IMPROVED: Tool descriptions and annotations guide proper usage sequence
+  - OPTIMIZED: Better search results by using basic tools first, advanced tools as fallback
+
 = Version 1.0.1 - beta - Release #000007 - August 2, 2025 @ 21:00 CET =
 
 **MAJOR RELEASE - COMPREHENSIVE PRODUCT LINKS IMPLEMENTATION**
