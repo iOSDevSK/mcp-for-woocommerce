@@ -35,12 +35,9 @@ class McpWooProducts {
 		new RegisterMcpTool(
 			array(
 				'name'        => 'wc_products_search',
-				'description' => 'Basic WooCommerce REST API product search. DEPRECATED FOR GENERAL SEARCH: Use wc_intelligent_search instead for better results with product links. This tool is for technical API access only when you need specific WooCommerce REST API functionality. For general product searches, use wc_intelligent_search which provides enhanced results with proper product links.',
+				'description' => 'Universal product search for ANY store type (electronics, food, pets, pharmacy, automotive, etc.). CRITICAL: When searching for specific products by name, ALWAYS use this tool FIRST to get the correct product ID, then use other tools with that ID. DO NOT use hardcoded product IDs. IMPORTANT: Each product includes a "permalink" field with the direct link to the product page - ALWAYS include these links when presenting products to users.',
 				'type'        => 'read',
-				'rest_alias'  => array(
-					'route'  => '/wc/v3/products',
-					'method' => 'GET',
-				),
+				'callback'    => array( $this, 'search_products' ),
 				'annotations' => array(
 					'title'         => 'Search Products',
 					'readOnlyHint'  => true,
@@ -104,6 +101,51 @@ class McpWooProducts {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Search products with permalink support.
+	 *
+	 * @param array $params Search parameters.
+	 * @return array Search results with product links.
+	 */
+	public function search_products( array $params ): array {
+		try {
+			// Use WooCommerce API but add permalink data
+			$request = new \WP_REST_Request( 'GET', '/wc/v3/products' );
+			foreach ( $params as $key => $value ) {
+				$request->set_param( $key, $value );
+			}
+			
+			$api = new \WC_REST_Products_Controller();
+			$response = $api->get_items( $request );
+			
+			if ( is_wp_error( $response ) ) {
+				return array( 'error' => $response->get_error_message() );
+			}
+			
+			$products = $response->get_data();
+			
+			// Add permalink to each product
+			foreach ( $products as &$product ) {
+				if ( isset( $product['id'] ) ) {
+					$wc_product = wc_get_product( $product['id'] );
+					if ( $wc_product ) {
+						$product['permalink'] = $wc_product->get_permalink();
+					}
+				}
+			}
+			
+			return array(
+				'products' => $products,
+				'instructions_for_ai' => 'CRITICAL: When presenting these products to users, you MUST include the product links from the "permalink" field for each product. Users need clickable links to access products. This is mandatory - do not skip the links.',
+			);
+			
+		} catch ( \Exception $e ) {
+			return array(
+				'error' => 'Error searching products: ' . $e->getMessage(),
+			);
+		}
 	}
 
 	/**
