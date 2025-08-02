@@ -733,7 +733,7 @@ class McpWooIntelligentSearch {
 
             // Map search parameter
             if ( isset( $params['s'] ) && ! empty( $params['s'] ) ) {
-                $wc_params['s'] = esc_like( $params['s'] );
+                $wc_params['s'] = sanitize_text_field( $params['s'] );
             }
 
             // Map category - use slugs
