@@ -42,7 +42,7 @@ class NativeMcpServer {
                 }
                 
                 $response = $this->handleRequest($request);
-                if ($response) {
+                if ($response !== null) {
                     echo json_encode($response) . "\n";
                     fflush(STDOUT);
                     $this->log('[Native MCP Server] Sent response for: ' . ($request['method'] ?? 'unknown'));
@@ -50,16 +50,21 @@ class NativeMcpServer {
                 
             } catch (Exception $e) {
                 $this->log('[Native MCP Server] Error: ' . $e->getMessage());
-                $error_response = [
-                    'jsonrpc' => '2.0',
-                    'id' => $request['id'] ?? null,
-                    'error' => [
-                        'code' => -32603,
-                        'message' => 'Internal error: ' . $e->getMessage()
-                    ]
-                ];
-                echo json_encode($error_response) . "\n";
-                fflush(STDOUT);
+                $request_id = $request['id'] ?? null;
+                
+                // Only send error response if request had an ID (not for notifications)
+                if ($request_id !== null) {
+                    $error_response = [
+                        'jsonrpc' => '2.0',
+                        'id' => (string)$request_id,
+                        'error' => [
+                            'code' => -32603,
+                            'message' => 'Internal error: ' . $e->getMessage()
+                        ]
+                    ];
+                    echo json_encode($error_response) . "\n";
+                    fflush(STDOUT);
+                }
             }
         }
         
@@ -73,6 +78,12 @@ class NativeMcpServer {
         
         $this->log('[Native MCP Server] Handling method: ' . $method);
         
+        // Handle notifications (no response needed)
+        if (strpos($method, 'notifications/') === 0) {
+            $this->log('[Native MCP Server] Received notification: ' . $method . ' - no response needed');
+            return null; // No response for notifications
+        }
+        
         switch ($method) {
             case 'initialize':
                 return $this->handleInitialize($request, $params, $id);
@@ -81,14 +92,18 @@ class NativeMcpServer {
             case 'tools/call':
                 return $this->handleToolsCall($params, $id);
             default:
-                return [
-                    'jsonrpc' => '2.0',
-                    'id' => (string)$id, // Ensure ID is string
-                    'error' => [
-                        'code' => -32601,
-                        'message' => "Method '$method' not found"
-                    ]
-                ];
+                // Only send error response if ID is present (not for notifications)
+                if ($id !== null) {
+                    return [
+                        'jsonrpc' => '2.0',
+                        'id' => (string)$id, // Ensure ID is string
+                        'error' => [
+                            'code' => -32601,
+                            'message' => "Method '$method' not found"
+                        ]
+                    ];
+                }
+                return null; // No response needed
         }
     }
     
