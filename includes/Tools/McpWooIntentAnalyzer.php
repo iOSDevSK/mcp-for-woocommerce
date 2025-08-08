@@ -265,6 +265,15 @@ class McpWooIntentAnalyzer {
     }
 
     public function permission_callback(): bool {
+        // Allow access when JWT is disabled (read-only mode) or when user has admin privileges
+        $jwt_required = function_exists('get_option') ? (bool) get_option('wordpress_mcp_jwt_required', true) : true;
+        
+        if (!$jwt_required) {
+            // JWT disabled - allow public read access to intent analyzer
+            return true;
+        }
+        
+        // JWT enabled - require admin privileges  
         return current_user_can('manage_options');
     }
 }
