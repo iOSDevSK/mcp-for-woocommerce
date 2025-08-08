@@ -15,6 +15,7 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use Exception;
+use Automattic\WordpressMcp\Admin\Settings;
 
 /**
  * Class JwtAuth
@@ -84,6 +85,15 @@ class JwtAuth {
 	 * @var string
 	 */
 	private const BEARER_TOKEN_PATTERN = '/Bearer\s(\S+)/';
+
+	/**
+	 * Check if JWT authentication is required.
+	 *
+	 * @return bool
+	 */
+	private function is_jwt_required(): bool {
+		return get_option( Settings::JWT_REQUIRED_OPTION, true );
+	}
 
 	/**
 	 * Get JWT secret key from options or generate a new one if not exists.
@@ -512,6 +522,12 @@ class JwtAuth {
    	// Only apply JWT authentication to MCP endpoints.
    	if ( ! $this->is_mcp_endpoint() ) {
    		return $result;
+   	}
+
+   	// Skip JWT authentication if it's disabled
+   	if ( ! $this->is_jwt_required() ) {
+   		$this->log_auth_event( 'JWT_DISABLED', 'JWT authentication is disabled - allowing access' );
+   		return true;
    	}
 
    	$auth = $this->get_authorization_header();

@@ -21,6 +21,11 @@ class Settings {
 	const TOOL_STATES_OPTION = 'wordpress_mcp_tool_states';
 
 	/**
+	 * The JWT required option name.
+	 */
+	const JWT_REQUIRED_OPTION = 'wordpress_mcp_jwt_required';
+
+	/**
 	 * Initialize the settings page.
 	 */
 	public function __construct() {
@@ -114,6 +119,7 @@ class Settings {
 				'nonce'               => wp_create_nonce( 'wordpress_mcp_settings' ),
 				'settings'            => get_option( self::OPTION_NAME, array() ),
 				'toolStates'          => get_option( self::TOOL_STATES_OPTION, array() ),
+				'jwtRequired'         => get_option( self::JWT_REQUIRED_OPTION, true ),
 				'featureApiAvailable' => $this->is_feature_api_available(),
 				'pluginUrl'           => WORDPRESS_MCP_URL,
 				'strings'             => array(
@@ -141,6 +147,8 @@ class Settings {
 					'thisTokenNeverExpires'            => __( 'This token never expires', 'wordpress-mcp' ),
 					'securityWarning'                  => __( 'Security Warning', 'wordpress-mcp' ),
 					'neverExpiringTokens'              => __( 'Never-Expiring Tokens:', 'wordpress-mcp' ),
+					'requireJwtAuth'                   => __( 'Require JWT Authentication', 'wordpress-mcp' ),
+					'requireJwtAuthDescription'        => __( 'When enabled, all MCP requests must include a valid JWT token. When disabled, MCP endpoints are accessible without authentication (readonly mode only).', 'wordpress-mcp' ),
 				),
 			)
 		);
@@ -163,6 +171,10 @@ class Settings {
 		$settings_raw = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '{}';
 		$settings     = $this->sanitize_settings( json_decode( $settings_raw, true ) );
 		update_option( self::OPTION_NAME, $settings );
+
+		// Handle JWT required setting separately
+		$jwt_required = isset( $_POST['jwt_required'] ) ? filter_var( $_POST['jwt_required'], FILTER_VALIDATE_BOOLEAN ) : true;
+		update_option( self::JWT_REQUIRED_OPTION, $jwt_required );
 
 		wp_send_json_success( array( 'message' => __( 'Settings saved successfully!', 'wordpress-mcp' ) ) );
 	}

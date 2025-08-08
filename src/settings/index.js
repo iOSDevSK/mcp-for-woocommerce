@@ -6,7 +6,7 @@ import { Notice, TabPanel } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 // Import the extracted components
-import SettingsTab from './SettingsTab';
+import SettingsTab, { AuthenticationCard } from './SettingsTab';
 import ToolsTab from './ToolsTab';
 import ResourcesTab from './ResourcesTab';
 import PromptsTab from './PromptsTab';
@@ -31,6 +31,9 @@ export const SettingsApp = () => {
 		enable_update_tools: false,
 		enable_delete_tools: false,
 	} );
+
+	// State for JWT authentication
+	const [ jwtRequired, setJwtRequired ] = useState( true );
 
 	// State for UI
 	const [ isSaving, setIsSaving ] = useState( false );
@@ -104,6 +107,14 @@ export const SettingsApp = () => {
 						: false,
 			} ) );
 		}
+
+		// Load JWT required setting
+		if (
+			window.wordpressMcpSettings &&
+			typeof window.wordpressMcpSettings.jwtRequired !== 'undefined'
+		) {
+			setJwtRequired( window.wordpressMcpSettings.jwtRequired );
+		}
 	}, [] );
 
 	// Handle tab selection
@@ -158,6 +169,62 @@ export const SettingsApp = () => {
 		} );
 	};
 
+	// Handle JWT required toggle
+	const handleJwtRequiredToggle = () => {
+		const newValue = ! jwtRequired;
+		setJwtRequired( newValue );
+
+		// Save JWT setting
+		handleSaveJwtSetting( newValue );
+	};
+
+	// Save JWT setting
+	const handleSaveJwtSetting = ( jwtValue ) => {
+		setIsSaving( true );
+		setNotice( null );
+
+		// Create form data for AJAX request
+		const formData = new FormData();
+		formData.append( 'action', 'wordpress_mcp_save_settings' );
+		formData.append( 'nonce', window.wordpressMcpSettings.nonce );
+		formData.append( 'settings', JSON.stringify( settings ) );
+		formData.append( 'jwt_required', jwtValue );
+
+		// Send AJAX request
+		fetch( ajaxurl, {
+			method: 'POST',
+			body: formData,
+			credentials: 'same-origin',
+		} )
+			.then( ( response ) => response.json() )
+			.then( ( data ) => {
+				setIsSaving( false );
+				if ( data.success ) {
+					setNotice( {
+						status: 'success',
+						message:
+							data.data.message ||
+							window.wordpressMcpSettings.strings.settingsSaved,
+					} );
+				} else {
+					setNotice( {
+						status: 'error',
+						message:
+							data.data.message ||
+							window.wordpressMcpSettings.strings.settingsError,
+					} );
+				}
+			} )
+			.catch( ( error ) => {
+				setIsSaving( false );
+				setNotice( {
+					status: 'error',
+					message: window.wordpressMcpSettings.strings.settingsError,
+				} );
+				console.error( 'Error saving JWT setting:', error );
+			} );
+	};
+
 	// Save settings with specific data
 	const handleSaveSettingsWithData = ( settingsData ) => {
 		setIsSaving( true );
@@ -168,6 +235,7 @@ export const SettingsApp = () => {
 		formData.append( 'action', 'wordpress_mcp_save_settings' );
 		formData.append( 'nonce', window.wordpressMcpSettings.nonce );
 		formData.append( 'settings', JSON.stringify( settingsData ) );
+		formData.append( 'jwt_required', jwtRequired );
 
 		// Send AJAX request
 		fetch( ajaxurl, {
@@ -257,12 +325,21 @@ export const SettingsApp = () => {
 					switch ( tab.name ) {
 						case 'settings':
 							return (
-								<SettingsTab
-									settings={ settings }
-									onToggleChange={ handleToggleChange }
-									isSaving={ isSaving }
-									strings={ strings }
-								/>
+								<>
+									<SettingsTab
+										settings={ settings }
+										onToggleChange={ handleToggleChange }
+										isSaving={ isSaving }
+										strings={ strings }
+									/>
+									<br />
+									<AuthenticationCard
+										jwtRequired={ jwtRequired }
+										onJwtRequiredToggle={ handleJwtRequiredToggle }
+										isSaving={ isSaving }
+										strings={ strings }
+									/>
+								</>
 							);
 						case 'authentication-tokens':
 							return <AuthenticationTokensTab />;

@@ -185,6 +185,35 @@ const SettingsTab = ( { settings, onToggleChange, isSaving, strings } ) => {
 					/>
 				</div>
 			</CardBody>
+		</Card>
+	);
+};
+
+const AuthenticationCard = ( { jwtRequired, onJwtRequiredToggle, isSaving, strings } ) => {
+	return (
+		<Card>
+			<CardHeader>
+				<h2>{ __( 'Authentication Settings', 'wordpress-mcp' ) }</h2>
+			</CardHeader>
+			<CardBody>
+				<div className="setting-row">
+					<ToggleControl
+						label={
+							strings.requireJwtAuth ||
+							__( 'Require JWT Authentication', 'wordpress-mcp' )
+						}
+						help={
+							strings.requireJwtAuthDescription ||
+							__(
+								'When enabled, all MCP requests must include a valid JWT token. When disabled, MCP endpoints are accessible without authentication (readonly mode only).',
+								'wordpress-mcp'
+							)
+						}
+						checked={ jwtRequired }
+						onChange={ onJwtRequiredToggle }
+					/>
+				</div>
+			</CardBody>
 			{ isSaving && (
 				<CardFooter>
 					<div className="settings-saving-indicator">
@@ -197,4 +226,5 @@ const SettingsTab = ( { settings, onToggleChange, isSaving, strings } ) => {
 	);
 };
 
+export { AuthenticationCard };
 export default SettingsTab;
