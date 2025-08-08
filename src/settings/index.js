@@ -55,6 +55,7 @@ export const SettingsApp = () => {
 				name: 'authentication-tokens',
 				title: __( 'Authentication Tokens', 'wordpress-mcp' ),
 				className: 'authentication-tokens-tab',
+				disabled: ! jwtRequired,
 			},
 			{
 				name: 'documentation',
@@ -80,7 +81,7 @@ export const SettingsApp = () => {
 				disabled: ! settings.enabled,
 			},
 		],
-		[ settings.enabled ]
+		[ settings.enabled, jwtRequired ]
 	);
 
 	// Load settings
@@ -124,6 +125,12 @@ export const SettingsApp = () => {
 			setActiveTab( tabName );
 			window.location.hash = tabName;
 			return tabName;
+		}
+		// If trying to access disabled Authentication Tokens tab, switch to settings
+		if ( tabName === 'authentication-tokens' && ! jwtRequired ) {
+			setActiveTab( 'settings' );
+			window.location.hash = 'settings';
+			return 'settings';
 		}
 		return activeTab;
 	};
@@ -173,6 +180,12 @@ export const SettingsApp = () => {
 	const handleJwtRequiredToggle = () => {
 		const newValue = ! jwtRequired;
 		setJwtRequired( newValue );
+
+		// If disabling JWT and currently on Authentication Tokens tab, switch to settings
+		if ( ! newValue && activeTab === 'authentication-tokens' ) {
+			setActiveTab( 'settings' );
+			window.location.hash = 'settings';
+		}
 
 		// Save JWT setting
 		handleSaveJwtSetting( newValue );
@@ -304,20 +317,34 @@ export const SettingsApp = () => {
 			>
 				{ ( tab ) => {
 					if ( tab.disabled ) {
+						// Different messages for different disabled tabs
+						let disabledMessage = '';
+						let enableMessage = '';
+						
+						if ( tab.name === 'authentication-tokens' ) {
+							disabledMessage = __(
+								'Authentication tokens are only available when JWT authentication is enabled.',
+								'wordpress-mcp'
+							);
+							enableMessage = __(
+								'Please enable "Require JWT Authentication" in the Settings tab first.',
+								'wordpress-mcp'
+							);
+						} else {
+							disabledMessage = __(
+								'This feature is only available when MCP functionality is enabled.',
+								'wordpress-mcp'
+							);
+							enableMessage = __(
+								'Please enable MCP in the Settings tab first.',
+								'wordpress-mcp'
+							);
+						}
+
 						return (
 							<div className="wordpress-mcp-disabled-tab-notice">
-								<p>
-									{ __(
-										'This feature is only available when MCP functionality is enabled.',
-										'wordpress-mcp'
-									) }
-								</p>
-								<p>
-									{ __(
-										'Please enable MCP in the Settings tab first.',
-										'wordpress-mcp'
-									) }
-								</p>
+								<p>{ disabledMessage }</p>
+								<p>{ enableMessage }</p>
 							</div>
 						);
 					}
