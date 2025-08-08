@@ -11,6 +11,7 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
+use Exception;
 
 /**
  * The WordPress MCP Streamable HTTP Transport class.
@@ -62,27 +63,53 @@ class McpStreamableTransport extends McpTransportBase {
 	 * @return bool|WP_Error
 	 */
 	public function check_permission(): WP_Error|bool {
-		// If MCP is disabled, deny access.
-		if ( ! $this->is_mcp_enabled() ) {
+		try {
+			// If MCP is disabled, deny access.
+			if ( ! $this->is_mcp_enabled() ) {
+				return new WP_Error(
+					'mcp_disabled',
+					'MCP functionality is currently disabled.',
+					array( 'status' => 403 )
+				);
+			}
+			
+			// Check JWT required setting
+			$jwt_required = get_option( 'wordpress_mcp_jwt_required', true );
+			
+			// Debug logging
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP Streamable] JWT required: ' . ( $jwt_required ? 'true' : 'false' ) );
+				error_log( '[MCP Streamable] User logged in: ' . ( is_user_logged_in() ? 'true' : 'false' ) );
+			}
+			
+			if ( ! $jwt_required ) {
+				// JWT is disabled, allow access without authentication (readonly mode)
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( '[MCP Streamable] JWT disabled - allowing access' );
+				}
+				return true;
+			}
+			
+			// JWT is required, check if user is authenticated via JWT or cookies
+			// The JWT authentication is handled by the rest_authentication_errors filter
+			// which runs before permission callbacks
+			$result = is_user_logged_in();
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP Streamable] Permission check result: ' . ( $result ? 'true' : 'false' ) );
+			}
+			return $result;
+			
+		} catch ( Exception $e ) {
+			// Log any exceptions
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP Streamable] Permission check exception: ' . $e->getMessage() );
+			}
 			return new WP_Error(
-				'mcp_disabled',
-				'MCP functionality is currently disabled.',
-				array( 'status' => 403 )
+				'permission_check_error',
+				'Error checking permissions: ' . $e->getMessage(),
+				array( 'status' => 500 )
 			);
 		}
-		
-		// Check JWT required setting
-		$jwt_required = get_option( 'wordpress_mcp_jwt_required', true );
-		
-		if ( ! $jwt_required ) {
-			// JWT is disabled, allow access without authentication (readonly mode)
-			return true;
-		}
-		
-		// JWT is required, check if user is authenticated via JWT or cookies
-		// The JWT authentication is handled by the rest_authentication_errors filter
-		// which runs before permission callbacks
-		return is_user_logged_in();
 	}
 
 	/**

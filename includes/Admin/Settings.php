@@ -35,6 +35,18 @@ class Settings {
 		add_action( 'wp_ajax_wordpress_mcp_save_settings', array( $this, 'ajax_save_settings' ) );
 		add_action( 'wp_ajax_wordpress_mcp_toggle_tool', array( $this, 'ajax_toggle_tool' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( WORDPRESS_MCP_PATH . 'wordpress-mcp.php' ), array( $this, 'plugin_action_links' ) );
+		
+		// Initialize JWT required option with default value if not exists
+		add_action( 'init', array( $this, 'init_jwt_option' ) );
+	}
+	
+	/**
+	 * Initialize JWT required option with default value.
+	 */
+	public function init_jwt_option(): void {
+		if ( false === get_option( self::JWT_REQUIRED_OPTION ) ) {
+			add_option( self::JWT_REQUIRED_OPTION, true );
+		}
 	}
 
 	/**
