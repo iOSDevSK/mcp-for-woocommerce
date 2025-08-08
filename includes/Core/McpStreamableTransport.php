@@ -34,6 +34,7 @@ class McpStreamableTransport extends McpTransportBase {
 	public function __construct( WpMcp $mcp ) {
 		parent::__construct( $mcp );
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
+		add_filter( 'rest_pre_serve_request', array( $this, 'handle_cors_preflight' ), 10, 4 );
 	}
 
 	/**
@@ -358,5 +359,40 @@ class McpStreamableTransport extends McpTransportBase {
 		
 		// If it's not already a proper error response, make it one
 		return McpErrorHandler::internal_error( $request_id, 'Invalid error response format' );
+	}
+
+	/**
+	 * Handle CORS preflight requests for MCP endpoint.
+	 *
+	 * @param mixed           $served  Whether the request has been served.
+	 * @param WP_REST_Response $result  The response object.
+	 * @param WP_REST_Request $request The request object.
+	 * @param WP_REST_Server  $server  The REST server instance.
+	 * @return mixed
+	 */
+	public function handle_cors_preflight( $served, $result, $request, $server ) {
+		// Only handle our MCP endpoint
+		if ( strpos( $request->get_route(), '/wpmcp/streamable' ) === false ) {
+			return $served;
+		}
+
+		// Set CORS headers for all requests to our endpoint
+		$origin = $request->get_header( 'origin' );
+		$allowed_origins = array( 'https://claude.ai' );
+		
+		if ( in_array( $origin, $allowed_origins ) || $origin === null ) {
+			header( 'Access-Control-Allow-Origin: https://claude.ai' );
+			header( 'Access-Control-Allow-Methods: POST, OPTIONS' );
+			header( 'Access-Control-Allow-Headers: content-type, accept' );
+			header( 'Access-Control-Max-Age: 600' );
+		}
+
+		// Handle OPTIONS preflight request
+		if ( $request->get_method() === 'OPTIONS' ) {
+			http_response_code( 204 );
+			exit;
+		}
+
+		return $served;
 	}
 }
