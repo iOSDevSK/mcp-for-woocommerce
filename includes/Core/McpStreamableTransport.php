@@ -151,11 +151,9 @@ class McpStreamableTransport extends McpTransportBase {
 			if ( ! $jwt_required ) {
 				return $this->handle_php_proxy_mode( $request );
 			}
-			// Validate Accept header - client MUST include both content types
+			// Validate Accept header - be flexible for Claude.ai compatibility
 			$accept_header = $request->get_header( 'accept' );
-			if ( ! $accept_header ||
-				strpos( $accept_header, 'application/json' ) === false ||
-				strpos( $accept_header, 'text/event-stream' ) === false ) {
+			if ( ! $accept_header || strpos( $accept_header, 'application/json' ) === false ) {
 				return new WP_REST_Response(
 					McpErrorHandler::invalid_accept_header( 0 ),
 					400
