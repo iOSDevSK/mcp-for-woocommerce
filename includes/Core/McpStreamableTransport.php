@@ -376,16 +376,11 @@ class McpStreamableTransport extends McpTransportBase {
 			return $served;
 		}
 
-		// Set CORS headers for all requests to our endpoint
-		$origin = $request->get_header( 'origin' );
-		$allowed_origins = array( 'https://claude.ai' );
-		
-		if ( in_array( $origin, $allowed_origins ) || $origin === null ) {
-			header( 'Access-Control-Allow-Origin: https://claude.ai' );
-			header( 'Access-Control-Allow-Methods: POST, OPTIONS' );
-			header( 'Access-Control-Allow-Headers: content-type, accept' );
-			header( 'Access-Control-Max-Age: 600' );
-		}
+		// Set CORS headers for all requests to our endpoint - allow all domains
+		header( 'Access-Control-Allow-Origin: *' );
+		header( 'Access-Control-Allow-Methods: POST, OPTIONS' );
+		header( 'Access-Control-Allow-Headers: content-type, accept' );
+		header( 'Access-Control-Max-Age: 600' );
 
 		// Handle OPTIONS preflight request
 		if ( $request->get_method() === 'OPTIONS' ) {
