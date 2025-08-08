@@ -212,7 +212,42 @@ const AuthenticationCard = ( { jwtRequired, onJwtRequiredToggle, isSaving, strin
 						checked={ jwtRequired }
 						onChange={ onJwtRequiredToggle }
 					/>
-					<div style={{ marginTop: '16px', padding: '12px', backgroundColor: '#f0f6fc', border: '1px solid #d1ecf1', borderRadius: '4px' }}>
+
+					{/* Claude.ai Desktop Connector Information */}
+					{(!jwtRequired || jwtRequired === '0' || jwtRequired === 0) && localizedData.claudeSetupInstructions && (
+						<div className="notice notice-info inline" style={{ marginTop: '15px', padding: '12px' }}>
+							<h4 style={{ margin: '0 0 8px 0' }}>{ strings.claudeConnectorNote || __( 'Claude.ai Desktop Connector:', 'wordpress-mcp' ) }</h4>
+							<p style={{ margin: '0 0 8px 0' }}>{ strings.claudeConnectorDescription || __( 'When JWT Authentication is disabled, this plugin can be used as a connector in Claude.ai Desktop. A proxy file will be automatically generated for easy setup.', 'wordpress-mcp' ) }</p>
+							
+							<p style={{ margin: '8px 0', fontWeight: 'bold' }}>{ strings.proxyFileGenerated || __( 'MCP Proxy file generated at:', 'wordpress-mcp' ) }</p>
+							<code style={{ 
+								display: 'block', 
+								padding: '8px', 
+								backgroundColor: '#f0f0f0', 
+								border: '1px solid #ddd',
+								marginBottom: '8px',
+								fontSize: '12px'
+							}}>
+								{localizedData.claudeSetupInstructions.proxyPath}
+							</code>
+							
+							<p style={{ margin: '8px 0', fontWeight: 'bold' }}>{ strings.claudeSetupInstructions || __( 'To use with Claude.ai Desktop, add this configuration to your claude_desktop_config.json:', 'wordpress-mcp' ) }</p>
+							<pre style={{ 
+								backgroundColor: '#f0f0f0', 
+								border: '1px solid #ddd',
+								padding: '12px',
+								fontSize: '12px',
+								overflowX: 'auto',
+								margin: '8px 0'
+							}}>
+{localizedData.claudeSetupInstructions.config}
+							</pre>
+						</div>
+					)}
+
+					{/* Webtalkbot Information - only when JWT enabled */}
+					{jwtRequired && (
+						<div style={{ marginTop: '16px', padding: '12px', backgroundColor: '#f0f6fc', border: '1px solid #d1ecf1', borderRadius: '4px' }}>
 						<p style={{ margin: '0', fontSize: '14px', color: '#0c5460' }}>
 							<strong>{ strings.webtalkbotNote || __( 'Note for Webtalkbot users:', 'wordpress-mcp' ) }</strong> { strings.webtalkbotDescription || __( 'JWT Authentication must be enabled if you want to create a WooCommerce AI Agent in', 'wordpress-mcp' ) }{' '}
 							<a 
@@ -225,6 +260,7 @@ const AuthenticationCard = ( { jwtRequired, onJwtRequiredToggle, isSaving, strin
 							</a>.
 						</p>
 					</div>
+				)}
 				</div>
 			</CardBody>
 			{ isSaving && (
