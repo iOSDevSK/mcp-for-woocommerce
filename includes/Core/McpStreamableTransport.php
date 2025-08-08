@@ -74,7 +74,7 @@ class McpStreamableTransport extends McpTransportBase {
 			}
 			
 			// Check JWT required setting
-			$jwt_required = function_exists( 'get_option' ) ? get_option( 'wordpress_mcp_jwt_required', true ) : true;
+			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
 			
 			// Debug logging
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {

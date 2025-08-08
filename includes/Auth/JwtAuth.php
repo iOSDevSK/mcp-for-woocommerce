@@ -96,7 +96,7 @@ class JwtAuth {
 			// WordPress not fully loaded yet, default to require JWT
 			return true;
 		}
-		return get_option( 'wordpress_mcp_jwt_required', true );
+		return (bool) get_option( 'wordpress_mcp_jwt_required', true );
 	}
 
 	/**
