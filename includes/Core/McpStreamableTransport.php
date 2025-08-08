@@ -160,6 +160,12 @@ class McpStreamableTransport extends McpTransportBase {
 				);
 			}
 
+			// Check for Claude.ai beta header requirement
+			$beta_header = $request->get_header( 'anthropic-beta' );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP Streamable] Beta header: ' . ( $beta_header ? $beta_header : 'missing' ) );
+			}
+
 			// Validate content type - be more flexible with content-type headers
 			$content_type = $request->get_header( 'content-type' );
 			if ( $content_type && strpos( $content_type, 'application/json' ) === false ) {
