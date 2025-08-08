@@ -61,8 +61,18 @@ class McpStdioTransport extends McpTransportBase {
 				array( 'status' => 403 )
 			);
 		}
-
-		// JWT authentication handles user validation, so just check if user is logged in.
+		
+		// Check JWT required setting
+		$jwt_required = get_option( 'wordpress_mcp_jwt_required', true );
+		
+		if ( ! $jwt_required ) {
+			// JWT is disabled, allow access without authentication (readonly mode)
+			return true;
+		}
+		
+		// JWT is required, check if user is authenticated via JWT or cookies
+		// The JWT authentication is handled by the rest_authentication_errors filter
+		// which runs before permission callbacks
 		return is_user_logged_in();
 	}
 
