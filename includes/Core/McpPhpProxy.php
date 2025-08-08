@@ -207,10 +207,15 @@ class McpPhpProxy {
                 'result' => $data['result']
             ];
         } elseif (isset($data['error'])) {
+            // Ensure error code is integer for Claude Desktop compatibility
+            $error = $data['error'];
+            if (isset($error['code']) && !is_int($error['code'])) {
+                $error['code'] = (int)$error['code'];
+            }
             return [
                 'jsonrpc' => '2.0',
                 'id' => $id,
-                'error' => $data['error']
+                'error' => $error
             ];
         } else {
             return [
