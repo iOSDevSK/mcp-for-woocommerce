@@ -6,12 +6,12 @@
  * @subpackage CLI
  */
 
-namespace Automattic\WordpressMcp\CLI;
+namespace WordPressMCP\CLI;
 
 use WP_CLI;
-use Automattic\WordpressMcp\Utils\ToolValidator;
-use Automattic\WordpressMcp\Utils\SchemaValidator;
-use Automattic\WordpressMcp\Core\RegisterMcpTool;
+use WordPressMCP\Utils\ToolValidator;
+use WordPressMCP\Utils\SchemaValidator;
+use WordPressMCP\Core\RegisterMcpTool;
 
 /**
  * Validates MCP tools for compliance and functionality.

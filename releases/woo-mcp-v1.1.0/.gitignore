@@ -1,0 +1,6 @@
+.DS_Store
+/wordpress-mcp.zip
+/.phpunit.result.cache
+wp-mcp.tar.gz
+
+woo-mcp-v*.zip

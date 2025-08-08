@@ -1,0 +1,102 @@
+name: Deploy WordPress Plugin
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          set -e  # Exit on any error
+          
+          PLUGIN_DIR="/var/www/html/wp-content/plugins/woo-mcp"
+          REPO_URL="https://github.com/${{ github.repository }}.git"
+          
+          echo "Starting deployment of commit ${{ github.sha }}"
+          
+          # Navigate to plugins directory
+          cd /var/www/html/wp-content/plugins/
+          
+          # Remove existing plugin if it exists
+          if [ -d "woo-mcp" ]; then
+            echo "Removing existing plugin..."
+            rm -rf woo-mcp
+          fi
+          
+          # Clone repository with force refresh
+          echo "Cloning repository from $REPO_URL..."
+          if ! git clone --depth=1 "$REPO_URL" woo-mcp; then
+            echo "Failed to clone repository"
+            exit 1
+          fi
+          
+          cd woo-mcp
+          
+          # Verify we got the latest changes
+          echo "Current HEAD commit: $(git rev-parse HEAD)"
+          echo "Current branch: $(git branch --show-current)"
+          
+          # Install composer dependencies if composer.json exists
+          if [ -f "composer.json" ]; then
+            echo "Installing composer dependencies..."
+            if command -v composer >/dev/null 2>&1; then
+              composer install --no-dev --optimize-autoloader
+            else
+              echo "Composer not found, skipping dependency installation"
+            fi
+          fi
+          
+          # Verify we're on the correct commit
+          DEPLOYED_COMMIT=$(git rev-parse HEAD)
+          echo "Deployed commit: $DEPLOYED_COMMIT"
+          echo "Expected commit: ${{ github.sha }}"
+          
+          if [ "$DEPLOYED_COMMIT" != "${{ github.sha }}" ]; then
+            echo "Warning: Deployed commit doesn't match expected commit"
+          fi
+          
+          # Verify plugin file exists
+          if [ ! -f "wordpress-mcp.php" ]; then
+            echo "Error: Main plugin file not found"
+            exit 1
+          fi
+          
+          # Set proper permissions
+          echo "Setting file permissions..."
+          chown -R www-data:www-data "$PLUGIN_DIR"
+          chmod -R 755 "$PLUGIN_DIR"
+          
+          # Clear caches
+          echo "Clearing caches..."
+          if command -v php >/dev/null 2>&1; then
+            php -r "if (function_exists('opcache_reset')) { opcache_reset(); echo 'OPcache cleared\n'; }"
+          fi
+          
+          if command -v wp >/dev/null 2>&1; then
+            wp cache flush --allow-root 2>/dev/null && echo "WordPress cache cleared" || echo "WordPress cache clear failed (non-critical)"
+          fi
+          
+          # Verify deployment
+          echo "Verifying deployment..."
+          ls -la "$PLUGIN_DIR/wordpress-mcp.php" || echo "Main plugin file check failed"
+          
+          # Check changelog to verify we have latest changes
+          if [ -f "$PLUGIN_DIR/changelog.txt" ]; then
+            echo "Changelog verification:"
+            head -10 "$PLUGIN_DIR/changelog.txt"
+          else
+            echo "Changelog file not found!"
+          fi
+          
+          echo "Deployment completed successfully at $(date)"
+          echo "Repository: ${{ github.repository }}"
+          echo "Commit: ${{ github.sha }}"

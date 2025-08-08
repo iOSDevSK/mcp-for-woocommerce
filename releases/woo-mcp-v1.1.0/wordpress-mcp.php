@@ -22,7 +22,7 @@ use Automattic\WordpressMcp\Core\WpMcp;
 use Automattic\WordpressMcp\Core\McpStdioTransport;
 use Automattic\WordpressMcp\Admin\Settings;
 use Automattic\WordpressMcp\Auth\JwtAuth;
-use Automattic\WordpressMcp\CLI\ValidateToolsCommand;
+use WordPressMCP\CLI\ValidateToolsCommand;
 
 define( 'WORDPRESS_MCP_VERSION', '1.1.0' );
 define( 'WORDPRESS_MCP_PATH', plugin_dir_path( __FILE__ ) );
