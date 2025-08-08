@@ -146,6 +146,11 @@ class McpStreamableTransport extends McpTransportBase {
 	 */
 	private function handle_post_request( $request ) {
 		try {
+			// Check if JWT is disabled - if so, use PHP proxy mode for external access
+			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+			if ( ! $jwt_required ) {
+				return $this->handle_php_proxy_mode( $request );
+			}
 			// Validate Accept header - client MUST include both content types
 			$accept_header = $request->get_header( 'accept' );
 			if ( ! $accept_header ||
@@ -389,5 +394,94 @@ class McpStreamableTransport extends McpTransportBase {
 		}
 
 		return $served;
+	}
+
+	/**
+	 * Handle PHP proxy mode when JWT is disabled
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 * @return WP_REST_Response
+	 */
+	private function handle_php_proxy_mode( $request ) {
+		// Get the request body
+		$body = $request->get_body();
+		if ( empty( $body ) ) {
+			return new WP_REST_Response(
+				array(
+					'jsonrpc' => '2.0',
+					'id' => null,
+					'error' => array(
+						'code' => -32700,
+						'message' => 'Parse error: Empty request body'
+					)
+				),
+				400
+			);
+		}
+
+		// Decode JSON request
+		$data = json_decode( $body, true );
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			return new WP_REST_Response(
+				array(
+					'jsonrpc' => '2.0',
+					'id' => null,
+					'error' => array(
+						'code' => -32700,
+						'message' => 'Parse error: ' . json_last_error_msg()
+					)
+				),
+				400
+			);
+		}
+
+		$id = $data['id'] ?? null;
+
+		// Process the MCP request internally
+		try {
+			$method = $data['method'] ?? '';
+			$params = $data['params'] ?? array();
+
+			// Route the request using existing MCP routing
+			$result = $this->route_request( $method, $params, (int) $id );
+
+			// Format response according to JSON-RPC 2.0
+			if ( isset( $result['error'] ) ) {
+				// Ensure error code is integer for Claude Desktop compatibility
+				$error = $result['error'];
+				if ( isset( $error['code'] ) && ! is_int( $error['code'] ) ) {
+					$error['code'] = (int) $error['code'];
+				}
+				return new WP_REST_Response(
+					array(
+						'jsonrpc' => '2.0',
+						'id' => $id,
+						'error' => $error
+					),
+					200
+				);
+			} else {
+				return new WP_REST_Response(
+					array(
+						'jsonrpc' => '2.0',
+						'id' => $id,
+						'result' => $result
+					),
+					200
+				);
+			}
+		} catch ( Exception $e ) {
+			return new WP_REST_Response(
+				array(
+					'jsonrpc' => '2.0',
+					'id' => $id,
+					'error' => array(
+						'code' => -32603,
+						'message' => 'Internal error: ' . $e->getMessage()
+					)
+				),
+				500
+			);
+		}
 	}
 }
