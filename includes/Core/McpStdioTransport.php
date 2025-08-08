@@ -63,7 +63,7 @@ class McpStdioTransport extends McpTransportBase {
 		}
 		
 		// Check JWT required setting
-		$jwt_required = get_option( 'wordpress_mcp_jwt_required', true );
+		$jwt_required = function_exists( 'get_option' ) ? get_option( 'wordpress_mcp_jwt_required', true ) : true;
 		
 		if ( ! $jwt_required ) {
 			// JWT is disabled, allow access without authentication (readonly mode)

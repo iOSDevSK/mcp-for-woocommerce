@@ -91,6 +91,11 @@ class JwtAuth {
 	 * @return bool
 	 */
 	private function is_jwt_required(): bool {
+		// Check if WordPress functions are available
+		if ( ! function_exists( 'get_option' ) ) {
+			// WordPress not fully loaded yet, default to require JWT
+			return true;
+		}
 		return get_option( 'wordpress_mcp_jwt_required', true );
 	}
 
