@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/your-org/wordpress-mcp/schema/wordpress-extensions.json",
+  "title": "WordPress MCP Extensions Schema",
+  "description": "WordPress-specific extensions to the MCP schema",
+  "type": "object",
+  "definitions": {
+    "WordPressTool": {
+      "allOf": [
+        {
+          "$ref": "mcp-2025-06-18.json#/definitions/Tool"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "callback": {
+              "type": "string",
+              "description": "PHP callback function or method for the tool"
+            },
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether the tool is currently enabled"
+            },
+            "rest_alias": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_/-]{1,128}$",
+              "description": "REST API endpoint alias for the tool"
+            },
+            "capability": {
+              "type": "string",
+              "description": "WordPress capability required to use this tool"
+            },
+            "priority": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "description": "Tool loading priority"
+            },
+            "hooks": {
+              "type": "object",
+              "properties": {
+                "before_call": {
+                  "type": "string",
+                  "description": "Hook to run before tool execution"
+                },
+                "after_call": {
+                  "type": "string", 
+                  "description": "Hook to run after tool execution"
+                },
+                "on_error": {
+                  "type": "string",
+                  "description": "Hook to run when tool execution fails"
+                }
+              },
+              "additionalProperties": false,
+              "description": "WordPress hooks for tool lifecycle events"
+            },
+            "cache": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to cache tool results"
+                },
+                "ttl": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 300,
+                  "description": "Cache time-to-live in seconds"
+                },
+                "key_prefix": {
+                  "type": "string",
+                  "description": "Prefix for cache keys"
+                }
+              },
+              "additionalProperties": false,
+              "description": "Caching configuration for the tool"
+            },
+            "rate_limit": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to apply rate limiting"
+                },
+                "max_calls": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Maximum number of calls per time window"
+                },
+                "time_window": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Time window in seconds"
+                }
+              },
+              "additionalProperties": false,
+              "description": "Rate limiting configuration"
+            },
+            "logging": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether to log tool usage"
+                },
+                "level": {
+                  "type": "string",
+                  "enum": ["debug", "info", "warning", "error"],
+                  "default": "info",
+                  "description": "Logging level"
+                },
+                "include_parameters": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to log input parameters"
+                }
+              },
+              "additionalProperties": false,
+              "description": "Logging configuration"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "WooCommerceTool": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/WordPressTool"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "woocommerce": {
+              "type": "object",
+              "properties": {
+                "requires_woocommerce": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether WooCommerce plugin is required"
+                },
+                "min_wc_version": {
+                  "type": "string",
+                  "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+                  "description": "Minimum WooCommerce version required"
+                },
+                "store_types": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "physical",
+                      "digital", 
+                      "subscription",
+                      "variable",
+                      "grouped",
+                      "external",
+                      "booking"
+                    ]
+                  },
+                  "uniqueItems": true,
+                  "description": "Supported WooCommerce store/product types"
+                },
+                "product_types": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "uniqueItems": true,
+                  "description": "Supported product types"
+                }
+              },
+              "additionalProperties": false,
+              "description": "WooCommerce-specific configuration"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "title": "WordPress MCP Tool",
+      "$ref": "#/definitions/WordPressTool"
+    },
+    {
+      "title": "WooCommerce MCP Tool",
+      "$ref": "#/definitions/WooCommerceTool"
+    }
+  ]
+}

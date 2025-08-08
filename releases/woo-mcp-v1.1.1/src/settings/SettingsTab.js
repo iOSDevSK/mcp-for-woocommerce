@@ -214,7 +214,7 @@ const AuthenticationCard = ( { jwtRequired, onJwtRequiredToggle, isSaving, strin
 					/>
 
 					{/* Claude.ai Desktop Connector Information */}
-					{(!jwtRequired || jwtRequired === '0' || jwtRequired === 0) && window.wordpressMcpSettings.claudeSetupInstructions && (
+					{(!jwtRequired || jwtRequired === '0' || jwtRequired === 0) && localizedData.claudeSetupInstructions && (
 						<div className="notice notice-info inline" style={{ marginTop: '15px', padding: '12px' }}>
 							<h4 style={{ margin: '0 0 8px 0' }}>{ strings.claudeConnectorNote || __( 'Claude.ai Desktop Connector:', 'wordpress-mcp' ) }</h4>
 							<p style={{ margin: '0 0 8px 0' }}>{ strings.claudeConnectorDescription || __( 'When JWT Authentication is disabled, this plugin can be used as a connector in Claude.ai Desktop. A proxy file will be automatically generated for easy setup.', 'wordpress-mcp' ) }</p>
@@ -228,7 +228,7 @@ const AuthenticationCard = ( { jwtRequired, onJwtRequiredToggle, isSaving, strin
 								marginBottom: '8px',
 								fontSize: '12px'
 							}}>
-								{window.wordpressMcpSettings.claudeSetupInstructions.proxyPath}
+								{localizedData.claudeSetupInstructions.proxyPath}
 							</code>
 							
 							<p style={{ margin: '8px 0', fontWeight: 'bold' }}>{ strings.claudeSetupInstructions || __( 'To use with Claude.ai Desktop, add this configuration to your claude_desktop_config.json:', 'wordpress-mcp' ) }</p>
@@ -240,7 +240,7 @@ const AuthenticationCard = ( { jwtRequired, onJwtRequiredToggle, isSaving, strin
 								overflowX: 'auto',
 								margin: '8px 0'
 							}}>
-{window.wordpressMcpSettings.claudeSetupInstructions.config}
+{localizedData.claudeSetupInstructions.config}
 							</pre>
 						</div>
 					)}

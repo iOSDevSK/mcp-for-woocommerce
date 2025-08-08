@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertWarningsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertDeprecationsToExceptions="true"
+	>
+	<testsuites>
+		<testsuite name="wordpress-mcp">
+			<directory suffix="Test.php">./tests/phpunit/</directory>
+			<exclude>./tests/test-sample.php</exclude>
+		</testsuite>
+	</testsuites>
+</phpunit>
