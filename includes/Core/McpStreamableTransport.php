@@ -388,7 +388,7 @@ class McpStreamableTransport extends McpTransportBase {
 		// Set CORS headers for all requests to our endpoint - allow all domains
 		header( 'Access-Control-Allow-Origin: *' );
 		header( 'Access-Control-Allow-Methods: POST, OPTIONS' );
-		header( 'Access-Control-Allow-Headers: content-type, accept' );
+		header( 'Access-Control-Allow-Headers: content-type, accept, anthropic-beta, authorization' );
 		header( 'Access-Control-Max-Age: 600' );
 
 		// Handle OPTIONS preflight request
