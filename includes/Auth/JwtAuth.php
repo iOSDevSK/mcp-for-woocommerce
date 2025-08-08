@@ -121,7 +121,17 @@ class JwtAuth {
 	 */
 	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
-		add_filter( 'rest_authentication_errors', array( $this, 'authenticate_request' ) );
+		add_action( 'init', array( $this, 'maybe_register_auth_filter' ) );
+	}
+
+	/**
+	 * Conditionally register the authentication filter based on JWT requirement setting.
+	 */
+	public function maybe_register_auth_filter(): void {
+		// Only register the auth filter if JWT is required
+		if ( $this->is_jwt_required() ) {
+			add_filter( 'rest_authentication_errors', array( $this, 'authenticate_request' ) );
+		}
 	}
 
 	/**
@@ -528,10 +538,10 @@ class JwtAuth {
    		return $result;
    	}
 
-   	// Skip JWT authentication if it's disabled
+   	// Skip JWT authentication if it's disabled - return original result to avoid interfering
    	if ( ! $this->is_jwt_required() ) {
-   		$this->log_auth_event( 'JWT_DISABLED', 'JWT authentication is disabled - allowing access' );
-   		return true;
+   		$this->log_auth_event( 'JWT_DISABLED', 'JWT authentication is disabled - passing through' );
+   		return $result;
    	}
 
    	$auth = $this->get_authorization_header();
