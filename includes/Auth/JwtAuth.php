@@ -15,7 +15,6 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use Exception;
-use Automattic\WordpressMcp\Admin\Settings;
 
 /**
  * Class JwtAuth
@@ -92,7 +91,7 @@ class JwtAuth {
 	 * @return bool
 	 */
 	private function is_jwt_required(): bool {
-		return get_option( Settings::JWT_REQUIRED_OPTION, true );
+		return get_option( 'wordpress_mcp_jwt_required', true );
 	}
 
 	/**
