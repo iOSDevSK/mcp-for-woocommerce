@@ -825,8 +825,8 @@ class McpStreamableTransport extends McpTransportBase {
 				'type' => 'none'  // Will use JWT when enabled
 			),
 			'api' => array(
-				'type' => 'openapi',
-				'url' => rest_url( 'wp/v2/wpmcp/openapi.json' )
+				'type' => 'mcp',
+				'url' => rest_url( 'wp/v2/wpmcp/streamable' )
 			),
 			'logo_url' => WORDPRESS_MCP_URL . 'assets/logo.png',
 			'contact_email' => get_option( 'admin_email', 'admin@' . parse_url( $site_url, PHP_URL_HOST ) ),

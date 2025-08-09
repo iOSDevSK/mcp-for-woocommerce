@@ -8,8 +8,8 @@
     "type": "none"
   },
   "api": {
-    "type": "openapi",
-    "url": "https://woo.webtalkbot.com/wp-json/wp/v2/wpmcp/openapi.json"
+    "type": "mcp",
+    "url": "https://woo.webtalkbot.com/wp-json/wp/v2/wpmcp/streamable"
   },
   "logo_url": "https://woo.webtalkbot.com/wp-admin/images/wordpress-logo.png",
   "contact_email": "support@woo.webtalkbot.com",
