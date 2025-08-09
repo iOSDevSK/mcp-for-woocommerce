@@ -35,6 +35,9 @@ class McpStreamableTransport extends McpTransportBase {
 		parent::__construct( $mcp );
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 		add_filter( 'rest_pre_serve_request', array( $this, 'handle_cors_preflight' ), 10, 4 );
+		add_action( 'init', array( $this, 'add_well_known_rewrite' ) );
+		add_filter( 'query_vars', array( $this, 'add_well_known_query_vars' ) );
+		add_action( 'template_redirect', array( $this, 'handle_well_known_request' ) );
 	}
 
 	/**
@@ -54,6 +57,28 @@ class McpStreamableTransport extends McpTransportBase {
 				'methods'             => WP_REST_Server::ALLMETHODS,
 				'callback'            => array( $this, 'handle_request' ),
 				'permission_callback' => array( $this, 'check_permission' ),
+			)
+		);
+
+		// AI Plugin manifest endpoint for Claude.ai compatibility
+		register_rest_route(
+			'wpmcp/v1',
+			'/ai-plugin.json',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'ai_plugin_manifest' ),
+				'permission_callback' => '__return_true',
+			)
+		);
+
+		// OpenAPI spec endpoint
+		register_rest_route(
+			'wp/v2',
+			'/wpmcp/openapi.json',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'openapi_spec' ),
+				'permission_callback' => '__return_true',
 			)
 		);
 	}
@@ -625,5 +650,209 @@ class McpStreamableTransport extends McpTransportBase {
 		$log_file = WP_CONTENT_DIR . '/mcp-claude-debug.log';
 		$log_entry = "[" . date('Y-m-d H:i:s') . "] CLAUDE.AI RESPONSE:\n" . wp_json_encode( $log_data, JSON_PRETTY_PRINT ) . "\n" . str_repeat('-', 80) . "\n\n";
 		error_log( $log_entry, 3, $log_file );
+	}
+
+	/**
+	 * Generate AI Plugin manifest for Claude.ai compatibility
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function ai_plugin_manifest() {
+		$site_url = get_site_url();
+		$manifest = array(
+			'schema_version' => 'v1',
+			'name_for_model' => 'woo_mcp',
+			'name_for_human' => 'WooCommerce MCP',
+			'description_for_model' => 'Access WooCommerce store data including products, orders, customers, and analytics via Model Context Protocol (MCP). Provides tools for searching products, managing orders, analyzing sales data, and accessing store configuration.',
+			'description_for_human' => 'WooCommerce Model Context Protocol integration for AI assistants',
+			'auth' => array(
+				'type' => 'none'  // Will use JWT when enabled
+			),
+			'api' => array(
+				'type' => 'openapi',
+				'url' => rest_url( 'wp/v2/wpmcp/openapi.json' )
+			),
+			'logo_url' => WORDPRESS_MCP_URL . 'assets/logo.png',
+			'contact_email' => get_option( 'admin_email' ),
+			'legal_info_url' => $site_url . '/privacy-policy/'
+		);
+
+		// Check if JWT is required
+		$jwt_required = (bool) get_option( 'wordpress_mcp_jwt_required', true );
+		if ( $jwt_required ) {
+			$manifest['auth'] = array(
+				'type' => 'service_http',
+				'authorization_type' => 'bearer',
+				'verification_tokens' => array(
+					'claude' => get_option( 'wordpress_mcp_jwt_secret', wp_generate_password( 64, false ) )
+				)
+			);
+		}
+
+		return new WP_REST_Response( $manifest, 200, array(
+			'Content-Type' => 'application/json',
+			'Access-Control-Allow-Origin' => '*',
+		) );
+	}
+
+	/**
+	 * Generate OpenAPI specification for MCP tools
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function openapi_spec() {
+		$site_url = get_site_url();
+		$spec = array(
+			'openapi' => '3.0.1',
+			'info' => array(
+				'title' => 'WooCommerce MCP API',
+				'description' => 'Model Context Protocol (MCP) integration for WooCommerce stores',
+				'version' => WORDPRESS_MCP_VERSION
+			),
+			'servers' => array(
+				array(
+					'url' => rest_url( 'wp/v2/wpmcp' )
+				)
+			),
+			'paths' => array(
+				'/streamable' => array(
+					'post' => array(
+						'summary' => 'MCP JSON-RPC endpoint',
+						'description' => 'Main endpoint for MCP protocol communication',
+						'requestBody' => array(
+							'required' => true,
+							'content' => array(
+								'application/json' => array(
+									'schema' => array(
+										'$ref' => '#/components/schemas/JsonRpcRequest'
+									)
+								)
+							)
+						),
+						'responses' => array(
+							'200' => array(
+								'description' => 'Successful response',
+								'content' => array(
+									'application/json' => array(
+										'schema' => array(
+											'$ref' => '#/components/schemas/JsonRpcResponse'
+										)
+									)
+								)
+							)
+						)
+					),
+					'get' => array(
+						'summary' => 'Health check endpoint',
+						'responses' => array(
+							'200' => array(
+								'description' => 'Service status',
+								'content' => array(
+									'application/json' => array(
+										'schema' => array(
+											'type' => 'object',
+											'properties' => array(
+												'status' => array( 'type' => 'string' ),
+												'transport' => array( 'type' => 'string' ),
+												'endpoint' => array( 'type' => 'string' )
+											)
+										)
+									)
+								)
+							)
+						)
+					)
+				)
+			),
+			'components' => array(
+				'schemas' => array(
+					'JsonRpcRequest' => array(
+						'type' => 'object',
+						'required' => array( 'jsonrpc', 'method', 'id' ),
+						'properties' => array(
+							'jsonrpc' => array( 'type' => 'string', 'enum' => array( '2.0' ) ),
+							'method' => array( 'type' => 'string' ),
+							'params' => array( 'type' => 'object' ),
+							'id' => array( 'oneOf' => array(
+								array( 'type' => 'string' ),
+								array( 'type' => 'integer' ),
+								array( 'type' => 'null' )
+							) )
+						)
+					),
+					'JsonRpcResponse' => array(
+						'type' => 'object',
+						'required' => array( 'jsonrpc', 'id' ),
+						'properties' => array(
+							'jsonrpc' => array( 'type' => 'string', 'enum' => array( '2.0' ) ),
+							'result' => array( 'type' => 'object' ),
+							'error' => array(
+								'type' => 'object',
+								'properties' => array(
+									'code' => array( 'type' => 'integer' ),
+									'message' => array( 'type' => 'string' ),
+									'data' => array( 'type' => 'object' )
+								)
+							),
+							'id' => array( 'oneOf' => array(
+								array( 'type' => 'string' ),
+								array( 'type' => 'integer' ),
+								array( 'type' => 'null' )
+							) )
+						)
+					)
+				)
+			)
+		);
+
+		return new WP_REST_Response( $spec, 200, array(
+			'Content-Type' => 'application/json',
+			'Access-Control-Allow-Origin' => '*',
+		) );
+	}
+
+	/**
+	 * Add rewrite rule for .well-known directory
+	 */
+	public function add_well_known_rewrite() {
+		add_rewrite_rule(
+			'^\.well-known/ai-plugin\.json$',
+			'index.php?well_known=ai-plugin.json',
+			'top'
+		);
+	}
+
+	/**
+	 * Add query vars for .well-known handling
+	 *
+	 * @param array $vars Existing query vars.
+	 * @return array
+	 */
+	public function add_well_known_query_vars( $vars ) {
+		$vars[] = 'well_known';
+		return $vars;
+	}
+
+	/**
+	 * Handle .well-known requests
+	 */
+	public function handle_well_known_request() {
+		$well_known = get_query_var( 'well_known' );
+		
+		if ( 'ai-plugin.json' === $well_known ) {
+			// Set CORS headers
+			header( 'Access-Control-Allow-Origin: *' );
+			header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
+			header( 'Access-Control-Allow-Headers: content-type, accept, anthropic-beta, authorization' );
+			
+			// Generate and output the manifest
+			$manifest = $this->ai_plugin_manifest();
+			
+			if ( $manifest instanceof WP_REST_Response ) {
+				header( 'Content-Type: application/json' );
+				echo wp_json_encode( $manifest->get_data() );
+			}
+			exit;
+		}
 	}
 }
