@@ -193,6 +193,9 @@ class McpStreamableTransport extends McpTransportBase {
 	 */
 	private function handle_post_request( $request ) {
 		try {
+			// Log incoming request for Claude.ai debugging
+			$this->log_claude_request( $request );
+			
 			// Check if JWT is disabled - if so, use PHP proxy mode for external access
 			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
 			if ( ! $jwt_required ) {
@@ -280,6 +283,9 @@ class McpStreamableTransport extends McpTransportBase {
 
 			// Return single result or batch
 			$response_body = count( $results ) === 1 ? $results[0] : $results;
+
+			// Log outgoing response for Claude.ai debugging
+			$this->log_claude_response( $response_body );
 
 			// Validate outgoing response
 			if ( is_array( $response_body ) ) {
@@ -538,5 +544,72 @@ class McpStreamableTransport extends McpTransportBase {
 				500
 			);
 		}
+	}
+
+	/**
+	 * Log incoming Claude.ai request for debugging
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 */
+	private function log_claude_request( $request ) {
+		$headers = $request->get_headers();
+		$body = $request->get_body();
+		$params = $request->get_params();
+		$method = $request->get_method();
+		$url = $request->get_route();
+		
+		$user_agent = $headers['user_agent'][0] ?? '';
+		$accept = $headers['accept'][0] ?? '';
+		$content_type = $headers['content_type'][0] ?? '';
+		$anthropic_beta = $headers['anthropic_beta'][0] ?? '';
+		$authorization = !empty($headers['authorization']) ? '[PRESENT]' : '[MISSING]';
+		
+		$log_data = array(
+			'timestamp' => current_time('mysql'),
+			'method' => $method,
+			'url' => $url,
+			'user_agent' => $user_agent,
+			'accept' => $accept,
+			'content_type' => $content_type,
+			'anthropic_beta' => $anthropic_beta,
+			'authorization' => $authorization,
+			'body_length' => strlen($body),
+			'body' => $body,
+			'params' => $params,
+			'all_headers' => $headers
+		);
+		
+		// Log to WordPress debug.log if WP_DEBUG is enabled
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP Claude.ai REQUEST] ' . wp_json_encode( $log_data, JSON_PRETTY_PRINT ) );
+		}
+		
+		// Also log to separate file for easier debugging
+		$log_file = WP_CONTENT_DIR . '/mcp-claude-debug.log';
+		$log_entry = "[" . date('Y-m-d H:i:s') . "] CLAUDE.AI REQUEST:\n" . wp_json_encode( $log_data, JSON_PRETTY_PRINT ) . "\n\n";
+		error_log( $log_entry, 3, $log_file );
+	}
+
+	/**
+	 * Log outgoing response for Claude.ai debugging
+	 *
+	 * @param mixed $response_body The response body.
+	 */
+	private function log_claude_response( $response_body ) {
+		$log_data = array(
+			'timestamp' => current_time('mysql'),
+			'response_type' => gettype($response_body),
+			'response_body' => $response_body
+		);
+		
+		// Log to WordPress debug.log if WP_DEBUG is enabled
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP Claude.ai RESPONSE] ' . wp_json_encode( $log_data, JSON_PRETTY_PRINT ) );
+		}
+		
+		// Also log to separate file for easier debugging
+		$log_file = WP_CONTENT_DIR . '/mcp-claude-debug.log';
+		$log_entry = "[" . date('Y-m-d H:i:s') . "] CLAUDE.AI RESPONSE:\n" . wp_json_encode( $log_data, JSON_PRETTY_PRINT ) . "\n" . str_repeat('-', 80) . "\n\n";
+		error_log( $log_entry, 3, $log_file );
 	}
 }
