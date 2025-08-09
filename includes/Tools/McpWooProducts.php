@@ -25,11 +25,13 @@ class McpWooProducts {
 	 *
 	 * @return void
 	 */
-	public function register_tools(): void {
-		// Only register tools if WooCommerce is active.
-		if ( ! $this->is_woocommerce_active() ) {
-			return;
-		}
+    public function register_tools(): void {
+        // Only register tools if WooCommerce is active.
+        if ( ! $this->is_woocommerce_active() ) {
+            // Log when WooCommerce is not detected so we know why these tools are missing
+            error_log('[MCP Tools] WooCommerce not active - skipping McpWooProducts tool registration');
+            return;
+        }
 
 		// Products - readonly with permalink support
 		new RegisterMcpTool(

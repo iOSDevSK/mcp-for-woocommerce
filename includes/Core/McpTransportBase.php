@@ -96,12 +96,13 @@ abstract class McpTransportBase {
 	protected function route_request( string $method, array $params, int $request_id = 0 ): array {
 		try {
 			$result = match ( $method ) {
-				'initialize' => $this->initialize_handler->handle(),
-				'init' => $this->initialize_handler->handle(),
+				'initialize' => $this->initialize_handler->handle( $params ),
+				'init' => $this->initialize_handler->handle( $params ),
 				'notifications/initialized' => $this->handle_notification_initialized(),
 				'ping' => $this->system_handler->ping(),
 				'tools/list' => $this->tools_handler->list_tools(),
 				'tools/list/all' => $this->tools_handler->list_all_tools( $params ),
+				'tools/debug' => $this->tools_handler->debug_tools_state(),
 				'tools/call' => $this->tools_handler->call_tool( $params ),
 				'resources/list' => $this->add_cursor_compatibility( $this->resources_handler->list_resources() ),
 				'resources/templates/list' => $this->add_cursor_compatibility( $this->resources_handler->list_resource_templates( $params ) ),

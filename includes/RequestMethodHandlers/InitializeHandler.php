@@ -33,9 +33,10 @@ class InitializeHandler {
 	/**
 	 * Handle the initialize request.
 	 *
+	 * @param array $params The request parameters.
 	 * @return array
 	 */
-	public function handle(): array {
+	public function handle( array $params = [] ): array {
 		$site_info = array(
 			'name'        => get_bloginfo( 'name' ),
 			'url'         => get_bloginfo( 'url' ),
@@ -86,9 +87,13 @@ class InitializeHandler {
 			}
 		}
 
+		// Use client's protocol version or default to 2024-11-05 for web compatibility
+		$client_protocol_version = $params['protocolVersion'] ?? '2024-11-05';
+		error_log( '[MCP Initialize] Client protocol version: ' . $client_protocol_version . ' from params: ' . wp_json_encode( $params ) );
+		
 		// Send the response according to JSON-RPC 2.0 and InitializeResult schema.
 		$response = array(
-			'protocolVersion' => '2025-06-18',
+			'protocolVersion' => $client_protocol_version,
 			'serverInfo'      => $server_info,
 			'capabilities'    => (object) $capabilities,
 			'instructions'    => 'This is a WordPress MCP Server implementation that provides tools, resources, and prompts for interacting with the WordPress site ' . get_bloginfo( 'name' ) . ' (' . get_bloginfo( 'url' ) . ').',
@@ -98,6 +103,14 @@ class InitializeHandler {
 		if ( $tools_response ) {
 			$response['tools'] = $tools_response;
 			error_log( '[MCP Initialize] Added ' . count( $tools_response ) . ' tools to initialize response for Claude.ai compatibility' );
+			// Log a concise summary of active vs all tools to help pinpoint missing items
+			try {
+				$active_count = function_exists('WPMCP') ? count( \WPMCP()->get_tools() ) : -1;
+				$all_count    = function_exists('WPMCP') && method_exists( \WPMCP(), 'get_all_tools') ? count( \WPMCP()->get_all_tools() ) : -1;
+				error_log( '[MCP Initialize] Tools summary: active=' . $active_count . ' all=' . $all_count );
+			} catch ( \Throwable $e ) {
+				// best effort logging only
+			}
 		}
 
 		return $response;

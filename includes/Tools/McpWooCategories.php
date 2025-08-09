@@ -19,6 +19,8 @@ class McpWooCategories {
     public function register_tools(): void {
         // Only register if WooCommerce is active
         if (!class_exists('WooCommerce')) {
+            // Log when WooCommerce is not detected so we know why these tools are missing
+            error_log('[MCP Tools] WooCommerce not active - skipping McpWooCategories tool registration');
             return;
         }
 

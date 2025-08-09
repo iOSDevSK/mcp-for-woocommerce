@@ -42,25 +42,27 @@ class ToolsHandler {
 		);
 	}
 
-	/**
-	 * Handle the tools/list/all request.
-	 *
-	 * @param array $params Request parameters.
-	 * @return array
-	 */
-	public function list_all_tools( array $params ): array {
-		// Return all tools with additional details.
-		$tools = $this->mcp->get_tools();
+    /**
+     * Handle the tools/list/all request.
+     *
+     * Return ALL tools, including those disabled by settings, with reasons.
+     * This is useful for debugging when clients report "tools disabled".
+     *
+     * @param array $params Request parameters.
+     * @return array
+     */
+    public function list_all_tools( array $params ): array {
+        // Include all tools captured during registration with enable flags
+        // tool_enabled: user toggle; tool_type_enabled: type-level toggle
+        // disabled_by_rest_crud: disabled because REST CRUD experimental setting is ON
+        $tools = method_exists( $this->mcp, 'get_all_tools' )
+            ? $this->mcp->get_all_tools()
+            : $this->mcp->get_tools();
 
-		// Add any additional metadata or details.
-		foreach ( $tools as &$tool ) {
-			$tool['available'] = true;
-		}
-
-		return array(
-			'tools' => array_values( $tools ),
-		);
-	}
+        return array(
+            'tools' => array_values( $tools ),
+        );
+    }
 
 	/**
 	 * Handle the tools/call request.
@@ -68,7 +70,7 @@ class ToolsHandler {
 	 * @param array $message Request message.
 	 * @return array
 	 */
-	public function call_tool( array $message ): array {
+    public function call_tool( array $message ): array {
 		// Handle both direct params and nested params structure.
 		$request_params = $message['params'] ?? $message;
 
@@ -83,8 +85,40 @@ class ToolsHandler {
 			foreach ( $request_params['arguments'] as $key => $value ) {
 				if ( empty( $value ) || 'null' === $value ) {
 					unset( $request_params['arguments'][ $key ] );
-				}
-			}
+    }
+
+    /**
+     * Debug method that returns a snapshot of tool availability and settings.
+     * Useful to diagnose why Claude shows tools disabled.
+     *
+     * @return array
+     */
+    public function debug_tools_state(): array {
+        try {
+            $settings = function_exists('get_option') ? (array) get_option('wordpress_mcp_settings', array()) : array();
+            $jwt_required = function_exists('get_option') ? (bool) get_option('wordpress_mcp_jwt_required', true) : true;
+            $active_tools = $this->mcp->get_tools();
+            $all_tools = method_exists($this->mcp, 'get_all_tools') ? $this->mcp->get_all_tools() : $active_tools;
+
+            return array(
+                'settings' => array(
+                    'enabled' => !empty($settings['enabled']),
+                    'enable_rest_api_crud_tools' => !empty($settings['enable_rest_api_crud_tools']),
+                    'features_adapter_enabled' => !empty($settings['features_adapter_enabled'] ?? false),
+                    'jwt_required' => $jwt_required,
+                ),
+                'counts' => array(
+                    'active' => count($active_tools),
+                    'all' => count($all_tools),
+                ),
+                'activeTools' => $active_tools,
+                'allTools' => $all_tools,
+            );
+        } catch (\Throwable $e) {
+            return array('error' => 'debug_tools_state failed: ' . $e->getMessage());
+        }
+    }
+}
 		}
 
 		try {
