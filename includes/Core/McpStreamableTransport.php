@@ -230,16 +230,19 @@ class McpStreamableTransport extends McpTransportBase {
 			if ( ! $jwt_required ) {
 				return $this->handle_php_proxy_mode( $request );
 			}
-			// Validate Accept header - be flexible for Claude.ai compatibility
-			$accept_header = $request->get_header( 'accept' );
-			$accepts_json = $accept_header && strpos( $accept_header, 'application/json' ) !== false;
-			$accepts_sse  = $accept_header && strpos( $accept_header, 'text/event-stream' ) !== false;
-			if ( ! $accept_header || ( ! $accepts_json && ! $accepts_sse ) ) {
-				return new WP_REST_Response(
-					McpErrorHandler::invalid_accept_header( 0 ),
-					400
-				);
-			}
+            // Validate Accept header - relax to default JSON when missing or */*
+            $accept_header = $request->get_header( 'accept' );
+            $accept_header = is_string( $accept_header ) ? trim( $accept_header ) : '';
+            $accepts_json = ( $accept_header === '' )
+                || strpos( $accept_header, 'application/json' ) !== false
+                || strpos( $accept_header, '*/*' ) !== false;
+            $accepts_sse  = $accept_header && strpos( $accept_header, 'text/event-stream' ) !== false;
+            if ( ! $accepts_json && ! $accepts_sse ) {
+                // Still incompatible: log and continue with JSON default instead of hard 400
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    error_log( '[MCP Streamable] Non-compatible Accept header received: ' . $accept_header . ' - proceeding as application/json' );
+                }
+            }
 
 			// Check for Claude.ai beta header requirement
 			$beta_header = $request->get_header( 'anthropic-beta' );
