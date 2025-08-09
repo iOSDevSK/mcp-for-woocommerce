@@ -513,36 +513,42 @@ class McpStreamableTransport extends McpTransportBase {
 				if ( isset( $error['code'] ) && ! is_int( $error['code'] ) ) {
 					$error['code'] = (int) $error['code'];
 				}
-				return new WP_REST_Response(
-					array(
-						'jsonrpc' => '2.0',
-						'id' => $id,
-						'error' => $error
-					),
-					200
-				);
-			} else {
-				return new WP_REST_Response(
-					array(
-						'jsonrpc' => '2.0',
-						'id' => $id,
-						'result' => $result
-					),
-					200
-				);
-			}
-		} catch ( Exception $e ) {
-			return new WP_REST_Response(
-				array(
+				$error_response = array(
 					'jsonrpc' => '2.0',
 					'id' => $id,
-					'error' => array(
-						'code' => -32603,
-						'message' => 'Internal error: ' . $e->getMessage()
-					)
-				),
-				500
+					'error' => $error
+				);
+				
+				// Log error response from PHP proxy mode
+				$this->log_claude_response( $error_response );
+				
+				return new WP_REST_Response( $error_response, 200 );
+			} else {
+				$response_body = array(
+					'jsonrpc' => '2.0',
+					'id' => $id,
+					'result' => $result
+				);
+				
+				// Log response from PHP proxy mode
+				$this->log_claude_response( $response_body );
+				
+				return new WP_REST_Response( $response_body, 200 );
+			}
+		} catch ( Exception $e ) {
+			$exception_response = array(
+				'jsonrpc' => '2.0',
+				'id' => $id,
+				'error' => array(
+					'code' => -32603,
+					'message' => 'Internal error: ' . $e->getMessage()
+				)
 			);
+			
+			// Log exception response from PHP proxy mode
+			$this->log_claude_response( $exception_response );
+			
+			return new WP_REST_Response( $exception_response, 500 );
 		}
 	}
 
