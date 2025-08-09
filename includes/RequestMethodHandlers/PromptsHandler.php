@@ -37,6 +37,14 @@ class PromptsHandler {
 	 * @return array|null Returns error array if permission denied, null if allowed.
 	 */
 	private function check_permission(): ?array {
+		// Check JWT required setting
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		
+		if ( ! $jwt_required ) {
+			// JWT is disabled, allow access without authentication (readonly mode)
+			return null;
+		}
+		
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return array(
 				'error' => array(
