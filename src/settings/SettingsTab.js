@@ -219,7 +219,17 @@ const AuthenticationCard = ( { jwtRequired, onJwtRequiredToggle, isSaving, strin
 							<h4 style={{ margin: '0 0 8px 0' }}>{ strings.claudeConnectorNote || __( 'Claude.ai Desktop Connector:', 'wordpress-mcp' ) }</h4>
 							<p style={{ margin: '0 0 8px 0' }}>{ strings.claudeConnectorDescription || __( 'When JWT Authentication is disabled, this plugin can be used as a connector in Claude.ai Desktop. A proxy file will be automatically generated for easy setup.', 'wordpress-mcp' ) }</p>
 							
-							<p style={{ margin: '8px 0', fontWeight: 'bold' }}>{ strings.proxyFileGenerated || __( 'MCP Proxy file generated at:', 'wordpress-mcp' ) }</p>
+							<p style={{ margin: '8px 0', fontWeight: 'bold' }}>{ strings.proxyFilesGenerated || __( 'MCP Proxy files generated at:', 'wordpress-mcp' ) }</p>
+							<code style={{ 
+								display: 'block', 
+								padding: '8px', 
+								backgroundColor: '#f0f0f0', 
+								border: '1px solid #ddd',
+								marginBottom: '4px',
+								fontSize: '12px'
+							}}>
+								{window.wordpressMcpSettings.claudeSetupInstructions.phpProxyPath || window.wordpressMcpSettings.claudeSetupInstructions.proxyPath.replace('.js', '.php')}
+							</code>
 							<code style={{ 
 								display: 'block', 
 								padding: '8px', 
