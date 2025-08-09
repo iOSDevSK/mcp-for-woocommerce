@@ -157,17 +157,14 @@ npx @modelcontextprotocol/inspector \
 
 #### Local Development Configuration
 
+To use with Claude.ai Desktop, add this configuration to your claude_desktop_config.json:
+
 ```json
 {
 	"mcpServers": {
-		"woo-local": {
-			"command": "node",
-			"args": [ "/path/to/mcp-wordpress-remote/dist/proxy.js" ],
-			"env": {
-				"WP_API_URL": "http://localhost:8080/",
-				"JWT_TOKEN": "your-local-jwt-token",
-				"LOG_FILE": "optional-path-to-log-file"
-			}
+		"woocommerce": {
+			"command": "php",
+			"args": [ "/path/to/your/woo-mcp/mcp-proxy.js" ]
 		}
 	}
 }
