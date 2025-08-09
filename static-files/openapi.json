@@ -10,8 +10,8 @@
   },
   "servers": [
     {
-      "url": "https://woo.webtalkbot.com",
-      "description": "WooCommerce MCP Server"
+      "url": "/",
+      "description": "WooCommerce MCP Server (Relative URL)"
     }
   ],
   "paths": {

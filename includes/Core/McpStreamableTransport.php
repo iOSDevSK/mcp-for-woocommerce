@@ -673,7 +673,7 @@ class McpStreamableTransport extends McpTransportBase {
 				'url' => rest_url( 'wp/v2/wpmcp/openapi.json' )
 			),
 			'logo_url' => WORDPRESS_MCP_URL . 'assets/logo.png',
-			'contact_email' => get_option( 'admin_email' ),
+			'contact_email' => get_option( 'admin_email', 'admin@' . parse_url( $site_url, PHP_URL_HOST ) ),
 			'legal_info_url' => $site_url . '/privacy-policy/'
 		);
 
@@ -707,11 +707,15 @@ class McpStreamableTransport extends McpTransportBase {
 			'info' => array(
 				'title' => 'WooCommerce MCP API',
 				'description' => 'Model Context Protocol (MCP) integration for WooCommerce stores',
-				'version' => WORDPRESS_MCP_VERSION
+				'version' => WORDPRESS_MCP_VERSION,
+				'contact' => array(
+					'email' => get_option( 'admin_email', 'admin@' . parse_url( $site_url, PHP_URL_HOST ) )
+				)
 			),
 			'servers' => array(
 				array(
-					'url' => rest_url( 'wp/v2/wpmcp' )
+					'url' => $site_url,
+					'description' => 'WooCommerce MCP Server'
 				)
 			),
 			'paths' => array(
