@@ -190,10 +190,20 @@ class JwtAuth {
 	/**
 	 * Check if the current user has permission to manage tokens.
 	 *
-	 * @return bool
+	 * @return bool|WP_Error
 	 */
-	public function check_revoke_permission(): bool {
-		return current_user_can( 'manage_options' );
+	public function check_revoke_permission() {
+		// First check if user is logged in and has manage_options capability
+		if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+			return true;
+		}
+		
+		// If not authenticated via cookies, return error with details
+		return new WP_Error(
+			'rest_forbidden',
+			__( 'You need to be logged in as an administrator to access JWT tokens.', 'wordpress-mcp' ),
+			array( 'status' => 401 )
+		);
 	}
 
 	/**

@@ -53,8 +53,22 @@ const AuthenticationTokensTab = () => {
 				includeCredentials: true,
 			} );
 			setTokens( response );
+			setError( null ); // Clear any previous errors
 		} catch ( err ) {
-			setError( __( 'Error fetching tokens', 'wordpress-mcp' ) );
+			console.error( 'Token fetch error:', err );
+			
+			// Show more detailed error message based on the error
+			if ( err.code === 'rest_forbidden' || err.status === 401 ) {
+				setError( 
+					err.message || __( 'You need to be logged in as an administrator to access JWT tokens.', 'wordpress-mcp' )
+				);
+			} else if ( err.status === 403 ) {
+				setError( __( 'You do not have permission to access JWT tokens. Admin privileges required.', 'wordpress-mcp' ) );
+			} else {
+				setError( 
+					err.message || __( 'Error fetching tokens', 'wordpress-mcp' )
+				);
+			}
 		}
 	};
 
@@ -77,9 +91,20 @@ const AuthenticationTokensTab = () => {
 			// Refresh the tokens list
 			fetchTokens();
 		} catch ( err ) {
-			setError(
-				err.message || __( 'Error generating token', 'wordpress-mcp' )
-			);
+			console.error( 'Token generation error:', err );
+			
+			// Show more detailed error message
+			if ( err.code === 'rest_forbidden' || err.status === 401 ) {
+				setError( 
+					err.message || __( 'You need to be logged in as an administrator to generate JWT tokens.', 'wordpress-mcp' )
+				);
+			} else if ( err.status === 403 ) {
+				setError( __( 'You do not have permission to generate JWT tokens. Admin privileges required.', 'wordpress-mcp' ) );
+			} else {
+				setError(
+					err.message || __( 'Error generating token', 'wordpress-mcp' )
+				);
+			}
 		} finally {
 			setLoading( false );
 		}
@@ -98,9 +123,20 @@ const AuthenticationTokensTab = () => {
 			// Refresh the tokens list
 			fetchTokens();
 		} catch ( err ) {
-			setError(
-				err.message || __( 'Error revoking token', 'wordpress-mcp' )
-			);
+			console.error( 'Token revocation error:', err );
+			
+			// Show more detailed error message
+			if ( err.code === 'rest_forbidden' || err.status === 401 ) {
+				setError( 
+					err.message || __( 'You need to be logged in as an administrator to revoke JWT tokens.', 'wordpress-mcp' )
+				);
+			} else if ( err.status === 403 ) {
+				setError( __( 'You do not have permission to revoke JWT tokens. Admin privileges required.', 'wordpress-mcp' ) );
+			} else {
+				setError(
+					err.message || __( 'Error revoking token', 'wordpress-mcp' )
+				);
+			}
 		}
 	};
 
