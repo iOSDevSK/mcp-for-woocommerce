@@ -164,7 +164,7 @@ To use with Claude.ai Desktop, add this configuration to your claude_desktop_con
 	"mcpServers": {
 		"woocommerce": {
 			"command": "php",
-			"args": [ "/path/to/your/woo-mcp/mcp-proxy.js" ]
+			"args": [ "/path/to/your/woo-mcp/mcp-proxy.php" ]
 		}
 	}
 }
