@@ -131,6 +131,30 @@ class McpStreamableTransport extends McpTransportBase {
 			return $this->handle_post_request( $request );
 		}
 
+		// Health-check friendly GET/HEAD responses for Claude.ai Connectors
+		if ( 'GET' === $method ) {
+			$body = array(
+				'jsonrpc' => '2.0',
+				'result'  => array(
+					'status'    => 'ok',
+					'transport' => 'streamable-http',
+					'endpoint'  => '/wp/v2/wpmcp/streamable',
+				),
+			);
+			$headers = array(
+				'Content-Type' => 'application/json',
+				'MCP-Protocol-Version' => '2025-03-26',
+			);
+			return new WP_REST_Response( $body, 200, $headers );
+		}
+
+		if ( 'HEAD' === $method ) {
+			$headers = array(
+				'MCP-Protocol-Version' => '2025-03-26',
+			);
+			return new WP_REST_Response( null, 200, $headers );
+		}
+
 		// Return 405 for unsupported methods.
 		return new WP_REST_Response(
 			McpErrorHandler::create_error_response( 0, McpErrorHandler::INVALID_REQUEST, 'Method not allowed' ),
