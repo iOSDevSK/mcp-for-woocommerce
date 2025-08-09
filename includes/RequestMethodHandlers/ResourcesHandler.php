@@ -39,12 +39,24 @@ class ResourcesHandler {
 		// Check JWT required setting
 		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
 		
+		// Debug logging
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP ResourcesHandler] JWT required: ' . ( $jwt_required ? 'true' : 'false' ) );
+			error_log( '[MCP ResourcesHandler] User can manage_options: ' . ( current_user_can( 'manage_options' ) ? 'true' : 'false' ) );
+		}
+		
 		if ( ! $jwt_required ) {
 			// JWT is disabled, allow access without authentication (readonly mode)
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP ResourcesHandler] JWT disabled - allowing access to resources' );
+			}
 			return null;
 		}
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP ResourcesHandler] Permission denied - user cannot manage_options' );
+			}
 			return array(
 				'error' => array(
 					'code'    => 'rest_forbidden',
