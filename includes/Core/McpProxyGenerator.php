@@ -79,20 +79,33 @@ class McpProxyGenerator {
      * @return array
      */
     public static function get_claude_setup_instructions(): array {
-        $proxy_path = self::get_proxy_file_path();
+        $proxy_js_path = self::get_proxy_file_path();
+        $proxy_php_path = str_replace('.js', '.php', $proxy_js_path);
         
-        $config = array(
+        $php_config = array(
+            'mcpServers' => array(
+                'woocommerce' => array(
+                    'command' => 'php',
+                    'args' => array($proxy_php_path)
+                )
+            )
+        );
+
+        $node_config = array(
             'mcpServers' => array(
                 'woocommerce' => array(
                     'command' => 'node',
-                    'args' => array($proxy_path)
+                    'args' => array($proxy_js_path)
                 )
             )
         );
 
         return array(
-            'proxyPath' => $proxy_path,
-            'config' => json_encode($config, JSON_PRETTY_PRINT)
+            'proxyPath' => $proxy_js_path,
+            'phpProxyPath' => $proxy_php_path,
+            'phpConfig' => json_encode($php_config, JSON_PRETTY_PRINT),
+            'nodeConfig' => json_encode($node_config, JSON_PRETTY_PRINT),
+            'config' => json_encode($node_config, JSON_PRETTY_PRINT) // backward compatibility
         );
     }
 

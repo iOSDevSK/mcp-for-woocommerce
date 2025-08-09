@@ -232,6 +232,8 @@ const AuthenticationCard = ( { jwtRequired, onJwtRequiredToggle, isSaving, strin
 							</code>
 							
 							<p style={{ margin: '8px 0', fontWeight: 'bold' }}>{ strings.claudeSetupInstructions || __( 'To use with Claude.ai Desktop, add this configuration to your claude_desktop_config.json:', 'wordpress-mcp' ) }</p>
+							
+							<p style={{ margin: '8px 0', fontWeight: 'bold', color: '#0073aa' }}>{ __( 'PHP Version (requires PHP installed):', 'wordpress-mcp' ) }</p>
 							<pre style={{ 
 								backgroundColor: '#f0f0f0', 
 								border: '1px solid #ddd',
@@ -240,7 +242,19 @@ const AuthenticationCard = ( { jwtRequired, onJwtRequiredToggle, isSaving, strin
 								overflowX: 'auto',
 								margin: '8px 0'
 							}}>
-{window.wordpressMcpSettings.claudeSetupInstructions.config}
+{window.wordpressMcpSettings.claudeSetupInstructions.phpConfig || window.wordpressMcpSettings.claudeSetupInstructions.config}
+							</pre>
+
+							<p style={{ margin: '8px 0', fontWeight: 'bold', color: '#0073aa' }}>{ __( 'Node.js Version (requires Node.js installed):', 'wordpress-mcp' ) }</p>
+							<pre style={{ 
+								backgroundColor: '#f0f0f0', 
+								border: '1px solid #ddd',
+								padding: '12px',
+								fontSize: '12px',
+								overflowX: 'auto',
+								margin: '8px 0'
+							}}>
+{window.wordpressMcpSettings.claudeSetupInstructions.nodeConfig || window.wordpressMcpSettings.claudeSetupInstructions.config}
 							</pre>
 						</div>
 					)}
