@@ -755,8 +755,9 @@ class McpStreamableTransport extends McpTransportBase {
 			'paths' => array(
 				'/wp-json/wp/v2/wpmcp/streamable' => array(
 					'post' => array(
-						'summary' => 'MCP JSON-RPC endpoint',
-						'description' => 'Main endpoint for MCP protocol communication',
+						'operationId' => 'mcpJsonRpcCall',
+						'summary' => 'MCP JSON-RPC endpoint for advanced queries',
+						'description' => 'Advanced Model Context Protocol endpoint using JSON-RPC 2.0. Use this for complex WooCommerce operations like detailed product searches, order management, and data analysis.',
 						'requestBody' => array(
 							'required' => true,
 							'content' => array(
@@ -781,10 +782,23 @@ class McpStreamableTransport extends McpTransportBase {
 						)
 					),
 					'get' => array(
-						'summary' => 'Health check endpoint',
+						'operationId' => 'searchWooCommerce',
+						'summary' => 'Search WooCommerce store data',
+						'description' => 'Use this tool to search for information in the WooCommerce store. Perfect for queries about products, order status, or customers. Example queries: \'find all orders for email john.doe@example.com\', \'what products are in the electronics category?\', \'show product details for ID 123\', \'search for laptop products\', \'get recent orders\'.',
+						'parameters' => array(
+							array(
+								'name' => 'query',
+								'in' => 'query',
+								'description' => 'Specific search query. Examples: \'latest orders\', \'products under $50\', \'customer John Smith\', \'laptops in stock\', \'orders from last week\'.',
+								'required' => true,
+								'schema' => array(
+									'type' => 'string'
+								)
+							)
+						),
 						'responses' => array(
 							'200' => array(
-								'description' => 'Service status',
+								'description' => 'Successful response with found data.',
 								'content' => array(
 									'application/json' => array(
 										'schema' => array(
