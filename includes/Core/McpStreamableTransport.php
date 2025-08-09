@@ -637,8 +637,12 @@ class McpStreamableTransport extends McpTransportBase {
 		$anthropic_beta = $headers['anthropic_beta'][0] ?? '';
 		$authorization = !empty($headers['authorization']) ? '[PRESENT]' : '[MISSING]';
 		
+		// Detect connection source based on user agent and other indicators
+		$connection_source = $this->detect_connection_source($headers);
+		
 		$log_data = array(
 			'timestamp' => current_time('mysql'),
+			'connection_source' => $connection_source,
 			'method' => $method,
 			'url' => $url,
 			'user_agent' => $user_agent,
@@ -649,8 +653,13 @@ class McpStreamableTransport extends McpTransportBase {
 			'body_length' => strlen($body),
 			'body' => $body,
 			'params' => $params,
+			'remote_addr' => $_SERVER['REMOTE_ADDR'] ?? '',
+			'referer' => $_SERVER['HTTP_REFERER'] ?? '',
 			'all_headers' => $headers
 		);
+		
+		// Enhanced connection attempt logging
+		$this->log_connection_attempt($log_data);
 		
 		// Log to WordPress debug.log if WP_DEBUG is enabled
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
@@ -672,8 +681,14 @@ class McpStreamableTransport extends McpTransportBase {
 		$log_data = array(
 			'timestamp' => current_time('mysql'),
 			'response_type' => gettype($response_body),
-			'response_body' => $response_body
+			'response_body' => $response_body,
+			'success' => !isset($response_body['error']),
+			'error_code' => isset($response_body['error']['code']) ? $response_body['error']['code'] : null,
+			'error_message' => isset($response_body['error']['message']) ? $response_body['error']['message'] : null
 		);
+		
+		// Enhanced connection result logging
+		$this->log_connection_result($log_data);
 		
 		// Log to WordPress debug.log if WP_DEBUG is enabled
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
@@ -684,6 +699,113 @@ class McpStreamableTransport extends McpTransportBase {
 		$log_file = WP_CONTENT_DIR . '/mcp-claude-debug.log';
 		$log_entry = "[" . date('Y-m-d H:i:s') . "] CLAUDE.AI RESPONSE:\n" . wp_json_encode( $log_data, JSON_PRETTY_PRINT ) . "\n" . str_repeat('-', 80) . "\n\n";
 		error_log( $log_entry, 3, $log_file );
+	}
+
+	/**
+	 * Detect connection source based on headers and other indicators
+	 *
+	 * @param array $headers Request headers.
+	 * @return string
+	 */
+	private function detect_connection_source( $headers ) {
+		$user_agent = $headers['user_agent'][0] ?? '';
+		$anthropic_beta = $headers['anthropic_beta'][0] ?? '';
+		$referer = $_SERVER['HTTP_REFERER'] ?? '';
+		
+		// Claude.ai web app detection
+		if ( strpos( $user_agent, 'claude' ) !== false || 
+			 strpos( $user_agent, 'Claude' ) !== false ||
+			 strpos( $referer, 'claude.ai' ) !== false ||
+			 !empty( $anthropic_beta ) ) {
+			return 'claude.ai-webapp';
+		}
+		
+		// Claude Desktop detection
+		if ( strpos( $user_agent, 'Claude Desktop' ) !== false ||
+			 strpos( $user_agent, 'claude-desktop' ) !== false ) {
+			return 'claude-desktop';
+		}
+		
+		// MCP proxy detection
+		if ( strpos( $user_agent, 'mcp' ) !== false ||
+			 strpos( $user_agent, 'MCP' ) !== false ) {
+			return 'mcp-proxy';
+		}
+		
+		// Generic HTTP client detection
+		if ( strpos( $user_agent, 'curl' ) !== false ) {
+			return 'curl';
+		}
+		
+		if ( strpos( $user_agent, 'Postman' ) !== false ) {
+			return 'postman';
+		}
+		
+		if ( empty( $user_agent ) ) {
+			return 'unknown-no-ua';
+		}
+		
+		return 'unknown-' . substr( $user_agent, 0, 20 );
+	}
+	
+	/**
+	 * Log connection attempt with enhanced details
+	 *
+	 * @param array $log_data Connection log data.
+	 */
+	private function log_connection_attempt( $log_data ) {
+		$connection_log = array(
+			'event' => 'connection_attempt',
+			'timestamp' => current_time('mysql'),
+			'source' => $log_data['connection_source'],
+			'method' => $log_data['method'],
+			'remote_addr' => $log_data['remote_addr'],
+			'user_agent' => $log_data['user_agent'],
+			'endpoint' => 'https://woo.webtalkbot.com' . $log_data['url'],
+			'has_auth' => $log_data['authorization'] === '[PRESENT]',
+			'anthropic_beta' => $log_data['anthropic_beta'],
+			'request_size' => $log_data['body_length']
+		);
+		
+		// Log to dedicated connection log file
+		$connection_log_file = WP_CONTENT_DIR . '/mcp-connections.log';
+		$connection_entry = "[" . date('Y-m-d H:i:s') . "] CONNECTION_ATTEMPT: " . wp_json_encode( $connection_log ) . "\n";
+		error_log( $connection_entry, 3, $connection_log_file );
+		
+		// Also log failed connections to separate error log
+		if ( $log_data['connection_source'] === 'claude.ai-webapp' ) {
+			$claude_connection_log = WP_CONTENT_DIR . '/mcp-claude-connections.log';
+			$claude_entry = "[" . date('Y-m-d H:i:s') . "] CLAUDE.AI_CONNECTION: " . wp_json_encode( $connection_log ) . "\n";
+			error_log( $claude_entry, 3, $claude_connection_log );
+		}
+	}
+	
+	/**
+	 * Log connection result with success/failure details
+	 *
+	 * @param array $log_data Response log data.
+	 */
+	private function log_connection_result( $log_data ) {
+		$result_log = array(
+			'event' => 'connection_result',
+			'timestamp' => current_time('mysql'),
+			'success' => $log_data['success'],
+			'error_code' => $log_data['error_code'],
+			'error_message' => $log_data['error_message'],
+			'response_type' => $log_data['response_type']
+		);
+		
+		// Log connection results
+		$connection_log_file = WP_CONTENT_DIR . '/mcp-connections.log';
+		$result_entry = "[" . date('Y-m-d H:i:s') . "] CONNECTION_RESULT: " . wp_json_encode( $result_log ) . "\n";
+		error_log( $result_entry, 3, $connection_log_file );
+		
+		// Log failed connections separately for easier analysis
+		if ( !$log_data['success'] ) {
+			$failed_log_file = WP_CONTENT_DIR . '/mcp-connection-failures.log';
+			$failed_entry = "[" . date('Y-m-d H:i:s') . "] FAILED_CONNECTION: " . wp_json_encode( $result_log ) . "\n";
+			error_log( $failed_entry, 3, $failed_log_file );
+		}
 	}
 
 	/**

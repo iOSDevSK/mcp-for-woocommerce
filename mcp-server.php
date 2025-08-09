@@ -168,7 +168,10 @@ class McpPhpServer {
     }
     
     private function makeWordPressRequest(array $request): array {
-        $this->log('[PHP MCP Server] Proxying to WordPress: ' . $request['method']);
+        $start_time = microtime(true);
+        $method = $request['method'] ?? 'unknown';
+        
+        $this->logDetailedConnectionAttempt($method, $request);
         
         $ch = curl_init();
         curl_setopt_array($ch, [
@@ -178,34 +181,94 @@ class McpPhpServer {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
-                'Accept: application/json, text/event-stream'
+                'Accept: application/json, text/event-stream',
+                'User-Agent: WooMCP-PHP-Server/1.0'
             ],
             CURLOPT_TIMEOUT => 30,
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 3
+            CURLOPT_MAXREDIRS => 3,
+            CURLOPT_VERBOSE => false
         ]);
         
         $response = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_info = curl_getinfo($ch);
         $curl_error = curl_error($ch);
         curl_close($ch);
         
+        $duration = round((microtime(true) - $start_time) * 1000, 2);
+        
         if ($response === false || !empty($curl_error)) {
+            $this->logDetailedConnectionFailure($method, 'CURL error: ' . $curl_error, $duration, $curl_info);
             throw new Exception('CURL error: ' . $curl_error);
         }
         
         if ($http_code !== 200) {
+            $this->logDetailedConnectionFailure($method, 'HTTP error: ' . $http_code, $duration, $curl_info, substr($response, 0, 500));
             throw new Exception('HTTP error: ' . $http_code . ' - ' . substr($response, 0, 200));
         }
         
         $data = json_decode($response, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->logDetailedConnectionFailure($method, 'JSON decode error: ' . json_last_error_msg(), $duration, $curl_info, substr($response, 0, 500));
             throw new Exception('JSON decode error: ' . json_last_error_msg());
         }
         
+        $this->logDetailedConnectionSuccess($method, $data, $duration, $curl_info);
+        
         return $data;
+    }
+    
+    private function logDetailedConnectionAttempt(string $method, array $request): void {
+        $log_data = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'event' => 'server_connection_attempt',
+            'method' => $method,
+            'endpoint' => $this->endpoint_url,
+            'request_id' => $request['id'] ?? null,
+            'has_params' => !empty($request['params']),
+            'pid' => getmypid()
+        ];
+        
+        $this->log('[PHP MCP Server] CONNECTION_ATTEMPT: ' . json_encode($log_data));
+    }
+    
+    private function logDetailedConnectionFailure(string $method, string $error, float $duration, array $curl_info, string $response = ''): void {
+        $log_data = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'event' => 'server_connection_failure',
+            'method' => $method,
+            'endpoint' => $this->endpoint_url,
+            'error' => $error,
+            'duration_ms' => $duration,
+            'http_code' => $curl_info['http_code'] ?? 0,
+            'total_time' => $curl_info['total_time'] ?? 0,
+            'connect_time' => $curl_info['connect_time'] ?? 0,
+            'response_preview' => $response ? substr($response, 0, 200) : '',
+            'pid' => getmypid()
+        ];
+        
+        $this->log('[PHP MCP Server] CONNECTION_FAILURE: ' . json_encode($log_data));
+    }
+    
+    private function logDetailedConnectionSuccess(string $method, array $response, float $duration, array $curl_info): void {
+        $log_data = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'event' => 'server_connection_success',
+            'method' => $method,
+            'endpoint' => $this->endpoint_url,
+            'success' => isset($response['result']),
+            'has_error' => isset($response['error']),
+            'error_code' => isset($response['error']['code']) ? $response['error']['code'] : null,
+            'duration_ms' => $duration,
+            'http_code' => $curl_info['http_code'] ?? 0,
+            'total_time' => $curl_info['total_time'] ?? 0,
+            'pid' => getmypid()
+        ];
+        
+        $this->log('[PHP MCP Server] CONNECTION_SUCCESS: ' . json_encode($log_data));
     }
     
     private function log(string $message): void {

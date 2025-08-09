@@ -168,14 +168,16 @@ class McpPhpProxyStandalone {
             'params' => $params
         ];
         
-        error_log("[PHP MCP Proxy] Proxying to WordPress: " . $method);
+        $start_time = microtime(true);
+        $this->logConnectionAttempt($method, $request_body);
         
         $context = stream_context_create([
             'http' => [
                 'method' => 'POST',
                 'header' => [
                     'Content-Type: application/json',
-                    'Accept: application/json, text/event-stream'
+                    'Accept: application/json, text/event-stream',
+                    'User-Agent: WooMCP-PHP-Proxy/1.0'
                 ],
                 'content' => json_encode($request_body),
                 'timeout' => 30
@@ -183,9 +185,10 @@ class McpPhpProxyStandalone {
         ]);
         
         $response = file_get_contents($this->wordpress_mcp_url, false, $context);
+        $duration = round((microtime(true) - $start_time) * 1000, 2);
         
         if ($response === false) {
-            error_log("[PHP MCP Proxy] HTTP request failed to: " . $this->wordpress_mcp_url);
+            $this->logConnectionFailure($method, 'HTTP request failed', $duration);
             return [
                 'jsonrpc' => '2.0',
                 'id' => $id,
@@ -198,7 +201,7 @@ class McpPhpProxyStandalone {
         
         $data = json_decode($response, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log("[PHP MCP Proxy] Invalid JSON response: " . $response);
+            $this->logConnectionFailure($method, 'Invalid JSON response: ' . json_last_error_msg(), $duration);
             return [
                 'jsonrpc' => '2.0',
                 'id' => $id,
@@ -208,6 +211,9 @@ class McpPhpProxyStandalone {
                 ]
             ];
         }
+        
+        // Log successful connection
+        $this->logConnectionSuccess($method, $data, $duration);
         
         // Forward the result/error with original request ID
         if (isset($data['result'])) {
@@ -237,6 +243,58 @@ class McpPhpProxyStandalone {
                 ]
             ];
         }
+    }
+    
+    /**
+     * Log connection attempt
+     */
+    private function logConnectionAttempt(string $method, array $request_body): void {
+        $log_data = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'event' => 'proxy_connection_attempt',
+            'method' => $method,
+            'endpoint' => $this->wordpress_mcp_url,
+            'request_body' => $request_body,
+            'pid' => getmypid()
+        ];
+        
+        error_log("[PHP MCP Proxy] CONNECTION_ATTEMPT: " . json_encode($log_data));
+    }
+    
+    /**
+     * Log connection failure
+     */
+    private function logConnectionFailure(string $method, string $error, float $duration): void {
+        $log_data = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'event' => 'proxy_connection_failure',
+            'method' => $method,
+            'endpoint' => $this->wordpress_mcp_url,
+            'error' => $error,
+            'duration_ms' => $duration,
+            'pid' => getmypid()
+        ];
+        
+        error_log("[PHP MCP Proxy] CONNECTION_FAILURE: " . json_encode($log_data));
+    }
+    
+    /**
+     * Log connection success
+     */
+    private function logConnectionSuccess(string $method, array $response, float $duration): void {
+        $log_data = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'event' => 'proxy_connection_success',
+            'method' => $method,
+            'endpoint' => $this->wordpress_mcp_url,
+            'success' => isset($response['result']),
+            'has_error' => isset($response['error']),
+            'error_code' => isset($response['error']['code']) ? $response['error']['code'] : null,
+            'duration_ms' => $duration,
+            'pid' => getmypid()
+        ];
+        
+        error_log("[PHP MCP Proxy] CONNECTION_SUCCESS: " . json_encode($log_data));
     }
 }
 
