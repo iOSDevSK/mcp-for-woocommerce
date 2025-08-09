@@ -145,9 +145,14 @@ class McpStreamableTransport extends McpTransportBase {
 				// Send endpoint event per 2024-11-05 SSE transport
 				echo "event: endpoint\n";
 				echo "data: {\"endpoint\": \"" . esc_url_raw( rest_url( 'wp/v2/wpmcp/streamable' ) ) . "\"}\n\n";
-				// Optional: ping to keep the stream briefly open
-				echo ": ping\n\n";
 				flush();
+				// Keep the SSE stream open for a short period with periodic pings so clients can complete handshake
+				$start = time();
+				while ( ( time() - $start ) < 60 ) { // keep open up to 60 seconds
+					echo ": ping\n\n";
+					flush();
+					usleep( 10000000 ); // 10 seconds
+				}
 				exit;
 			}
 			// Default JSON health when not requesting SSE (or when JWT is ON)
@@ -195,7 +200,9 @@ class McpStreamableTransport extends McpTransportBase {
 			}
 			// Validate Accept header - be flexible for Claude.ai compatibility
 			$accept_header = $request->get_header( 'accept' );
-			if ( ! $accept_header || strpos( $accept_header, 'application/json' ) === false ) {
+			$accepts_json = $accept_header && strpos( $accept_header, 'application/json' ) !== false;
+			$accepts_sse  = $accept_header && strpos( $accept_header, 'text/event-stream' ) !== false;
+			if ( ! $accept_header || ( ! $accepts_json && ! $accepts_sse ) ) {
 				return new WP_REST_Response(
 					McpErrorHandler::invalid_accept_header( 0 ),
 					400
