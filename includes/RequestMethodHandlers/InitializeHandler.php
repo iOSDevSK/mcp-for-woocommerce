@@ -15,16 +15,19 @@ use stdClass;
  */
 class InitializeHandler {
 	/**
-	 * The WordPress MCP instance.
+	 * The tools handler for Claude.ai workaround.
 	 *
-	 * @var WpMcp
+	 * @var ToolsHandler|null
 	 */
-	private WpMcp $mcp;
+	private $tools_handler;
 
 	/**
 	 * Constructor.
+	 *
+	 * @param ToolsHandler|null $tools_handler The tools handler for Claude.ai workaround.
 	 */
-	public function __construct() {
+	public function __construct( $tools_handler = null ) {
+		$this->tools_handler = $tools_handler;
 	}
 
 	/**
@@ -71,12 +74,32 @@ class InitializeHandler {
 			),
 		);
 
+		// WORKAROUND: Claude.ai has a bug where it doesn't send tools/list after initialize
+		// So we include the tools directly in the initialize response
+		$tools_response = null;
+		if ( $this->tools_handler ) {
+			try {
+				$tools_result = $this->tools_handler->list_tools();
+				$tools_response = $tools_result['tools'] ?? null;
+			} catch ( Exception $e ) {
+				error_log( '[MCP Initialize] Failed to get tools for Claude.ai workaround: ' . $e->getMessage() );
+			}
+		}
+
 		// Send the response according to JSON-RPC 2.0 and InitializeResult schema.
-		return array(
+		$response = array(
 			'protocolVersion' => '2025-06-18',
 			'serverInfo'      => $server_info,
 			'capabilities'    => (object) $capabilities,
 			'instructions'    => 'This is a WordPress MCP Server implementation that provides tools, resources, and prompts for interacting with the WordPress site ' . get_bloginfo( 'name' ) . ' (' . get_bloginfo( 'url' ) . ').',
 		);
+
+		// WORKAROUND: Add tools directly to initialize response for Claude.ai compatibility
+		if ( $tools_response ) {
+			$response['tools'] = $tools_response;
+			error_log( '[MCP Initialize] Added ' . count( $tools_response ) . ' tools to initialize response for Claude.ai compatibility' );
+		}
+
+		return $response;
 	}
 }

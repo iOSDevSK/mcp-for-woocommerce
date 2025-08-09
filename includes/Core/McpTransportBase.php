@@ -68,8 +68,8 @@ abstract class McpTransportBase {
 		$this->mcp = $mcp;
 
 		// Initialize handlers
-		$this->initialize_handler = new InitializeHandler();
 		$this->tools_handler      = new ToolsHandler( $mcp );
+		$this->initialize_handler = new InitializeHandler( $this->tools_handler );
 		$this->resources_handler  = new ResourcesHandler( $mcp );
 		$this->prompts_handler    = new PromptsHandler( $mcp );
 		$this->system_handler     = new SystemHandler();
