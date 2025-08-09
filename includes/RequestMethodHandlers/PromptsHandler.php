@@ -37,14 +37,15 @@ class PromptsHandler {
 	 * @return array|null Returns error array if permission denied, null if allowed.
 	 */
 	private function check_permission(): ?array {
+		// Force debug log to see if method is called
+		error_log( '[MCP PromptsHandler] check_permission() called' );
+		
 		// Check JWT required setting
 		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
 		
 		// Debug logging
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( '[MCP PromptsHandler] JWT required: ' . ( $jwt_required ? 'true' : 'false' ) );
-			error_log( '[MCP PromptsHandler] User can manage_options: ' . ( current_user_can( 'manage_options' ) ? 'true' : 'false' ) );
-		}
+		error_log( '[MCP PromptsHandler] JWT required: ' . ( $jwt_required ? 'true' : 'false' ) );
+		error_log( '[MCP PromptsHandler] User can manage_options: ' . ( current_user_can( 'manage_options' ) ? 'true' : 'false' ) );
 		
 		if ( ! $jwt_required ) {
 			// JWT is disabled, allow access without authentication (readonly mode)
