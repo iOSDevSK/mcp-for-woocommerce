@@ -131,8 +131,26 @@ class McpStreamableTransport extends McpTransportBase {
 			return $this->handle_post_request( $request );
 		}
 
-		// Health-check friendly GET/HEAD responses for Claude.ai Connectors
+		// Health-check friendly GET/HEAD responses and SSE fallback (only when JWT is OFF)
 		if ( 'GET' === $method ) {
+			$accept = $request->get_header( 'accept' );
+			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+			// If client requests SSE and JWT is OFF, provide legacy SSE "endpoint" event for compatibility
+			if ( ! $jwt_required && $accept && strpos( $accept, 'text/event-stream' ) !== false ) {
+				// Manually emit SSE headers and body
+				header( 'Content-Type: text/event-stream' );
+				header( 'Cache-Control: no-cache' );
+				header( 'Connection: keep-alive' );
+				header( 'MCP-Protocol-Version: 2025-03-26' );
+				// Send endpoint event per 2024-11-05 SSE transport
+				echo "event: endpoint\n";
+				echo "data: {\"endpoint\": \"" . esc_url_raw( rest_url( 'wp/v2/wpmcp/streamable' ) ) . "\"}\n\n";
+				// Optional: ping to keep the stream briefly open
+				echo ": ping\n\n";
+				flush();
+				exit;
+			}
+			// Default JSON health when not requesting SSE (or when JWT is ON)
 			$body = array(
 				'jsonrpc' => '2.0',
 				'result'  => array(
