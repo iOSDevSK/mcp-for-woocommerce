@@ -719,7 +719,7 @@ class McpStreamableTransport extends McpTransportBase {
 				)
 			),
 			'paths' => array(
-				'/streamable' => array(
+				'/wp-json/wp/v2/wpmcp/streamable' => array(
 					'post' => array(
 						'summary' => 'MCP JSON-RPC endpoint',
 						'description' => 'Main endpoint for MCP protocol communication',
