@@ -304,14 +304,22 @@ class McpStreamableTransport extends McpTransportBase {
 				}
 			}
 
-			$headers = array(
-				'Content-Type'                 => 'application/json',
-				'MCP-Protocol-Version'         => '2025-06-18',
-				// Removed dangerous CORS headers for security
-			);
+				$headers = array(
+					'Content-Type'                 => 'application/json',
+					'MCP-Protocol-Version'         => '2025-06-18',
+					// Removed dangerous CORS headers for security
+				);
 
-			return new WP_REST_Response( $response_body, 200, $headers );
+				// If this batch included initialize, assign a session ID per spec (optional for clients)
+				if ( $has_initialize ) {
+					if ( function_exists( 'wp_generate_uuid4' ) ) {
+						$headers['Mcp-Session-Id'] = wp_generate_uuid4();
+					} else {
+						$headers['Mcp-Session-Id'] = bin2hex( random_bytes( 16 ) );
+					}
+				}
 
+				return new WP_REST_Response( $response_body, 200, $headers );
 		} catch ( \Throwable $exception ) {
 			// Handle any unexpected exceptions
 			McpErrorHandler::log_error( 'Unexpected error in handle_post_request', array( 'exception' => $exception->getMessage() ) );
