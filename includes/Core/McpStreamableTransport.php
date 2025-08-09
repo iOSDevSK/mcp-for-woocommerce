@@ -35,9 +35,6 @@ class McpStreamableTransport extends McpTransportBase {
 		parent::__construct( $mcp );
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 		add_filter( 'rest_pre_serve_request', array( $this, 'handle_cors_preflight' ), 10, 4 );
-		add_action( 'init', array( $this, 'add_well_known_rewrite' ) );
-		add_filter( 'query_vars', array( $this, 'add_well_known_query_vars' ) );
-		add_action( 'template_redirect', array( $this, 'handle_well_known_request' ) );
 	}
 
 	/**
@@ -60,16 +57,6 @@ class McpStreamableTransport extends McpTransportBase {
 			)
 		);
 
-		// AI Plugin manifest endpoint for Claude.ai compatibility
-		register_rest_route(
-			'wpmcp/v1',
-			'/ai-plugin.json',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'ai_plugin_manifest' ),
-				'permission_callback' => '__return_true',
-			)
-		);
 
 		// OpenAPI spec endpoint
 		register_rest_route(
@@ -808,48 +795,6 @@ class McpStreamableTransport extends McpTransportBase {
 		}
 	}
 
-	/**
-	 * Generate AI Plugin manifest for Claude.ai compatibility
-	 *
-	 * @return WP_REST_Response
-	 */
-	public function ai_plugin_manifest() {
-		$site_url = get_site_url();
-		$manifest = array(
-			'schema_version' => 'v1',
-			'name_for_model' => 'woo_mcp',
-			'name_for_human' => 'WooCommerce MCP',
-			'description_for_model' => 'Access WooCommerce store data including products, orders, customers, and analytics via Model Context Protocol (MCP). Provides tools for searching products, managing orders, analyzing sales data, and accessing store configuration.',
-			'description_for_human' => 'WooCommerce Model Context Protocol integration for AI assistants',
-			'auth' => array(
-				'type' => 'none'  // Will use JWT when enabled
-			),
-			'api' => array(
-				'type' => 'mcp',
-				'url' => rest_url( 'wp/v2/wpmcp/streamable' )
-			),
-			'logo_url' => WORDPRESS_MCP_URL . 'assets/logo.png',
-			'contact_email' => get_option( 'admin_email', 'admin@' . parse_url( $site_url, PHP_URL_HOST ) ),
-			'legal_info_url' => $site_url . '/privacy-policy/'
-		);
-
-		// Check if JWT is required
-		$jwt_required = (bool) get_option( 'wordpress_mcp_jwt_required', true );
-		if ( $jwt_required ) {
-			$manifest['auth'] = array(
-				'type' => 'service_http',
-				'authorization_type' => 'bearer',
-				'verification_tokens' => array(
-					'claude' => get_option( 'wordpress_mcp_jwt_secret', wp_generate_password( 64, false ) )
-				)
-			);
-		}
-
-		return new WP_REST_Response( $manifest, 200, array(
-			'Content-Type' => 'application/json',
-			'Access-Control-Allow-Origin' => '*',
-		) );
-	}
 
 	/**
 	 * Generate OpenAPI specification for MCP tools
@@ -985,48 +930,4 @@ class McpStreamableTransport extends McpTransportBase {
 		) );
 	}
 
-	/**
-	 * Add rewrite rule for .well-known directory
-	 */
-	public function add_well_known_rewrite() {
-		add_rewrite_rule(
-			'^\.well-known/ai-plugin\.json$',
-			'index.php?well_known=ai-plugin.json',
-			'top'
-		);
-	}
-
-	/**
-	 * Add query vars for .well-known handling
-	 *
-	 * @param array $vars Existing query vars.
-	 * @return array
-	 */
-	public function add_well_known_query_vars( $vars ) {
-		$vars[] = 'well_known';
-		return $vars;
-	}
-
-	/**
-	 * Handle .well-known requests
-	 */
-	public function handle_well_known_request() {
-		$well_known = get_query_var( 'well_known' );
-		
-		if ( 'ai-plugin.json' === $well_known ) {
-			// Set CORS headers
-			header( 'Access-Control-Allow-Origin: *' );
-			header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
-			header( 'Access-Control-Allow-Headers: content-type, accept, anthropic-beta, authorization' );
-			
-			// Generate and output the manifest
-			$manifest = $this->ai_plugin_manifest();
-			
-			if ( $manifest instanceof WP_REST_Response ) {
-				header( 'Content-Type: application/json' );
-				echo wp_json_encode( $manifest->get_data() );
-			}
-			exit;
-		}
-	}
 }
