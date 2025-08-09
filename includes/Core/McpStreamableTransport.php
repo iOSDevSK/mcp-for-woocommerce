@@ -90,8 +90,14 @@ class McpStreamableTransport extends McpTransportBase {
 	 */
 	public function check_permission(): WP_Error|bool {
 		try {
+			error_log( '[MCP AUTH] Permission check started' );
+			error_log( '[MCP AUTH] Request URI: ' . ( $_SERVER['REQUEST_URI'] ?? 'not set' ) );
+			error_log( '[MCP AUTH] Request method: ' . ( $_SERVER['REQUEST_METHOD'] ?? 'not set' ) );
+			error_log( '[MCP AUTH] User agent: ' . ( $_SERVER['HTTP_USER_AGENT'] ?? 'not set' ) );
+			
 			// If MCP is disabled, deny access.
 			if ( ! $this->is_mcp_enabled() ) {
+				error_log( '[MCP AUTH] MCP is disabled in settings' );
 				return new WP_Error(
 					'mcp_disabled',
 					'MCP functionality is currently disabled.',
@@ -102,17 +108,14 @@ class McpStreamableTransport extends McpTransportBase {
 			// Check JWT required setting
 			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
 			
-			// Debug logging
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[MCP Streamable] JWT required: ' . ( $jwt_required ? 'true' : 'false' ) );
-				error_log( '[MCP Streamable] User logged in: ' . ( is_user_logged_in() ? 'true' : 'false' ) );
-			}
+			error_log( '[MCP AUTH] MCP enabled: true' );
+			error_log( '[MCP AUTH] JWT required: ' . ( $jwt_required ? 'true' : 'false' ) );
+			error_log( '[MCP AUTH] User logged in: ' . ( is_user_logged_in() ? 'true' : 'false' ) );
+			error_log( '[MCP AUTH] Current user ID: ' . get_current_user_id() );
 			
 			if ( ! $jwt_required ) {
 				// JWT is disabled, allow access without authentication (readonly mode)
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					error_log( '[MCP Streamable] JWT disabled - allowing access' );
-				}
+				error_log( '[MCP AUTH] JWT disabled - ALLOWING ACCESS' );
 				return true;
 			}
 			
@@ -120,16 +123,23 @@ class McpStreamableTransport extends McpTransportBase {
 			// The JWT authentication is handled by the rest_authentication_errors filter
 			// which runs before permission callbacks
 			$result = is_user_logged_in();
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[MCP Streamable] Permission check result: ' . ( $result ? 'true' : 'false' ) );
+			error_log( '[MCP AUTH] JWT required mode - permission result: ' . ( $result ? 'ALLOWED' : 'DENIED' ) );
+			
+			if ( ! $result ) {
+				error_log( '[MCP AUTH] AUTHENTICATION FAILED - returning WP_Error' );
+				return new WP_Error(
+					'rest_forbidden',
+					'You do not have permission to access this endpoint.',
+					array( 'status' => 403 )
+				);
 			}
+			
 			return $result;
 			
 		} catch ( Exception $e ) {
 			// Log any exceptions
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[MCP Streamable] Permission check exception: ' . $e->getMessage() );
-			}
+			error_log( '[MCP AUTH] EXCEPTION in permission check: ' . $e->getMessage() );
+			error_log( '[MCP AUTH] Exception trace: ' . $e->getTraceAsString() );
 			return new WP_Error(
 				'permission_check_error',
 				'Error checking permissions: ' . $e->getMessage(),
@@ -145,14 +155,21 @@ class McpStreamableTransport extends McpTransportBase {
 	 * @return WP_REST_Response
 	 */
 	public function handle_request( WP_REST_Request $request ) {
+		error_log( '[MCP HANDLE] Request received' );
+		error_log( '[MCP HANDLE] Method: ' . $request->get_method() );
+		error_log( '[MCP HANDLE] Route: ' . $request->get_route() );
+		error_log( '[MCP HANDLE] Headers: ' . print_r( $request->get_headers(), true ) );
+		
 		// Handle preflight requests
 		if ( 'OPTIONS' === $request->get_method() ) {
+			error_log( '[MCP HANDLE] Handling OPTIONS preflight' );
 			return new WP_REST_Response( null, 204 );
 		}
 
 		$method = $request->get_method();
 
 		if ( 'POST' === $method ) {
+			error_log( '[MCP HANDLE] Handling POST request' );
 			return $this->handle_post_request( $request );
 		}
 
@@ -469,11 +486,19 @@ class McpStreamableTransport extends McpTransportBase {
 	 * @return mixed
 	 */
 	public function handle_cors_preflight( $served, $result, $request, $server ) {
+		// Debug log all CORS requests
+		error_log( '[MCP CORS] Request route: ' . $request->get_route() );
+		error_log( '[MCP CORS] Request method: ' . $request->get_method() );
+		error_log( '[MCP CORS] Request headers: ' . print_r( $request->get_headers(), true ) );
+		
 		// Only handle our MCP endpoint
 		if ( strpos( $request->get_route(), '/wpmcp/streamable' ) === false ) {
+			error_log( '[MCP CORS] Not MCP endpoint, skipping CORS' );
 			return $served;
 		}
 
+		error_log( '[MCP CORS] Setting CORS headers for MCP endpoint' );
+		
 		// Set CORS headers for all requests to our endpoint - allow all domains
 		header( 'Access-Control-Allow-Origin: *' );
 		header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
@@ -483,6 +508,7 @@ class McpStreamableTransport extends McpTransportBase {
 
 		// Handle OPTIONS preflight request
 		if ( $request->get_method() === 'OPTIONS' ) {
+			error_log( '[MCP CORS] Handling OPTIONS preflight request' );
 			http_response_code( 204 );
 			exit;
 		}
@@ -497,9 +523,17 @@ class McpStreamableTransport extends McpTransportBase {
 	 * @return WP_REST_Response
 	 */
 	private function handle_php_proxy_mode( $request ) {
+		error_log( '[MCP PROXY] PHP proxy mode activated' );
+		error_log( '[MCP PROXY] Request method: ' . $request->get_method() );
+		error_log( '[MCP PROXY] Request headers: ' . print_r( $request->get_headers(), true ) );
+		
 		// Get the request body
 		$body = $request->get_body();
+		error_log( '[MCP PROXY] Request body length: ' . strlen( $body ) );
+		error_log( '[MCP PROXY] Request body: ' . $body );
+		
 		if ( empty( $body ) ) {
+			error_log( '[MCP PROXY] Empty request body - returning error' );
 			return new WP_REST_Response(
 				array(
 					'jsonrpc' => '2.0',
