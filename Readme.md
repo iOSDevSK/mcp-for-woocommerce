@@ -159,12 +159,25 @@ npx @modelcontextprotocol/inspector \
 
 To use with Claude.ai Desktop, add this configuration to your claude_desktop_config.json:
 
+**PHP Version (requires PHP installed):**
 ```json
 {
 	"mcpServers": {
 		"woocommerce": {
 			"command": "php",
 			"args": [ "/path/to/your/woo-mcp/mcp-proxy.php" ]
+		}
+	}
+}
+```
+
+**Node.js Version (requires Node.js installed):**
+```json
+{
+	"mcpServers": {
+		"woocommerce": {
+			"command": "node",
+			"args": [ "/path/to/your/woo-mcp/mcp-proxy.js" ]
 		}
 	}
 }
