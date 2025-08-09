@@ -275,6 +275,7 @@ class McpStreamableTransport extends McpTransportBase {
 
 			$headers = array(
 				'Content-Type'                 => 'application/json',
+				'MCP-Protocol-Version'         => '2025-03-26',
 				// Removed dangerous CORS headers for security
 			);
 
