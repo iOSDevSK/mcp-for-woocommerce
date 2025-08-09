@@ -9,6 +9,7 @@ namespace Automattic\WordpressMcp\RequestMethodHandlers;
 
 use Automattic\WordpressMcp\Core\WpMcp;
 use stdClass;
+use Exception;
 
 /**
  * Handles the initialize MCP method.
@@ -100,18 +101,11 @@ class InitializeHandler {
 		);
 
 		// WORKAROUND: Add tools directly to initialize response for Claude.ai compatibility
-		if ( $tools_response ) {
-			$response['tools'] = $tools_response;
-			error_log( '[MCP Initialize] Added ' . count( $tools_response ) . ' tools to initialize response for Claude.ai compatibility' );
-			// Log a concise summary of active vs all tools to help pinpoint missing items
-			try {
-				$active_count = function_exists('WPMCP') ? count( \WPMCP()->get_tools() ) : -1;
-				$all_count    = function_exists('WPMCP') && method_exists( \WPMCP(), 'get_all_tools') ? count( \WPMCP()->get_all_tools() ) : -1;
-				error_log( '[MCP Initialize] Tools summary: active=' . $active_count . ' all=' . $all_count );
-			} catch ( \Throwable $e ) {
-				// best effort logging only
-			}
-		}
+        if ( $tools_response ) {
+            $response['tools'] = $tools_response;
+            error_log( '[MCP Initialize] Added ' . count( $tools_response ) . ' tools to initialize response for Claude.ai compatibility' );
+            // Note: additional counts are available via tools/debug
+        }
 
 		return $response;
 	}
