@@ -149,6 +149,8 @@ class Settings {
 			'wordpressMcpSettings',
 			array(
 				'apiUrl'              => rest_url( 'wordpress-mcp/v1/settings' ),
+				'jwtApiUrl'           => rest_url( 'jwt-auth/v1' ),
+				'restFallbackUrl'     => home_url( '/index.php?rest_route=' ),
 				'nonce'               => wp_create_nonce( 'wordpress_mcp_settings' ),
 				'settings'            => get_option( self::OPTION_NAME, array() ),
 				'toolStates'          => get_option( self::TOOL_STATES_OPTION, array() ),

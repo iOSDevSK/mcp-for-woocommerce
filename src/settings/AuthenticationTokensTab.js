@@ -47,11 +47,30 @@ const AuthenticationTokensTab = () => {
 
 	const fetchTokens = async () => {
 		try {
-			const response = await apiFetch( {
-				path: '/jwt-auth/v1/tokens',
-				method: 'GET',
-				includeCredentials: true,
-			} );
+			// Try with fallback URL if wp-json doesn't work
+			const jwtApiUrl = window.wordpressMcpSettings?.jwtApiUrl || '/jwt-auth/v1';
+			const fallbackUrl = window.wordpressMcpSettings?.restFallbackUrl;
+			
+			let response;
+			try {
+				response = await apiFetch( {
+					path: '/jwt-auth/v1/tokens',
+					method: 'GET',
+					includeCredentials: true,
+				} );
+			} catch (firstError) {
+				// If primary path fails, try fallback
+				if (fallbackUrl) {
+					response = await apiFetch( {
+						url: fallbackUrl + '/jwt-auth/v1/tokens',
+						method: 'GET',
+						includeCredentials: true,
+					} );
+				} else {
+					throw firstError;
+				}
+			}
+			
 			setTokens( response );
 			setError( null ); // Clear any previous errors
 		} catch ( err ) {
@@ -78,14 +97,33 @@ const AuthenticationTokensTab = () => {
 		setError( null );
 
 		try {
-			const response = await apiFetch( {
-				path: '/jwt-auth/v1/token',
-				method: 'POST',
-				data: {
-					expires_in: selectedDuration,
-				},
-				includeCredentials: true,
-			} );
+			const fallbackUrl = window.wordpressMcpSettings?.restFallbackUrl;
+			
+			let response;
+			try {
+				response = await apiFetch( {
+					path: '/jwt-auth/v1/token',
+					method: 'POST',
+					data: {
+						expires_in: selectedDuration,
+					},
+					includeCredentials: true,
+				} );
+			} catch (firstError) {
+				// If primary path fails, try fallback
+				if (fallbackUrl) {
+					response = await apiFetch( {
+						url: fallbackUrl + '/jwt-auth/v1/token',
+						method: 'POST',
+						data: {
+							expires_in: selectedDuration,
+						},
+						includeCredentials: true,
+					} );
+				} else {
+					throw firstError;
+				}
+			}
 
 			setToken( response );
 			// Refresh the tokens list
@@ -112,14 +150,33 @@ const AuthenticationTokensTab = () => {
 
 	const revokeToken = async ( jti ) => {
 		try {
-			await apiFetch( {
-				path: '/jwt-auth/v1/revoke',
-				method: 'POST',
-				data: {
-					jti: jti,
-				},
-				includeCredentials: true,
-			} );
+			const fallbackUrl = window.wordpressMcpSettings?.restFallbackUrl;
+			
+			try {
+				await apiFetch( {
+					path: '/jwt-auth/v1/revoke',
+					method: 'POST',
+					data: {
+						jti: jti,
+					},
+					includeCredentials: true,
+				} );
+			} catch (firstError) {
+				// If primary path fails, try fallback
+				if (fallbackUrl) {
+					await apiFetch( {
+						url: fallbackUrl + '/jwt-auth/v1/revoke',
+						method: 'POST',
+						data: {
+							jti: jti,
+						},
+						includeCredentials: true,
+					} );
+				} else {
+					throw firstError;
+				}
+			}
+			
 			// Refresh the tokens list
 			fetchTokens();
 		} catch ( err ) {
