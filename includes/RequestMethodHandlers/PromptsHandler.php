@@ -76,7 +76,9 @@ class PromptsHandler {
 	 * @return array
 	 */
 	public function list_prompts(): array {
+		error_log( '[MCP PromptsHandler] list_prompts() method called' );
 		$permission_error = $this->check_permission();
+		error_log( '[MCP PromptsHandler] permission_error result: ' . print_r( $permission_error, true ) );
 		if ( $permission_error ) {
 			return $permission_error;
 		}
