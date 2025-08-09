@@ -9,7 +9,7 @@
   },
   "api": {
     "type": "openapi",
-    "url": "https://woo.webtalkbot.com/openapi.json"
+    "url": "https://woo.webtalkbot.com/wp-json/wp/v2/wpmcp/openapi.json"
   },
   "logo_url": "https://woo.webtalkbot.com/wp-content/uploads/2024/01/woocommerce-logo.png",
   "contact_email": "support@woo.webtalkbot.com",
