@@ -1,70 +1,85 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "WooCommerce MCP Plugin",
-    "description": "Model Context Protocol API for accessing WooCommerce store data and WordPress content. Provides comprehensive tools for searching products, managing orders, accessing reviews, and analyzing store data.",
-    "version": "1.1.4",
-    "contact": {
-      "email": "filip.dvoran@gmail.com"
-    }
+    "title": "WooCommerce MCP Connector",
+    "description": "API for accessing WooCommerce store data. Allows searching products, orders, and customer information via Model Context Protocol.",
+    "version": "1.1.4"
   },
   "servers": [
     {
-      "url": "/",
-      "description": "WooCommerce MCP Server (Relative URL)"
+      "url": "/"
     }
   ],
   "paths": {
     "/wp-json/wp/v2/wpmcp/streamable": {
+      "get": {
+        "operationId": "searchWooCommerce",
+        "summary": "Search WooCommerce store data",
+        "description": "Use this tool to search for information in the WooCommerce store. Perfect for queries about products, order status, or customers. Example queries: 'find all orders for email john.doe@example.com', 'what products are in the electronics category?', 'show product details for ID 123', 'search for laptop products', 'get recent orders'.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Specific search query. Examples: 'latest orders', 'products under $50', 'customer John Smith', 'laptops in stock', 'orders from last week'.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with found data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
-        "operationId": "mcpJsonRpc",
-        "summary": "MCP JSON-RPC 2.0 Endpoint",
-        "description": "Main Model Context Protocol endpoint for accessing WooCommerce tools via JSON-RPC 2.0. Use this endpoint to search products, get detailed product information, access categories, tags, reviews, and manage WooCommerce data.",
-        "tags": ["MCP"],
+        "operationId": "mcpJsonRpcCall",
+        "summary": "MCP JSON-RPC endpoint for advanced queries",
+        "description": "Advanced Model Context Protocol endpoint using JSON-RPC 2.0. Use this for complex WooCommerce operations like detailed product searches, order management, and data analysis.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/JsonRpcRequest"
-              },
-              "examples": {
-                "searchProducts": {
-                  "summary": "Search for products",
-                  "value": {
-                    "jsonrpc": "2.0",
-                    "method": "tools/call",
-                    "params": {
-                      "name": "wc_products_search",
-                      "arguments": {
-                        "search": "laptop",
-                        "per_page": 10
-                      }
-                    },
-                    "id": 1
-                  }
-                },
-                "getProductDetails": {
-                  "summary": "Get product details by ID",
-                  "value": {
-                    "jsonrpc": "2.0",
-                    "method": "tools/call",
-                    "params": {
-                      "name": "wc_get_product",
-                      "arguments": {
-                        "id": 123
-                      }
-                    },
-                    "id": 2
-                  }
-                },
-                "listTools": {
-                  "summary": "List available tools",
-                  "value": {
-                    "jsonrpc": "2.0",
-                    "method": "tools/list",
-                    "params": {},
-                    "id": 3
+                "type": "object",
+                "required": ["jsonrpc", "method", "id"],
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "enum": ["2.0"]
+                  },
+                  "method": {
+                    "type": "string",
+                    "description": "Method to call: tools/list, tools/call, resources/list, etc."
+                  },
+                  "params": {
+                    "type": "object",
+                    "description": "Method parameters"
+                  },
+                  "id": {
+                    "oneOf": [
+                      {"type": "string"},
+                      {"type": "integer"}
+                    ]
                   }
                 }
               }
@@ -77,95 +92,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JsonRpcResponse"
-                },
-                "examples": {
-                  "toolsListResponse": {
-                    "summary": "List of available tools",
-                    "value": {
-                      "jsonrpc": "2.0",
-                      "id": 1,
-                      "result": {
-                        "tools": [
-                          {
-                            "name": "wc_products_search",
-                            "description": "PRIMARY PRODUCT SEARCH TOOL: Universal product search for ANY store type",
-                            "type": "read",
-                            "inputSchema": {
-                              "type": "object",
-                              "properties": {
-                                "search": {"type": "string", "description": "Search term for product name or description"},
-                                "category": {"type": "string", "description": "Product category slug"},
-                                "per_page": {"type": "integer", "description": "Number of products per page"}
-                              }
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  },
-                  "productSearchResponse": {
-                    "summary": "Product search results",
-                    "value": {
-                      "jsonrpc": "2.0",
-                      "id": 2,
-                      "result": {
-                        "content": [
-                          {
-                            "type": "text",
-                            "text": "Found products matching your search..."
-                          }
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid JSON-RPC request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JsonRpcErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JsonRpcErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "operationId": "healthCheck",
-        "summary": "Health Check",
-        "description": "Check if the MCP server is running and accessible",
-        "tags": ["Health"],
-        "responses": {
-          "200": {
-            "description": "Server is healthy",
-            "content": {
-              "application/json": {
-                "schema": {
                   "type": "object",
                   "properties": {
-                    "jsonrpc": {"type": "string", "example": "2.0"},
+                    "jsonrpc": {
+                      "type": "string",
+                      "enum": ["2.0"]
+                    },
                     "result": {
-                      "type": "object",
-                      "properties": {
-                        "status": {"type": "string", "example": "ok"},
-                        "transport": {"type": "string", "example": "streamable-http"},
-                        "endpoint": {"type": "string", "example": "/wp/v2/wpmcp/streamable"}
-                      }
+                      "type": "object"
+                    },
+                    "id": {
+                      "oneOf": [
+                        {"type": "string"},
+                        {"type": "integer"}
+                      ]
                     }
                   }
                 }
@@ -175,172 +115,5 @@
         }
       }
     }
-  },
-  "components": {
-    "schemas": {
-      "JsonRpcRequest": {
-        "type": "object",
-        "required": ["jsonrpc", "method", "id"],
-        "properties": {
-          "jsonrpc": {
-            "type": "string",
-            "enum": ["2.0"],
-            "description": "JSON-RPC version"
-          },
-          "method": {
-            "type": "string",
-            "description": "Method name to call",
-            "enum": [
-              "initialize",
-              "tools/list",
-              "tools/call",
-              "resources/list",
-              "resources/read",
-              "prompts/list",
-              "prompts/get"
-            ]
-          },
-          "params": {
-            "type": "object",
-            "description": "Method parameters"
-          },
-          "id": {
-            "oneOf": [
-              {"type": "string"},
-              {"type": "integer"},
-              {"type": "null"}
-            ],
-            "description": "Request identifier"
-          }
-        }
-      },
-      "JsonRpcResponse": {
-        "type": "object",
-        "required": ["jsonrpc", "id"],
-        "properties": {
-          "jsonrpc": {
-            "type": "string",
-            "enum": ["2.0"]
-          },
-          "result": {
-            "type": "object",
-            "description": "Method result"
-          },
-          "id": {
-            "oneOf": [
-              {"type": "string"},
-              {"type": "integer"},
-              {"type": "null"}
-            ]
-          }
-        }
-      },
-      "JsonRpcErrorResponse": {
-        "type": "object",
-        "required": ["jsonrpc", "error", "id"],
-        "properties": {
-          "jsonrpc": {
-            "type": "string",
-            "enum": ["2.0"]
-          },
-          "error": {
-            "type": "object",
-            "required": ["code", "message"],
-            "properties": {
-              "code": {
-                "type": "integer",
-                "description": "Error code"
-              },
-              "message": {
-                "type": "string",
-                "description": "Error message"
-              },
-              "data": {
-                "type": "object",
-                "description": "Additional error data"
-              }
-            }
-          },
-          "id": {
-            "oneOf": [
-              {"type": "string"},
-              {"type": "integer"},
-              {"type": "null"}
-            ]
-          }
-        }
-      },
-      "McpTool": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Tool name"
-          },
-          "description": {
-            "type": "string",
-            "description": "Tool description"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["read", "write"],
-            "description": "Tool type"
-          },
-          "inputSchema": {
-            "type": "object",
-            "description": "JSON Schema for tool input parameters"
-          }
-        }
-      },
-      "ProductSearchParams": {
-        "type": "object",
-        "properties": {
-          "search": {
-            "type": "string",
-            "description": "Search term for product name or description",
-            "example": "laptop"
-          },
-          "category": {
-            "type": "string",
-            "description": "Product category slug",
-            "example": "electronics"
-          },
-          "per_page": {
-            "type": "integer",
-            "description": "Number of products per page (1-100)",
-            "minimum": 1,
-            "maximum": 100,
-            "default": 10
-          },
-          "page": {
-            "type": "integer",
-            "description": "Page number",
-            "minimum": 1,
-            "default": 1
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "description": "JWT Bearer token (when JWT authentication is enabled)"
-      }
-    }
-  },
-  "tags": [
-    {
-      "name": "MCP",
-      "description": "Model Context Protocol operations"
-    },
-    {
-      "name": "Health",
-      "description": "Health check and status operations"
-    }
-  ],
-  "externalDocs": {
-    "description": "Model Context Protocol Documentation",
-    "url": "https://modelcontextprotocol.io/docs/"
   }
 }
