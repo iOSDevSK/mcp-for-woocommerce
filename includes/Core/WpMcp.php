@@ -137,10 +137,9 @@ class WpMcp {
 				$this->init_default_tools();
 				$this->init_default_prompts();
 				$this->init_features_as_tools();
-				// Register the MCP assets late in the rest_api_init hook (required for rest_alias tools).
-				// This is to ensure that the rest_api_init hook is not called too early.
-				// We use a priority of 20000 to ensure that the rest_api_init hook is called after the rest_api_init hook of the FeaturesAPI plugin.
-				add_action( 'rest_api_init', array( $this, 'wordpress_mcp_init' ), 20000 );
+				// Register the MCP assets earlier in the rest_api_init hook to prevent timeouts with Claude.ai web app.
+				// Reduced priority from 20000 to 10 for faster initialization
+				add_action( 'rest_api_init', array( $this, 'wordpress_mcp_init' ), 10 );
 
 				self::$initialized = true;
 			}

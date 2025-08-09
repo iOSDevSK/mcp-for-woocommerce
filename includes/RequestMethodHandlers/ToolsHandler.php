@@ -33,13 +33,31 @@ class ToolsHandler {
 
 	/**
 	 * Handle the tools/list request.
+	 * Optimized for fast response to prevent Claude.ai timeouts.
 	 *
 	 * @return array
 	 */
 	public function list_tools(): array {
-		return array(
-			'tools' => array_values( $this->mcp->get_tools() ),
-		);
+		// Add timeout and memory limit increase for complex tool loading
+		if ( ! ini_get( 'safe_mode' ) ) {
+			@set_time_limit( 120 ); // 2 minutes
+			@ini_set( 'memory_limit', '512M' );
+		}
+		
+		try {
+			$tools = $this->mcp->get_tools();
+			error_log( '[MCP ToolsHandler] Returning ' . count( $tools ) . ' tools to client' );
+			
+			return array(
+				'tools' => array_values( $tools ),
+			);
+		} catch ( \Throwable $e ) {
+			error_log( '[MCP ToolsHandler] Error in list_tools: ' . $e->getMessage() );
+			// Return empty tools list instead of failing completely
+			return array(
+				'tools' => array(),
+			);
+		}
 	}
 
 	/**

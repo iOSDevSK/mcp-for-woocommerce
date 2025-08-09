@@ -489,12 +489,13 @@ class McpStreamableTransport extends McpTransportBase {
 
 		error_log( '[MCP CORS] Setting CORS headers for MCP endpoint' );
 		
-		// Set CORS headers for all requests to our endpoint - allow all domains
+		// Set CORS headers for all requests to our endpoint - allow all domains with Claude.ai specific headers
 		header( 'Access-Control-Allow-Origin: *' );
-		header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
-		header( 'Access-Control-Allow-Headers: content-type, accept, anthropic-beta, authorization, mcp-protocol-version, mcp-session-id' );
+		header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS, HEAD' );
+		header( 'Access-Control-Allow-Headers: content-type, accept, anthropic-beta, authorization, mcp-protocol-version, mcp-session-id, user-agent, cache-control, pragma' );
 		header( 'Access-Control-Expose-Headers: MCP-Protocol-Version, Mcp-Session-Id' );
-		header( 'Access-Control-Max-Age: 600' );
+		header( 'Access-Control-Max-Age: 1800' );
+		header( 'Access-Control-Allow-Credentials: false' );
 
 		// Handle OPTIONS preflight request
 		if ( $request->get_method() === 'OPTIONS' ) {
