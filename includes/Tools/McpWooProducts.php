@@ -171,6 +171,17 @@ class McpWooProducts {
 	 * @return array Search results with product links.
 	 */
 	public function search_products( array $params ): array {
+		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		
+		if ( ! $jwt_required ) {
+			// JWT disabled - allow public read access to products
+			// Continue with function execution
+		} elseif ( ! current_user_can( 'manage_woocommerce' ) ) {
+			// JWT enabled - require admin privileges
+			return array( 'error' => 'Insufficient permissions' );
+		}
+		
 		// Safety check for WooCommerce functions
 		if ( ! function_exists( 'wc_get_product' ) || ! function_exists( 'get_woocommerce_currency' ) ) {
 			return array( 'error' => 'WooCommerce functions not available' );
@@ -228,6 +239,17 @@ class McpWooProducts {
 	 * @return array Product data with link.
 	 */
 	public function get_product( array $params ): array {
+		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		
+		if ( ! $jwt_required ) {
+			// JWT disabled - allow public read access to products
+			// Continue with function execution
+		} elseif ( ! current_user_can( 'manage_woocommerce' ) ) {
+			// JWT enabled - require admin privileges
+			return array( 'error' => 'Insufficient permissions' );
+		}
+		
 		// Safety check for WooCommerce functions
 		if ( ! function_exists( 'wc_get_product' ) ) {
 			return array( 'error' => 'WooCommerce functions not available' );
@@ -261,6 +283,17 @@ class McpWooProducts {
 	 * @return array Variations data with links.
 	 */
 	public function get_product_variations( array $params ): array {
+		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		
+		if ( ! $jwt_required ) {
+			// JWT disabled - allow public read access to product variations
+			// Continue with function execution
+		} elseif ( ! current_user_can( 'manage_woocommerce' ) ) {
+			// JWT enabled - require admin privileges
+			return array( 'error' => 'Insufficient permissions' );
+		}
+		
 		// Safety check for WooCommerce functions
 		if ( ! function_exists( 'wc_get_product' ) ) {
 			return array( 'error' => 'WooCommerce functions not available' );
@@ -303,6 +336,17 @@ class McpWooProducts {
 	 * @return array Variation data with link.
 	 */
 	public function get_product_variation( array $params ): array {
+		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		
+		if ( ! $jwt_required ) {
+			// JWT disabled - allow public read access to product variations
+			// Continue with function execution
+		} elseif ( ! current_user_can( 'manage_woocommerce' ) ) {
+			// JWT enabled - require admin privileges
+			return array( 'error' => 'Insufficient permissions' );
+		}
+		
 		// Safety check for WooCommerce functions
 		if ( ! function_exists( 'wc_get_product' ) ) {
 			return array( 'error' => 'WooCommerce functions not available' );

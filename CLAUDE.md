@@ -33,6 +33,10 @@ vendor/bin/phpunit
 3. **Admin Tool Loading**: Verify tools display properly in WordPress admin
 4. **Product Link Generation**: Confirm `permalink` fields are included in product responses
 
+## Server Access
+
+For server access, use: `ssh woo.webtalkbot.com`
+
 ## Development Notes
 
 - Use `wc_get_product()` instead of REST API controllers for safer product access
