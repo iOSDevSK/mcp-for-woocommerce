@@ -98,6 +98,7 @@ abstract class McpTransportBase {
 			$result = match ( $method ) {
 				'initialize' => $this->initialize_handler->handle(),
 				'init' => $this->initialize_handler->handle(),
+				'notifications/initialized' => $this->handle_notification_initialized(),
 				'ping' => $this->system_handler->ping(),
 				'tools/list' => $this->tools_handler->list_tools(),
 				'tools/list/all' => $this->tools_handler->list_all_tools( $params ),
@@ -150,6 +151,17 @@ abstract class McpTransportBase {
 		}
 		
 		return $result;
+	}
+
+	/**
+	 * Handle notifications/initialized notification
+	 * 
+	 * @return array
+	 */
+	protected function handle_notification_initialized(): array {
+		// Notifications don't require responses according to JSON-RPC 2.0
+		// But we return success to indicate the notification was processed
+		return array( 'acknowledged' => true );
 	}
 
 	/**

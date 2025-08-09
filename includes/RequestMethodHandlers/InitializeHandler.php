@@ -73,7 +73,7 @@ class InitializeHandler {
 
 		// Send the response according to JSON-RPC 2.0 and InitializeResult schema.
 		return array(
-			'protocolVersion' => '2025-03-26',
+			'protocolVersion' => '2025-06-18',
 			'serverInfo'      => $server_info,
 			'capabilities'    => (object) $capabilities,
 			'instructions'    => 'This is a WordPress MCP Server implementation that provides tools, resources, and prompts for interacting with the WordPress site ' . get_bloginfo( 'name' ) . ' (' . get_bloginfo( 'url' ) . ').',

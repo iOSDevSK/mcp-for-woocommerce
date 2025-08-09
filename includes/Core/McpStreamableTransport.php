@@ -141,7 +141,7 @@ class McpStreamableTransport extends McpTransportBase {
 				header( 'Content-Type: text/event-stream' );
 				header( 'Cache-Control: no-cache' );
 				header( 'Connection: keep-alive' );
-				header( 'MCP-Protocol-Version: 2025-03-26' );
+				header( 'MCP-Protocol-Version: 2025-06-18' );
 				// Send endpoint event per 2024-11-05 SSE transport
 				echo "event: endpoint\n";
 				echo "data: {\"endpoint\": \"" . esc_url_raw( rest_url( 'wp/v2/wpmcp/streamable' ) ) . "\"}\n\n";
@@ -166,14 +166,14 @@ class McpStreamableTransport extends McpTransportBase {
 			);
 			$headers = array(
 				'Content-Type' => 'application/json',
-				'MCP-Protocol-Version' => '2025-03-26',
+				'MCP-Protocol-Version' => '2025-06-18',
 			);
 			return new WP_REST_Response( $body, 200, $headers );
 		}
 
 		if ( 'HEAD' === $method ) {
 			$headers = array(
-				'MCP-Protocol-Version' => '2025-03-26',
+				'MCP-Protocol-Version' => '2025-06-18',
 			);
 			return new WP_REST_Response( null, 200, $headers );
 		}
