@@ -225,7 +225,11 @@ class JwtAuth {
 
 		// If user is already authenticated, use their ID.
 		if ( is_user_logged_in() ) {
-			return rest_ensure_response( $this->generate_token( get_current_user_id(), $expires_in ) );
+			$result = $this->generate_token( get_current_user_id(), $expires_in );
+			if ( is_wp_error( $result ) ) {
+				return $result;
+			}
+			return rest_ensure_response( $result );
 		}
 
 		// Otherwise, try to authenticate with provided credentials.
@@ -241,7 +245,11 @@ class JwtAuth {
 			);
 		}
 
-		return rest_ensure_response( $this->generate_token( $user->ID, $expires_in ) );
+		$result = $this->generate_token( $user->ID, $expires_in );
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+		return rest_ensure_response( $result );
 	}
 
 	/**
@@ -249,11 +257,23 @@ class JwtAuth {
 	 *
 	 * @param int        $user_id The user ID.
 	 * @param string|int $expires_in Token expiration time in seconds or "never".
-	 * @return array
+	 * @return array|WP_Error
 	 */
-	private function generate_token( int $user_id, $expires_in = self::JWT_ACCESS_EXP_DEFAULT ): array {
-		// Clean up tokens to ensure we don't exceed the limit
-		$this->cleanup_tokens_for_user( $user_id );
+	private function generate_token( int $user_id, $expires_in = self::JWT_ACCESS_EXP_DEFAULT ) {
+		// Clean up tokens and check if we can generate a new one
+		$active_token_count = $this->cleanup_tokens_for_user( $user_id );
+		
+		// Check if we can generate a new token
+		if ( $active_token_count >= self::MAX_ACTIVE_TOKENS ) {
+			return new WP_Error(
+				'token_limit_exceeded',
+				sprintf(
+					'Maximum of %d active tokens allowed per user. Please revoke some existing tokens before generating new ones.',
+					self::MAX_ACTIVE_TOKENS
+				),
+				array( 'status' => 429 ) // 429 Too Many Requests
+			);
+		}
 		
 		$issued_at = time();
 		$jti       = wp_generate_password( 32, false );
@@ -344,11 +364,12 @@ class JwtAuth {
 
 	/**
 	 * Clean up tokens for a specific user to maintain the maximum limit.
-	 * Removes oldest revoked tokens first, then oldest active tokens if needed.
+	 * Removes oldest revoked tokens first.
 	 *
 	 * @param int $user_id User ID.
+	 * @return int Number of active tokens after cleanup.
 	 */
-	private function cleanup_tokens_for_user( int $user_id ): void {
+	private function cleanup_tokens_for_user( int $user_id ): int {
 		$registry = get_option( self::TOKEN_REGISTRY_OPTION, array() );
 		$current_time = time();
 		
@@ -358,11 +379,6 @@ class JwtAuth {
 			if ( $token_data['user_id'] === $user_id ) {
 				$user_tokens[ $jti ] = $token_data;
 			}
-		}
-		
-		// If user has less than max tokens, no cleanup needed
-		if ( count( $user_tokens ) < self::MAX_ACTIVE_TOKENS ) {
-			return;
 		}
 		
 		// Separate revoked and active tokens
@@ -381,43 +397,22 @@ class JwtAuth {
 			}
 		}
 		
-		// If we have exactly the limit of active tokens, we need to make room for the new one
-		if ( count( $active_tokens ) >= self::MAX_ACTIVE_TOKENS ) {
-			// First, remove oldest revoked tokens
-			if ( ! empty( $revoked_tokens ) ) {
-				// Sort by issued_at (oldest first)
-				uasort( $revoked_tokens, function( $a, $b ) {
-					return $a['issued_at'] - $b['issued_at'];
-				});
-				
-				// Remove oldest revoked tokens
-				foreach ( $revoked_tokens as $jti => $token_data ) {
-					unset( $registry[ $jti ] );
-					if ( count( $active_tokens ) < self::MAX_ACTIVE_TOKENS ) {
-						break;
-					}
-				}
+		// Clean up revoked/expired tokens
+		if ( ! empty( $revoked_tokens ) ) {
+			// Sort by issued_at (oldest first)
+			uasort( $revoked_tokens, function( $a, $b ) {
+				return $a['issued_at'] - $b['issued_at'];
+			});
+			
+			// Remove all revoked/expired tokens
+			foreach ( $revoked_tokens as $jti => $token_data ) {
+				unset( $registry[ $jti ] );
 			}
 			
-			// If still at limit, remove oldest active token to make room
-			if ( count( $active_tokens ) >= self::MAX_ACTIVE_TOKENS ) {
-				// Sort active tokens by issued_at (oldest first)
-				uasort( $active_tokens, function( $a, $b ) {
-					return $a['issued_at'] - $b['issued_at'];
-				});
-				
-				// Remove the oldest active token
-				$oldest_jti = array_key_first( $active_tokens );
-				unset( $registry[ $oldest_jti ] );
-			}
+			update_option( self::TOKEN_REGISTRY_OPTION, $registry );
 		}
 		
-		// Clean up any remaining revoked/expired tokens
-		foreach ( $revoked_tokens as $jti => $token_data ) {
-			unset( $registry[ $jti ] );
-		}
-		
-		update_option( self::TOKEN_REGISTRY_OPTION, $registry );
+		return count( $active_tokens );
 	}
 
 	/**

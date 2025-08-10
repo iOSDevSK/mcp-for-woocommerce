@@ -490,7 +490,7 @@ const AuthenticationTokensTab = () => {
 						</strong>
 						<p style={ { marginTop: '8px', marginBottom: '0', fontSize: '14px' } }>
 							{ __(
-								'Maximum 10 active tokens allowed per user. When generating a new token at the limit, the oldest revoked token will be automatically removed. If no revoked tokens exist, the oldest active token will be replaced.',
+								'Maximum 10 active tokens allowed per user. When generating a new token at the limit, oldest revoked tokens will be automatically removed to make room. If no revoked tokens exist, new token generation will be blocked - you must revoke some existing active tokens first.',
 								'wordpress-mcp'
 							) }
 						</p>
