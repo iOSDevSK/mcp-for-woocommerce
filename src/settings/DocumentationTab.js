@@ -75,11 +75,13 @@ const DocumentationTab = () => {
 					}
 
 					// Create copy button
+					// Get the code text before adding the copy button
+					const codeText = pre.textContent || pre.innerText;
+					
 					const copyButton = document.createElement( 'button' );
 					copyButton.className = 'copy-button';
 					copyButton.textContent = 'Copy';
 					copyButton.onclick = () => {
-						const codeText = pre.textContent || pre.innerText;
 						copyToClipboard( codeText );
 					};
 

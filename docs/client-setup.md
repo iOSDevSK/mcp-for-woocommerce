@@ -28,7 +28,7 @@ WordPress MCP supports two transport protocols:
 Add your WordPress MCP server directly to Claude Code using the HTTP transport:
 
 ```bash
-claude mcp add --transport http wordpress-mcp {{your-website.com}}/wp-json/wp/v2/wpmcp/streamable --header "Authorization: Bearer your-jwt-token-here"
+claude mcp add --transport http woo-mcp {{your-website.com}}/wp-json/wp/v2/wpmcp/streamable --header "Authorization: Bearer your-jwt-token-here"
 ```
 
 For more information about Claude Code MCP configuration, see the [Claude Code MCP documentation](https://docs.anthropic.com/en/docs/claude-code/mcp).
@@ -42,7 +42,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
 ```json
 {
 	"mcpServers": {
-		"wordpress-mcp": {
+		"woo-mcp": {
 			"command": "npx",
 			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
 			"env": {
@@ -79,7 +79,7 @@ Add to your Cursor MCP configuration file:
 ```json
 {
 	"mcpServers": {
-		"wordpress-mcp": {
+		"woo-mcp": {
 			"command": "npx",
 			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
 			"env": {
@@ -100,7 +100,7 @@ Add to your VS Code MCP settings:
 ```json
 {
 	"servers": {
-		"wordpress-mcp": {
+		"woo-mcp": {
 			"type": "http",
 			"url": "{{your-website.com}}/wp-json/wp/v2/wpmcp/streamable",
 			"headers": {
