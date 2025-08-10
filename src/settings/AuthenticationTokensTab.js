@@ -472,6 +472,30 @@ const AuthenticationTokensTab = () => {
 						) }
 					</p>
 
+					{/* Token Limit Information */}
+					<div
+						style={ {
+							padding: '12px',
+							backgroundColor: '#e7f3ff',
+							border: '1px solid #b3d9ff',
+							borderRadius: '4px',
+							marginBottom: '16px',
+						} }
+					>
+						<strong>
+							{ __(
+								'ℹ️ Token Limit:',
+								'wordpress-mcp'
+							) }
+						</strong>
+						<p style={ { marginTop: '8px', marginBottom: '0', fontSize: '14px' } }>
+							{ __(
+								'Maximum 10 active tokens allowed per user. When generating a new token at the limit, the oldest revoked token will be automatically removed. If no revoked tokens exist, the oldest active token will be replaced.',
+								'wordpress-mcp'
+							) }
+						</p>
+					</div>
+
 					<div className="mcp-form-field">
 						<SelectControl
 							label={ __( 'Token Duration', 'wordpress-mcp' ) }
