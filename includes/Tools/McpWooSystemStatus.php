@@ -31,8 +31,7 @@ class McpWooSystemStatus {
             'permission_callback' => '__return_true',
             'inputSchema' => [
                 'type' => 'object',
-                'properties' => (object)[],
-                'required' => []
+                'properties' => (object)[]
             ],
             'annotations' => [
                 'title' => 'Get System Status',
@@ -49,8 +48,7 @@ class McpWooSystemStatus {
             'permission_callback' => '__return_true',
             'inputSchema' => [
                 'type' => 'object',
-                'properties' => (object)[],
-                'required' => []
+                'properties' => (object)[]
             ],
             'annotations' => [
                 'title' => 'Get System Tools',

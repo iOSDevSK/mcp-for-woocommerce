@@ -41,8 +41,7 @@ class McpWooCategories {
                         'description' => 'Whether to hide categories with no products (default: false)',
                         'default' => false
                     ]
-                ],
-                'required' => []
+                ]
             ],
             'callback' => [$this, 'get_categories'],
             'permission_callback' => '__return_true',

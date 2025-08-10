@@ -31,8 +31,7 @@ class McpWooTaxes {
             'permission_callback' => '__return_true',
             'inputSchema' => [
                 'type' => 'object',
-                'properties' => (object)[],
-                'required' => []
+                'properties' => (object)[]
             ],
             'annotations' => [
                 'title' => 'Get Tax Classes',
@@ -62,8 +61,7 @@ class McpWooTaxes {
                         'type' => 'string',
                         'description' => 'State code to filter by'
                     ]
-                ],
-                'required' => []
+                ]
             ],
             'annotations' => [
                 'title' => 'Get Tax Rates',

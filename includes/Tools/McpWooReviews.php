@@ -43,8 +43,7 @@ class McpWooReviews {
                         'minimum' => 1,
                         'maximum' => 100
                     ]
-                ],
-                'required' => []
+                ]
             ],
             'annotations' => [
                 'title' => 'Get Product Reviews',

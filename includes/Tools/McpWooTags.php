@@ -39,8 +39,7 @@ class McpWooTags {
                         'description' => 'Whether to hide tags with no products (default: false)', 
                         'default' => false
                     ]
-                ],
-                'required' => []
+                ]
             ],
             'callback' => [$this, 'get_tags'],
             'permission_callback' => '__return_true',
