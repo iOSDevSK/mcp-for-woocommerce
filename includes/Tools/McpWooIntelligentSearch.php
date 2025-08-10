@@ -46,7 +46,6 @@ class McpWooIntelligentSearch {
                         'query' => array(
                             'type'        => 'string',
                             'description' => 'Search query (e.g., "cheapest perfumes on sale", "latest electronics")',
-                            'required'    => true,
                         ),
                         'per_page' => array(
                             'type'        => 'integer',
@@ -91,7 +90,6 @@ class McpWooIntelligentSearch {
                         'user_query' => array(
                             'type'        => 'string',
                             'description' => 'The original user search query',
-                            'required'    => true,
                         ),
                         'available_categories' => array(
                             'type'        => 'array',

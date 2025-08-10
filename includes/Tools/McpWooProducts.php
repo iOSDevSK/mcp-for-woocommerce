@@ -97,7 +97,6 @@ class McpWooProducts {
 						'id' => array(
 							'type'        => 'integer',
 							'description' => 'Product ID',
-							'required'    => true,
 						),
 					),
 					'required' => array( 'id' ),
@@ -125,7 +124,6 @@ class McpWooProducts {
 						'product_id' => array(
 							'type'        => 'integer',
 							'description' => 'Variable product ID',
-							'required'    => true,
 						),
 					),
 					'required' => array( 'product_id' ),
@@ -152,12 +150,10 @@ class McpWooProducts {
 						'product_id' => array(
 							'type'        => 'integer',
 							'description' => 'Parent product ID',
-							'required'    => true,
 						),
 						'id' => array(
 							'type'        => 'integer',
 							'description' => 'Variation ID',
-							'required'    => true,
 						),
 					),
 					'required' => array( 'product_id', 'id' ),
