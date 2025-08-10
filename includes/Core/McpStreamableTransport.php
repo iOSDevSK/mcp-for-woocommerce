@@ -136,113 +136,180 @@ class McpStreamableTransport extends McpTransportBase {
 	}
 
 	/**
-	 * Handle the HTTP request
+	 * Handle the HTTP request with true streaming support
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 * @return WP_REST_Response
 	 */
 	public function handle_request( WP_REST_Request $request ) {
-		error_log( '[MCP HANDLE] Request received' );
-		error_log( '[MCP HANDLE] Method: ' . $request->get_method() );
-		error_log( '[MCP HANDLE] Route: ' . $request->get_route() );
-		error_log( '[MCP HANDLE] Headers: ' . print_r( $request->get_headers(), true ) );
+		error_log( '[MCP STREAMABLE] Request received' );
+		error_log( '[MCP STREAMABLE] Method: ' . $request->get_method() );
+		error_log( '[MCP STREAMABLE] Route: ' . $request->get_route() );
+		error_log( '[MCP STREAMABLE] Headers: ' . print_r( $request->get_headers(), true ) );
 		
 		// Handle preflight requests
 		if ( 'OPTIONS' === $request->get_method() ) {
-			error_log( '[MCP HANDLE] Handling OPTIONS preflight' );
-			return new WP_REST_Response( null, 204 );
+			error_log( '[MCP STREAMABLE] Handling OPTIONS preflight' );
+			$this->stream_response( null, 204 );
+			return;
 		}
 
 		$method = $request->get_method();
 
 		if ( 'POST' === $method ) {
-			error_log( '[MCP HANDLE] Handling POST request' );
-			return $this->handle_post_request( $request );
+			error_log( '[MCP STREAMABLE] Handling POST request' );
+			$this->handle_streamable_post_request( $request );
+			return;
 		}
 
-		// Health-check friendly GET/HEAD responses and SSE fallback (only when JWT is OFF)
+		// Health-check with streaming support
 		if ( 'GET' === $method ) {
 			$accept = $request->get_header( 'accept' );
-			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
-			// If client requests SSE and JWT is OFF, provide legacy SSE "endpoint" event for compatibility
-			if ( ! $jwt_required && $accept && strpos( $accept, 'text/event-stream' ) !== false ) {
-				// Manually emit SSE headers and body
-				header( 'Content-Type: text/event-stream' );
-				header( 'Cache-Control: no-cache' );
-				header( 'Connection: keep-alive' );
-				header( 'MCP-Protocol-Version: 2025-06-18' );
-				// Send endpoint event per 2024-11-05 SSE transport
-				echo "event: endpoint\n";
-				echo "data: {\"endpoint\": \"" . esc_url_raw( rest_url( 'wp/v2/wpmcp/streamable' ) ) . "\"}\n\n";
-				flush();
-				// Keep the SSE stream open for a short period with periodic pings so clients can complete handshake
-				$start = time();
-				while ( ( time() - $start ) < 60 ) { // keep open up to 60 seconds
-					echo ": ping\n\n";
-					flush();
-					usleep( 10000000 ); // 10 seconds
-				}
-				exit;
+			
+			// For streamable transport, require proper Accept header
+			if ( ! $this->validate_streamable_headers( $request ) ) {
+				$this->stream_error_response(
+					McpErrorHandler::invalid_accept_header( 0 ),
+					400
+				);
+				return;
 			}
-			// Default JSON health when not requesting SSE (or when JWT is ON)
+			
+			// Stream health response
 			$body = array(
 				'jsonrpc' => '2.0',
 				'result'  => array(
 					'status'    => 'ok',
 					'transport' => 'streamable-http',
 					'endpoint'  => '/wp/v2/wpmcp/streamable',
+					'streaming' => true,
 				),
 			);
-			$headers = array(
-				'Content-Type' => 'application/json',
-				'MCP-Protocol-Version' => '2025-06-18',
-			);
-			return new WP_REST_Response( $body, 200, $headers );
+			$this->stream_response( $body, 200 );
+			return;
 		}
 
 		if ( 'HEAD' === $method ) {
-			$headers = array(
+			$this->stream_response( null, 200, array(
 				'MCP-Protocol-Version' => '2025-06-18',
-			);
-			return new WP_REST_Response( null, 200, $headers );
+				'X-Transport-Type' => 'streamable-http'
+			) );
+			return;
 		}
 
-		// Return 405 for unsupported methods.
-		return new WP_REST_Response(
+		// Return 405 for unsupported methods
+		$this->stream_error_response(
 			McpErrorHandler::create_error_response( 0, McpErrorHandler::INVALID_REQUEST, 'Method not allowed' ),
 			405
 		);
 	}
 
 	/**
-	 * Handle POST requests
+	 * Validate streamable headers according to MCP specification
 	 *
 	 * @param WP_REST_Request $request The request object.
-	 * @return WP_REST_Response
+	 * @return bool
 	 */
-	private function handle_post_request( $request ) {
+	private function validate_streamable_headers( WP_REST_Request $request ): bool {
+		$accept_header = $request->get_header( 'accept' );
+		
+		if ( ! $accept_header ) {
+			return false;
+		}
+		
+		// Require both application/json and text/event-stream for streamable transport
+		return strpos( $accept_header, 'application/json' ) !== false &&
+		       strpos( $accept_header, 'text/event-stream' ) !== false;
+	}
+
+	/**
+	 * Stream response directly to client with chunked encoding
+	 *
+	 * @param mixed $data Response data.
+	 * @param int   $status HTTP status code.
+	 * @param array $headers Additional headers.
+	 */
+	private function stream_response( $data = null, int $status = 200, array $headers = array() ) {
+		// Disable WordPress output buffering
+		if ( ob_get_level() ) {
+			ob_end_clean();
+		}
+		
+		// Set status code
+		http_response_code( $status );
+		
+		// Set streaming headers
+		header( 'Content-Type: application/json' );
+		header( 'Transfer-Encoding: chunked' );
+		header( 'Connection: keep-alive' );
+		header( 'Cache-Control: no-cache' );
+		header( 'MCP-Protocol-Version: 2025-06-18' );
+		header( 'X-Transport-Type: streamable-http' );
+		
+		// Add custom headers
+		foreach ( $headers as $key => $value ) {
+			header( $key . ': ' . $value );
+		}
+		
+		// Stream the response
+		if ( $data !== null ) {
+			$json = wp_json_encode( $data, JSON_UNESCAPED_SLASHES );
+			$this->write_chunk( $json );
+		}
+		
+		// End the stream
+		$this->write_chunk( '' ); // Final chunk
+		flush();
+		exit;
+	}
+
+	/**
+	 * Stream error response
+	 *
+	 * @param array $error Error data.
+	 * @param int   $status HTTP status code.
+	 */
+	private function stream_error_response( array $error, int $status = 400 ) {
+		$this->stream_response( $error, $status );
+	}
+
+	/**
+	 * Write chunked data to stream
+	 *
+	 * @param string $data Data to write.
+	 */
+	private function write_chunk( string $data ) {
+		$length = strlen( $data );
+		echo dechex( $length ) . "\r\n";
+		echo $data . "\r\n";
+		flush();
+	}
+
+	/**
+	 * Handle streamable POST requests
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 */
+	private function handle_streamable_post_request( WP_REST_Request $request ) {
 		try {
 			// Log incoming request for Claude.ai debugging
 			$this->log_claude_request( $request );
 			
+			// Validate streamable headers - REQUIRED for streamable transport
+			if ( ! $this->validate_streamable_headers( $request ) ) {
+				$this->stream_error_response(
+					McpErrorHandler::invalid_accept_header( 0 ),
+					400
+				);
+				return;
+			}
+			
 			// Check if JWT is disabled - if so, use PHP proxy mode for external access
 			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
 			if ( ! $jwt_required ) {
-				return $this->handle_php_proxy_mode( $request );
+				$this->handle_streamable_proxy_mode( $request );
+				return;
 			}
-            // Validate Accept header - relax to default JSON when missing or */*
-            $accept_header = $request->get_header( 'accept' );
-            $accept_header = is_string( $accept_header ) ? trim( $accept_header ) : '';
-            $accepts_json = ( $accept_header === '' )
-                || strpos( $accept_header, 'application/json' ) !== false
-                || strpos( $accept_header, '*/*' ) !== false;
-            $accepts_sse  = $accept_header && strpos( $accept_header, 'text/event-stream' ) !== false;
-            if ( ! $accepts_json && ! $accepts_sse ) {
-                // Still incompatible: log and continue with JSON default instead of hard 400
-                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                    error_log( '[MCP Streamable] Non-compatible Accept header received: ' . $accept_header . ' - proceeding as application/json' );
-                }
-            }
 
 			// Check for Claude.ai beta header requirement
 			$beta_header = $request->get_header( 'anthropic-beta' );
@@ -253,19 +320,21 @@ class McpStreamableTransport extends McpTransportBase {
 			// Validate content type - be more flexible with content-type headers
 			$content_type = $request->get_header( 'content-type' );
 			if ( $content_type && strpos( $content_type, 'application/json' ) === false ) {
-				return new WP_REST_Response(
+				$this->stream_error_response(
 					McpErrorHandler::invalid_content_type( 0 ),
 					400
 				);
+				return;
 			}
 
 			// Get the JSON-RPC message(s) - can be single message or array batch
 			$body = $request->get_json_params();
 			if ( null === $body ) {
-				return new WP_REST_Response(
+				$this->stream_error_response(
 					McpErrorHandler::parse_error( 0, 'Invalid JSON in request body' ),
 					400
 				);
+				return;
 			}
 
 			// Handle both single messages and batched arrays
@@ -284,7 +353,8 @@ class McpStreamableTransport extends McpTransportBase {
 							'validation_error' => $validation_result 
 						) 
 					);
-					return new WP_REST_Response( $validation_result, 400 );
+					$this->stream_error_response( $validation_result, 400 );
+					return;
 				}
 
 				// Check if it's a request (has id and method) or notification/response
@@ -297,23 +367,45 @@ class McpStreamableTransport extends McpTransportBase {
 
 			// If only notifications or responses, return 202 Accepted with no body
 			if ( $has_notifications_or_responses && ! $has_requests ) {
-				return new WP_REST_Response( null, 202 );
+				$this->stream_response( null, 202 );
+				return;
 			}
 
-			// Process requests and return JSON response
+			// Process requests with streaming support
 			$results        = array();
 			$has_initialize = false;
-			foreach ( $messages as $message ) {
+			$is_large_batch = count( $messages ) > 5; // Stream for large batches
+			
+			if ( $is_large_batch ) {
+				// Start streaming response for large batches
+				$this->start_batch_stream();
+			}
+			
+			foreach ( $messages as $index => $message ) {
 				if ( isset( $message['method'] ) && isset( $message['id'] ) ) {
 					$this->request_id = (int) $message['id'];
 					if ( 'initialize' === $message['method'] ) {
 						$has_initialize = true;
 					}
-					$results[] = $this->process_message( $message );
+					
+					$result = $this->process_message( $message );
+					
+					if ( $is_large_batch ) {
+						// Stream each result immediately for large batches
+						$this->stream_batch_item( $result, $index );
+					} else {
+						$results[] = $result;
+					}
 				}
 			}
+			
+			if ( $is_large_batch ) {
+				// End batch stream
+				$this->end_batch_stream( $has_initialize );
+				return;
+			}
 
-			// Return single result or batch
+			// Return single result or small batch
 			$response_body = count( $results ) === 1 ? $results[0] : $results;
 
 			// Log outgoing response for Claude.ai debugging
@@ -336,11 +428,7 @@ class McpStreamableTransport extends McpTransportBase {
 				}
 			}
 
-				$headers = array(
-					'Content-Type'                 => 'application/json',
-					'MCP-Protocol-Version'         => '2025-06-18',
-					// Removed dangerous CORS headers for security
-				);
+				$headers = array();
 
 				// If this batch included initialize, assign a session ID per spec (optional for clients)
 				if ( $has_initialize ) {
@@ -351,11 +439,12 @@ class McpStreamableTransport extends McpTransportBase {
 					}
 				}
 
-				return new WP_REST_Response( $response_body, 200, $headers );
+				// Stream the response
+				$this->stream_response( $response_body, 200, $headers );
 		} catch ( \Throwable $exception ) {
 			// Handle any unexpected exceptions
-			McpErrorHandler::log_error( 'Unexpected error in handle_post_request', array( 'exception' => $exception->getMessage() ) );
-			return new WP_REST_Response(
+			McpErrorHandler::log_error( 'Unexpected error in handle_streamable_post_request', array( 'exception' => $exception->getMessage() ) );
+			$this->stream_error_response(
 				McpErrorHandler::handle_exception( $exception, $this->request_id ),
 				500
 			);
@@ -508,24 +597,88 @@ class McpStreamableTransport extends McpTransportBase {
 	}
 
 	/**
-	 * Handle PHP proxy mode when JWT is disabled
+	 * Start streaming response for large batches
+	 */
+	private function start_batch_stream() {
+		// Disable WordPress output buffering
+		if ( ob_get_level() ) {
+			ob_end_clean();
+		}
+		
+		// Set status code
+		http_response_code( 200 );
+		
+		// Set streaming headers
+		header( 'Content-Type: application/json' );
+		header( 'Transfer-Encoding: chunked' );
+		header( 'Connection: keep-alive' );
+		header( 'Cache-Control: no-cache' );
+		header( 'MCP-Protocol-Version: 2025-06-18' );
+		header( 'X-Transport-Type: streamable-http' );
+		
+		// Start JSON array for batch response
+		$this->write_chunk( '[' );
+	}
+
+	/**
+	 * Stream a single item in a batch
+	 *
+	 * @param array $item The response item.
+	 * @param int   $index The item index.
+	 */
+	private function stream_batch_item( array $item, int $index ) {
+		$json = wp_json_encode( $item, JSON_UNESCAPED_SLASHES );
+		
+		// Add comma separator for items after the first
+		if ( $index > 0 ) {
+			$this->write_chunk( ',' );
+		}
+		
+		$this->write_chunk( $json );
+	}
+
+	/**
+	 * End streaming response for large batches
+	 *
+	 * @param bool $has_initialize Whether initialize was called.
+	 */
+	private function end_batch_stream( bool $has_initialize = false ) {
+		// Close JSON array
+		$this->write_chunk( ']' );
+		
+		// Add session ID header if initialize was called
+		if ( $has_initialize ) {
+			if ( function_exists( 'wp_generate_uuid4' ) ) {
+				header( 'Mcp-Session-Id: ' . wp_generate_uuid4() );
+			} else {
+				header( 'Mcp-Session-Id: ' . bin2hex( random_bytes( 16 ) ) );
+			}
+		}
+		
+		// End the stream
+		$this->write_chunk( '' ); // Final chunk
+		flush();
+		exit;
+	}
+
+	/**
+	 * Handle streamable PHP proxy mode when JWT is disabled
 	 *
 	 * @param WP_REST_Request $request The request object.
-	 * @return WP_REST_Response
 	 */
-	private function handle_php_proxy_mode( $request ) {
-		error_log( '[MCP PROXY] PHP proxy mode activated' );
-		error_log( '[MCP PROXY] Request method: ' . $request->get_method() );
-		error_log( '[MCP PROXY] Request headers: ' . print_r( $request->get_headers(), true ) );
+	private function handle_streamable_proxy_mode( WP_REST_Request $request ) {
+		error_log( '[MCP STREAMABLE PROXY] Streamable proxy mode activated' );
+		error_log( '[MCP STREAMABLE PROXY] Request method: ' . $request->get_method() );
+		error_log( '[MCP STREAMABLE PROXY] Request headers: ' . print_r( $request->get_headers(), true ) );
 		
 		// Get the request body
 		$body = $request->get_body();
-		error_log( '[MCP PROXY] Request body length: ' . strlen( $body ) );
-		error_log( '[MCP PROXY] Request body: ' . $body );
+		error_log( '[MCP STREAMABLE PROXY] Request body length: ' . strlen( $body ) );
+		error_log( '[MCP STREAMABLE PROXY] Request body: ' . $body );
 		
 		if ( empty( $body ) ) {
-			error_log( '[MCP PROXY] Empty request body - returning error' );
-			return new WP_REST_Response(
+			error_log( '[MCP STREAMABLE PROXY] Empty request body - returning error' );
+			$this->stream_error_response(
 				array(
 					'jsonrpc' => '2.0',
 					'id' => null,
@@ -536,12 +689,13 @@ class McpStreamableTransport extends McpTransportBase {
 				),
 				400
 			);
+			return;
 		}
 
 		// Decode JSON request
 		$data = json_decode( $body, true );
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			return new WP_REST_Response(
+			$this->stream_error_response(
 				array(
 					'jsonrpc' => '2.0',
 					'id' => null,
@@ -552,6 +706,7 @@ class McpStreamableTransport extends McpTransportBase {
 				),
 				400
 			);
+			return;
 		}
 
 		$id = $data['id'] ?? null;
@@ -564,7 +719,7 @@ class McpStreamableTransport extends McpTransportBase {
 			// Route the request using existing MCP routing
 			$result = $this->route_request( $method, $params, (int) $id );
 
-			// Format response according to JSON-RPC 2.0
+			// Format response according to JSON-RPC 2.0 and stream it
 			if ( isset( $result['error'] ) ) {
 				// Ensure error code is integer for Claude Desktop compatibility
 				$error = $result['error'];
@@ -577,10 +732,10 @@ class McpStreamableTransport extends McpTransportBase {
 					'error' => $error
 				);
 				
-				// Log error response from PHP proxy mode
+				// Log error response from streamable proxy mode
 				$this->log_claude_response( $error_response );
 				
-				return new WP_REST_Response( $error_response, 200 );
+				$this->stream_response( $error_response, 200 );
 			} else {
 				$response_body = array(
 					'jsonrpc' => '2.0',
@@ -588,10 +743,10 @@ class McpStreamableTransport extends McpTransportBase {
 					'result' => $result
 				);
 				
-				// Log response from PHP proxy mode
+				// Log response from streamable proxy mode
 				$this->log_claude_response( $response_body );
 				
-				return new WP_REST_Response( $response_body, 200 );
+				$this->stream_response( $response_body, 200 );
 			}
 		} catch ( Exception $e ) {
 			$exception_response = array(
@@ -603,10 +758,10 @@ class McpStreamableTransport extends McpTransportBase {
 				)
 			);
 			
-			// Log exception response from PHP proxy mode
+			// Log exception response from streamable proxy mode
 			$this->log_claude_response( $exception_response );
 			
-			return new WP_REST_Response( $exception_response, 500 );
+			$this->stream_error_response( $exception_response, 500 );
 		}
 	}
 
