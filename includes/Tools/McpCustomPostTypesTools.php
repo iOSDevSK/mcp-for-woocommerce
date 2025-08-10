@@ -33,14 +33,16 @@ class McpCustomPostTypesTools {
 
 		new RegisterMcpTool(
 			array(
-				'name'        => 'wp_list_post_types',
-				'description' => 'List all available WordPress custom post types',
-				'type'        => 'read',
-				'rest_alias'  => array(
-					'route'  => '/wp/v2/types',
-					'method' => 'GET',
+				'name'                => 'wp_list_post_types',
+				'description'         => 'List all available WordPress custom post types',
+				'type'                => 'read',
+				'callback'            => array( $this, 'list_post_types' ),
+				'permission_callback' => '__return_true',
+				'inputSchema'         => array(
+					'type'       => 'object',
+					'properties' => (object) array(),
 				),
-				'annotations' => array(
+				'annotations'         => array(
 					'title'         => 'List Post Types',
 					'readOnlyHint'  => true,
 					'openWorldHint' => false,
@@ -134,6 +136,32 @@ class McpCustomPostTypesTools {
 		// Removed wp_add_cpt for security reasons
 
 		// Removed wp_update_cpt and wp_delete_cpt for security reasons
+	}
+
+	/**
+	 * List all available WordPress post types.
+	 *
+	 * @param array $params The parameters (unused).
+	 * @return array
+	 */
+	public function list_post_types( array $params ): array {
+		$post_types = get_post_types( array( 'public' => true ), 'objects' );
+		$result = array();
+
+		foreach ( $post_types as $post_type_key => $post_type ) {
+			$result[ $post_type_key ] = array(
+				'description'   => $post_type->description,
+				'hierarchical'  => $post_type->hierarchical,
+				'name'          => $post_type->name,
+				'slug'          => $post_type->name,
+				'supports'      => get_all_post_type_supports( $post_type->name ),
+				'taxonomies'    => get_object_taxonomies( $post_type->name, 'names' ),
+				'rest_base'     => $post_type->rest_base ?: $post_type->name,
+				'rest_namespace' => 'wp/v2',
+			);
+		}
+
+		return array( 'results' => $result );
 	}
 
 	/**
