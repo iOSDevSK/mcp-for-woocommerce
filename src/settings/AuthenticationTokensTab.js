@@ -610,7 +610,7 @@ const AuthenticationTokensTab = () => {
 								</tr>
 							</thead>
 							<tbody>
-								{ tokens.map( ( token ) => (
+								{ tokens.slice( 0, 10 ).map( ( token ) => (
 									<tr key={ token.jti }>
 										<td>
 											{ token.user.display_name }
@@ -674,6 +674,13 @@ const AuthenticationTokensTab = () => {
 								) ) }
 							</tbody>
 						</table>
+						
+						{/* Show info if there are more than 10 tokens */}
+						{ tokens.length > 10 && (
+							<p style={ { marginTop: '12px', color: '#666', fontStyle: 'italic' } }>
+								{ __( 'Showing first 10 tokens. Total tokens:', 'wordpress-mcp' ) } { tokens.length }
+							</p>
+						) }
 					</div>
 				</CardBody>
 			</Card>
