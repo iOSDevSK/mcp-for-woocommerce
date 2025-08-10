@@ -54,7 +54,7 @@ class McpCustomPostTypesTools {
 				'description'         => 'Search and filter WordPress custom post types including ' . $post_types_list . ' with pagination',
 				'type'                => 'read',
 				'callback'            => array( $this, 'search_custom_post_types' ),
-				'permission_callback' => array( $this, 'search_custom_post_types_permission_callback' ),
+				'permission_callback' => '__return_true',
 				'disabled_by_rest_crud' => true,
 				'inputSchema'         => array(
 					'type'       => 'object',
@@ -104,7 +104,7 @@ class McpCustomPostTypesTools {
 				'description'         => 'Get a WordPress custom post type by ID',
 				'type'                => 'read',
 				'callback'            => array( $this, 'get_custom_post_type' ),
-				'permission_callback' => array( $this, 'get_custom_post_type_permission_callback' ),
+				'permission_callback' => '__return_true',
 				'disabled_by_rest_crud' => true,
 				'inputSchema'         => array(
 					'type'       => 'object',
@@ -176,14 +176,6 @@ class McpCustomPostTypesTools {
 		);
 	}
 
-	/**
-	 * Search custom post types permissions callback.
-	 *
-	 * @return bool
-	 */
-	public function search_custom_post_types_permission_callback(): bool {
-		return current_user_can( 'edit_posts' );
-	}
 
 	/**
 	 * Get a custom post type by ID.
@@ -204,14 +196,6 @@ class McpCustomPostTypesTools {
 		return array( 'results' => $post );
 	}
 
-	/**
-	 * Get custom post type permissions callback.
-	 *
-	 * @return bool
-	 */
-	public function get_custom_post_type_permission_callback(): bool {
-		return current_user_can( 'edit_posts' );
-	}
 
 	/**
 	 * Add a new custom post type.
@@ -248,14 +232,6 @@ class McpCustomPostTypesTools {
 		return array( 'results' => get_post( $post_id ) );
 	}
 
-	/**
-	 * Add custom post type permissions callback.
-	 *
-	 * @return bool
-	 */
-	public function add_custom_post_type_permission_callback(): bool {
-		return current_user_can( 'edit_posts' );
-	}
 
 	/**
 	 * Update a custom post type.
@@ -307,14 +283,6 @@ class McpCustomPostTypesTools {
 		return array( 'results' => get_post( $post_id ) );
 	}
 
-	/**
-	 * Update custom post type permissions callback.
-	 *
-	 * @return bool
-	 */
-	public function update_custom_post_type_permission_callback(): bool {
-		return current_user_can( 'edit_posts' );
-	}
 
 	/**
 	 * Delete a custom post type.
@@ -346,12 +314,4 @@ class McpCustomPostTypesTools {
 		return array( 'results' => true );
 	}
 
-	/**
-	 * Delete custom post type permissions callback.
-	 *
-	 * @return bool
-	 */
-	public function delete_custom_post_type_permission_callback(): bool {
-		return current_user_can( 'edit_posts' );
-	}
 }

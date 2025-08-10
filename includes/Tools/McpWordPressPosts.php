@@ -29,7 +29,7 @@ class McpWordPressPosts {
             'description' => 'List WordPress posts with filtering and search options',
             'type' => 'read',
             'callback' => array($this, 'list_posts'),
-            'permission_callback' => array($this, 'check_read_permission'),
+            'permission_callback' => '__return_true',
             'inputSchema' => [
                 'type' => 'object',
                 'properties' => [
@@ -90,7 +90,7 @@ class McpWordPressPosts {
             'description' => 'Get a single WordPress post by ID',
             'type' => 'read',
             'callback' => array($this, 'get_post'),
-            'permission_callback' => array($this, 'check_read_permission'),
+            'permission_callback' => '__return_true',
             'inputSchema' => [
                 'type' => 'object',
                 'properties' => [
@@ -244,10 +244,4 @@ class McpWordPressPosts {
         ];
     }
 
-    /**
-     * Check read permission.
-     */
-    public function check_read_permission(): bool {
-        return current_user_can('read_posts');
-    }
 }

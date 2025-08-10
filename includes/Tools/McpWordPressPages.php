@@ -29,7 +29,7 @@ class McpWordPressPages {
             'description' => 'List WordPress pages with filtering and search options',
             'type' => 'read',
             'callback' => array($this, 'list_pages'),
-            'permission_callback' => array($this, 'check_read_permission'),
+            'permission_callback' => '__return_true',
             'inputSchema' => [
                 'type' => 'object',
                 'properties' => [
@@ -82,7 +82,7 @@ class McpWordPressPages {
             'description' => 'Get a single WordPress page by ID',
             'type' => 'read',
             'callback' => array($this, 'get_page'),
-            'permission_callback' => array($this, 'check_read_permission'),
+            'permission_callback' => '__return_true',
             'inputSchema' => [
                 'type' => 'object',
                 'properties' => [
@@ -225,10 +225,4 @@ class McpWordPressPages {
         ];
     }
 
-    /**
-     * Check read permission.
-     */
-    public function check_read_permission(): bool {
-        return current_user_can('read_pages');
-    }
 }

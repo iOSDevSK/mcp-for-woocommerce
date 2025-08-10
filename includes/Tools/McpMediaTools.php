@@ -67,7 +67,7 @@ class McpMediaTools {
 				'description'         => 'Get the actual file content (blob) of a WordPress media item',
 				'type'                => 'read',
 				'callback'            => array( $this, 'wp_get_media_file' ),
-				'permission_callback' => array( $this, 'get_media_file_permission_callback' ),
+				'permission_callback' => '__return_true',
 				'inputSchema'         => array(
 					'type'       => 'object',
 					'properties' => array(
@@ -195,15 +195,6 @@ class McpMediaTools {
 		);
 	}
 
-	/**
-	 * Permissions callback for the wp_get_media_file tool.
-	 *
-	 * @return bool
-	 */
-	public function get_media_file_permission_callback(): bool {
-		// todo: check if the user has permission to view the media file.
-		return true;
-	}
 
 	/**
 	 * Pre-callback for the wp_upload_media tool.

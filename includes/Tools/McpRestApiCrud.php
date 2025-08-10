@@ -118,7 +118,7 @@ class McpRestApiCrud {
 					'required'   => array( 'route', 'method' ),
 				),
 				'callback'            => array( $this, 'handle_tool_run_request' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => '__return_true',
 				'annotations'         => array(
 					'title'           => 'Run API Function (Read Only)',
 					'readOnlyHint'    => true,
