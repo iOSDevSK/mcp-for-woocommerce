@@ -1,4 +1,4 @@
-=== Woo - MCP Plugin Changelog ===
+=== Woo MCP Plugin Changelog ===
 
 = Version 1.0.2 - beta - Release #000008 - August 2, 2025 @ 22:00 CET =
 
