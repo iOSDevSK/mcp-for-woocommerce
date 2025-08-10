@@ -63,7 +63,7 @@ class Settings {
 		
 		add_options_page(
 			$page_title,
-			__( 'MCP', 'wordpress-mcp' ),
+			__( 'Woo MCP', 'wordpress-mcp' ),
 			'manage_options',
 			'wordpress-mcp-settings',
 			array( $this, 'render_settings_page' )

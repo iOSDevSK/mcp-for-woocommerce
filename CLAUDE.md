@@ -44,6 +44,30 @@ For server access, use: `ssh woo.webtalkbot.com`
 - Add strong AI instructions for mandatory link inclusion in tool responses
 - Test in both admin and MCP client contexts before pushing
 
+## Development Workflow
+
+**CRITICAL WORKFLOW:** After any code changes, follow this mandatory sequence:
+
+1. **Test First**: Run all required tests to ensure code stability
+2. **If tests pass**: Push changes to git
+3. **Wait 20 seconds**: Allow git hooks/deployment to process
+4. **Verify server sync**: Check if changes are reflected on server via `ssh woo.webtalkbot.com`
+5. **If not synced**: Apply changes directly to server and push to git
+6. **Final verification**: Ensure all three are synchronized: local, git, server
+
+### UI Changes Specific Requirements
+When making UI changes, after server sync:
+- Connect to server: `ssh woo.webtalkbot.com`
+- Navigate to: `/var/www/html/wp-content/plugins/woo-mcp`
+- Run: `npm run build`
+- Verify UI changes are reflected
+
+### Sync Verification Protocol
+Always verify synchronization between:
+- **Local**: Your development environment
+- **Git**: Remote repository 
+- **Server**: Production server (woo.webtalkbot.com)
+
 ## Version History
 
 - v0.2.8: Implemented comprehensive product links across all WooCommerce tools
