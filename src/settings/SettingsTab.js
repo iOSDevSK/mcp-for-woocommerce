@@ -55,7 +55,7 @@ const AuthenticationCard = ( { jwtRequired, onJwtRequiredToggle, isSaving, strin
 				{/* Webtalkbot Information - always visible at top */}
 				<div style={{ marginBottom: '20px', padding: '12px', backgroundColor: '#f0f6fc', border: '1px solid #d1ecf1', borderRadius: '4px' }}>
 					<p style={{ margin: '0', fontSize: '14px', color: '#0c5460' }}>
-						<strong>{ strings.webtalkbotNote || __( 'Note for Webtalkbot users:', 'wordpress-mcp' ) }</strong> { strings.webtalkbotDescription || __( 'JWT Authentication must be enabled if you want to create a WooCommerce AI Agent in', 'wordpress-mcp' ) }{' '}
+						<strong>{ strings.webtalkbotNote || __( 'Note for Webtalkbot users:', 'wordpress-mcp' ) }</strong> { strings.webtalkbotDescription || __( 'JWT Authentication is recommended if you want to create a WooCommerce AI Agent in', 'wordpress-mcp' ) }{' '}
 						<a 
 							href="https://webtalkbot.com" 
 							target="_blank" 

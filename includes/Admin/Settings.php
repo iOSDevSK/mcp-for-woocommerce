@@ -154,7 +154,7 @@ class Settings {
 					'requireJwtAuth'                   => __( 'Require JWT Authentication', 'wordpress-mcp' ),
 					'requireJwtAuthDescription'        => __( 'When enabled, all MCP requests must include a valid JWT token. When disabled, MCP endpoints are accessible without authentication (readonly mode only).', 'wordpress-mcp' ),
 					'webtalkbotNote'                   => __( 'Note for Webtalkbot users:', 'wordpress-mcp' ),
-					'webtalkbotDescription'            => __( 'JWT Authentication must be enabled if you want to create a WooCommerce AI Agent in', 'wordpress-mcp' ),
+					'webtalkbotDescription'            => __( 'JWT Authentication is recommended if you want to create a WooCommerce AI Agent in', 'wordpress-mcp' ),
 				),
 			)
 		);

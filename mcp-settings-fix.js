@@ -52,7 +52,7 @@ window.mcpSettings = {
         requireJwtAuth: 'Require JWT Authentication',
         requireJwtAuthDescription: 'When enabled, all MCP requests must include a valid JWT token. When disabled, MCP endpoints are accessible without authentication (readonly mode only) and can be used as a Claude.ai Desktop connector.',
         webtalkbotNote: 'Note for Webtalkbot users:',
-        webtalkbotDescription: 'JWT Authentication must be enabled if you want to create a WooCommerce AI Agent in',
+        webtalkbotDescription: 'JWT Authentication is recommended if you want to create a WooCommerce AI Agent in',
         claudeConnectorNote: 'Claude.ai Desktop Connector:',
         claudeConnectorDescription: 'When JWT Authentication is disabled, this plugin can be used as a connector in Claude.ai Desktop. A proxy file will be automatically generated for easy setup.',
         proxyFileGenerated: 'MCP Proxy file generated at:',
