@@ -33,6 +33,11 @@ class InputSchema {
 			}
 		}
 
+		// Remove empty required arrays to comply with JSON Schema draft 2020-12
+		if ( isset( $input_schema['required'] ) && empty( $input_schema['required'] ) ) {
+			unset( $input_schema['required'] );
+		}
+
 		return $input_schema;
 	}
 }

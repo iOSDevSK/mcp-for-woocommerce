@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Automattic\WordpressMcp\Core;
 
 use InvalidArgumentException;
+use Automattic\WordpressMcp\Utils\InputSchema;
 
 /**
  * Register an MCP tool.
@@ -49,6 +50,10 @@ class RegisterMcpTool {
 		if ( ! empty( $this->args['rest_alias'] ) ) {
 			$this->get_args_from_rest_api();
 		} else {
+			// Clean the input schema before registration
+			if ( isset( $this->args['inputSchema'] ) ) {
+				$this->args['inputSchema'] = InputSchema::clean( $this->args['inputSchema'] );
+			}
 			WPMCP()->register_tool( $this->args );
 		}
 	}
@@ -169,7 +174,7 @@ class RegisterMcpTool {
 		}
 
 		// Update the args with the converted schema.
-		$this->args['inputSchema']         = $input_schema;
+		$this->args['inputSchema']         = InputSchema::clean( $input_schema );
 		$this->args['callback']            = $rest_api['callback'];
 		$this->args['permission_callback'] = $rest_api['permission_callback'];
 
