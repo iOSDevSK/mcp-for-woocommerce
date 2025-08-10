@@ -26,10 +26,6 @@ export const SettingsApp = () => {
 	// State for settings
 	const [ settings, setSettings ] = useState( {
 		enabled: false,
-		features_adapter_enabled: false,
-		enable_create_tools: false,
-		enable_update_tools: false,
-		enable_delete_tools: false,
 	} );
 
 	// State for JWT authentication
@@ -93,19 +89,7 @@ export const SettingsApp = () => {
 			const loaded = window.wordpressMcpSettings.settings;
 			setSettings( ( prev ) => ( {
 				...prev,
-				...loaded,
-				enable_create_tools:
-					typeof loaded.enable_create_tools === 'boolean'
-						? loaded.enable_create_tools
-						: false,
-				enable_update_tools:
-					typeof loaded.enable_update_tools === 'boolean'
-						? loaded.enable_update_tools
-						: false,
-				enable_delete_tools:
-					typeof loaded.enable_delete_tools === 'boolean'
-						? loaded.enable_delete_tools
-						: false,
+				enabled: loaded.enabled || false,
 			} ) );
 		}
 

@@ -84,14 +84,6 @@ class Settings {
 		);
 	}
 
-	/**
-	 * Checks if WordPress Feature API is available.
-	 *
-	 * @return bool True if WP Feature API is available, false otherwise.
-	 */
-	private function is_feature_api_available(): bool {
-		return defined( 'WP_FEATURE_API_VERSION' );
-	}
 
 	/**
 	 * Gets Claude.ai Desktop setup instructions if proxy should be generated.
@@ -162,22 +154,11 @@ class Settings {
 				'settings'            => get_option( self::OPTION_NAME, array() ),
 				'toolStates'          => get_option( self::TOOL_STATES_OPTION, array() ),
 				'jwtRequired'         => get_option( self::JWT_REQUIRED_OPTION, true ),
-				'featureApiAvailable' => $this->is_feature_api_available(),
 				'pluginUrl'           => WORDPRESS_MCP_URL,
 				'claudeSetupInstructions' => $this->get_claude_setup_instructions(),
 				'strings'             => array(
 					'enableMcp'                        => __( 'Enable MCP functionality', 'wordpress-mcp' ),
 					'enableMcpDescription'             => __( 'Toggle to enable or disable the MCP plugin functionality.', 'wordpress-mcp' ),
-					'enableFeaturesAdapter'            => __( 'Enable WordPress Features Adapter', 'wordpress-mcp' ),
-					'enableFeaturesAdapterDescription' => __( 'Enable or disable the WordPress Features Adapter. This option only works when MCP is enabled.', 'wordpress-mcp' ),
-					'enableCreateTools'                => __( 'Enable Create Tools', 'wordpress-mcp' ),
-					'enableCreateToolsDescription'     => __( 'Allow create operations via tools.', 'wordpress-mcp' ),
-					'enableUpdateTools'                => __( 'Enable Update Tools', 'wordpress-mcp' ),
-					'enableUpdateToolsDescription'     => __( 'Allow update operations via tools.', 'wordpress-mcp' ),
-					'enableDeleteTools'                => __( 'Enable Delete Tools', 'wordpress-mcp' ),
-					'enableDeleteToolsDescription'     => __( '⚠️ CAUTION: Allow deletion operations via tools.', 'wordpress-mcp' ),
-					'enableRestApiCrudTools'           => __( '🧪 Enable REST API CRUD Tools (EXPERIMENTAL)', 'wordpress-mcp' ),
-					'enableRestApiCrudToolsDescription' => __( '⚠️ EXPERIMENTAL FEATURE: Enable or disable the generic REST API CRUD tools for accessing WordPress endpoints. This is experimental functionality that may change or be removed in future versions. When enabled, all tools that are a rest_alias or have the disabled_by_rest_crud flag will be disabled.', 'wordpress-mcp' ),
 					'saveSettings'                     => __( 'Save Settings', 'wordpress-mcp' ),
 					'settingsSaved'                    => __( 'Settings saved successfully!', 'wordpress-mcp' ),
 					'settingsError'                    => __( 'Error saving settings. Please try again.', 'wordpress-mcp' ),
@@ -253,35 +234,12 @@ class Settings {
 			$sanitized['enabled'] = false;
 		}
 
-		if ( isset( $input['features_adapter_enabled'] ) ) {
-			$sanitized['features_adapter_enabled'] = (bool) $input['features_adapter_enabled'];
-		} else {
-			$sanitized['features_adapter_enabled'] = false;
-		}
-
-		if ( isset( $input['enable_create_tools'] ) ) {
-			$sanitized['enable_create_tools'] = (bool) $input['enable_create_tools'];
-		} else {
-			$sanitized['enable_create_tools'] = false;
-		}
-
-		if ( isset( $input['enable_update_tools'] ) ) {
-			$sanitized['enable_update_tools'] = (bool) $input['enable_update_tools'];
-		} else {
-			$sanitized['enable_update_tools'] = false;
-		}
-
-		if ( isset( $input['enable_delete_tools'] ) ) {
-			$sanitized['enable_delete_tools'] = (bool) $input['enable_delete_tools'];
-		} else {
-			$sanitized['enable_delete_tools'] = false;
-		}
-
-		if ( isset( $input['enable_rest_api_crud_tools'] ) ) {
-			$sanitized['enable_rest_api_crud_tools'] = (bool) $input['enable_rest_api_crud_tools'];
-		} else {
-			$sanitized['enable_rest_api_crud_tools'] = false;
-		}
+		// Hardcode the removed settings for Woo MCP functionality
+		$sanitized['features_adapter_enabled'] = false;     // WordPress Features Adapter disabled for Woo MCP
+		$sanitized['enable_create_tools'] = true;           // Create tools always enabled for Woo MCP
+		$sanitized['enable_update_tools'] = true;           // Update tools always enabled for Woo MCP
+		$sanitized['enable_delete_tools'] = true;           // Delete tools always enabled for Woo MCP
+		$sanitized['enable_rest_api_crud_tools'] = false;   // REST API CRUD tools always disabled for Woo MCP
 
 		return $sanitized;
 	}
