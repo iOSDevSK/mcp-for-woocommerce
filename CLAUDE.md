@@ -68,6 +68,29 @@ Always verify synchronization between:
 - **Git**: Remote repository 
 - **Server**: Production server (woo.webtalkbot.com)
 
+## "ALL WORKS!" Commit Policy
+
+**IMPORTANT:** "ALL WORKS!" commits are special and should ONLY be used when explicitly requested by the user.
+
+### When to Use "ALL WORKS!" Commits:
+- **Only when user explicitly asks** for an "ALL WORKS!" commit
+- **Only after user has tested** all changes on the server
+- **Only when user confirms** everything is working correctly
+
+### When NOT to Use "ALL WORKS!" Commits:
+- **Never add "ALL WORKS!" automatically** without user request
+- **Never assume** everything works without user testing
+- **Never use** for regular commits, even if changes seem working
+
+### User Testing Requirements:
+Before creating "ALL WORKS!" commits, user must:
+1. Test functionality on production server
+2. Verify all UI changes work correctly
+3. Confirm no breaking changes exist
+4. Explicitly request the "ALL WORKS!" commit
+
+**Remember**: "ALL WORKS!" commits are a confirmation from the user that they have personally tested and verified everything works on their server.
+
 ## Version History
 
 - v0.2.8: Implemented comprehensive product links across all WooCommerce tools

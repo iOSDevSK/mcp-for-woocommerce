@@ -27,7 +27,7 @@ const AuthenticationTokensTab = () => {
 		{ label: __( '6 hours', 'wordpress-mcp' ), value: 21600 },
 		{ label: __( '12 hours', 'wordpress-mcp' ), value: 43200 },
 		{ label: __( '24 hours (1 day)', 'wordpress-mcp' ), value: 86400 },
-		{ label: __( '⚠️ Never expire (NOT RECOMMENDED)', 'wordpress-mcp' ), value: 'never' },
+		{ label: __( 'Never expire', 'wordpress-mcp' ), value: 'never' },
 	];
 
 	useEffect( () => {
