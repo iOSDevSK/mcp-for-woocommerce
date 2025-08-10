@@ -79,6 +79,21 @@ Add to your Claude Desktop `claude_desktop_config.json`:
 }
 ```
 
+#### Local Development Configuration
+
+To use with Claude Desktop for local development, add this configuration to your claude_desktop_config.json:
+
+```json
+{
+	"mcpServers": {
+		"woocommerce": {
+			"command": "php",
+			"args": [ "/path/to/your/woo-mcp/mcp-proxy.php" ]
+		}
+	}
+}
+```
+
 ### Cursor IDE
 
 #### Using mcp-wordpress-remote proxy

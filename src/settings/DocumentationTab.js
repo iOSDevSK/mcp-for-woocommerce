@@ -109,7 +109,7 @@ const DocumentationTab = () => {
 	return (
 		<Card>
 			<CardHeader>
-				<h2>{ __( 'MCP Client Setup Guide', 'wordpress-mcp' ) }</h2>
+				<h2>{ __( 'Documentation', 'wordpress-mcp' ) }</h2>
 			</CardHeader>
 			<CardBody>
 				<div
