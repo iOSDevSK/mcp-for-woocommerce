@@ -54,8 +54,15 @@ class Settings {
 	 * Add the settings page to the WordPress admin menu.
 	 */
 	public function add_settings_page(): void {
+		// Get plugin version from main plugin file header
+		$plugin_data = get_file_data( WORDPRESS_MCP_PATH . 'wordpress-mcp.php', array( 'Version' => 'Version' ) );
+		$version = ! empty( $plugin_data['Version'] ) ? $plugin_data['Version'] : '';
+		
+		// Create page title with version
+		$page_title = trim( sprintf( 'Woo MCP %s', $version ) );
+		
 		add_options_page(
-			__( 'MCP', 'wordpress-mcp' ),
+			$page_title,
 			__( 'MCP', 'wordpress-mcp' ),
 			'manage_options',
 			'wordpress-mcp-settings',
