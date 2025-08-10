@@ -85,25 +85,6 @@ class Settings {
 	}
 
 
-	/**
-	 * Gets Claude.ai Desktop setup instructions if proxy should be generated.
-	 *
-	 * @return array|null Proxy setup instructions or null if JWT is enabled.
-	 */
-	private function get_claude_setup_instructions(): ?array {
-		$jwt_required = get_option( self::JWT_REQUIRED_OPTION, true );
-		
-		if ( $jwt_required ) {
-			return null;
-		}
-
-		$generator = new McpProxyGenerator();
-		if ( ! $generator->should_generate_proxy() ) {
-			return null;
-		}
-
-		return $generator->get_claude_setup_instructions();
-	}
 
 	/**
 	 * Enqueue scripts and styles for the React app.
@@ -155,7 +136,6 @@ class Settings {
 				'toolStates'          => get_option( self::TOOL_STATES_OPTION, array() ),
 				'jwtRequired'         => get_option( self::JWT_REQUIRED_OPTION, true ),
 				'pluginUrl'           => WORDPRESS_MCP_URL,
-				'claudeSetupInstructions' => $this->get_claude_setup_instructions(),
 				'strings'             => array(
 					'enableMcp'                        => __( 'Enable MCP functionality', 'wordpress-mcp' ),
 					'enableMcpDescription'             => __( 'Toggle to enable or disable the MCP plugin functionality.', 'wordpress-mcp' ),
@@ -175,10 +155,6 @@ class Settings {
 					'requireJwtAuthDescription'        => __( 'When enabled, all MCP requests must include a valid JWT token. When disabled, MCP endpoints are accessible without authentication (readonly mode only).', 'wordpress-mcp' ),
 					'webtalkbotNote'                   => __( 'Note for Webtalkbot users:', 'wordpress-mcp' ),
 					'webtalkbotDescription'            => __( 'JWT Authentication must be enabled if you want to create a WooCommerce AI Agent in', 'wordpress-mcp' ),
-					'claudeConnectorNote'              => __( 'Claude.ai Desktop Connector:', 'wordpress-mcp' ),
-					'claudeConnectorDescription'       => __( 'When JWT Authentication is disabled, this plugin can be used as a connector in Claude.ai Desktop. A proxy file will be automatically generated for easy setup.', 'wordpress-mcp' ),
-					'proxyFileGenerated'               => __( 'MCP Proxy file generated at:', 'wordpress-mcp' ),
-					'claudeSetupInstructions'          => __( 'To use with Claude.ai Desktop, add this configuration to your claude_desktop_config.json:', 'wordpress-mcp' ),
 				),
 			)
 		);
