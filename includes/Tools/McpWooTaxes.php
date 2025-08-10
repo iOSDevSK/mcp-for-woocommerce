@@ -31,7 +31,7 @@ class McpWooTaxes {
             'permission_callback' => '__return_true',
             'inputSchema' => [
                 'type' => 'object',
-                'properties' => [],
+                'properties' => (object)[],
                 'required' => []
             ],
             'annotations' => [
