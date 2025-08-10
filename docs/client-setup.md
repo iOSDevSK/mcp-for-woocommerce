@@ -1,5 +1,13 @@
 # MCP Client Setup Guide
 
+## About Woo MCP
+
+Woo MCP is a specialized version of the [WordPress MCP](https://github.com/Automattic/wordpress-mcp) plugin by Automattic, specifically designed for WooCommerce integration. This plugin provides read-only access to publicly available WooCommerce store data, including products, categories, orders, and customer information.
+
+The plugin is designed to work seamlessly with [Webtalkbot](https://webtalkbot.com), a platform that enables you to create intelligent WooCommerce AI chatbots that can be deployed directly on your WooCommerce-powered website. These chatbots can assist customers with product inquiries, order information, and general store navigation using real-time data from your WooCommerce store.
+
+All updates to the original WordPress MCP plugin that are relevant to WooCommerce functionality will be continuously integrated into Woo MCP to ensure compatibility and feature parity.
+
 This guide explains how to connect various MCP clients to your Woo MCP server using different transport protocols and authentication methods.
 
 ## Overview
