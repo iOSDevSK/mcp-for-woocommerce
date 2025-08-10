@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { Card, CardHeader, CardBody, Spinner } from '@wordpress/components';
+import { Card, CardHeader, CardBody, Spinner, Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useState, useEffect } from '@wordpress/element';
 import { marked } from 'marked';
@@ -13,6 +13,7 @@ const DocumentationTab = () => {
 	const [ content, setContent ] = useState( '' );
 	const [ isLoading, setIsLoading ] = useState( true );
 	const [ error, setError ] = useState( null );
+	const [ copySuccess, setCopySuccess ] = useState( false );
 
 	// Configure marked options for better security and rendering
 	marked.setOptions( {
@@ -60,6 +61,87 @@ const DocumentationTab = () => {
 
 		loadDocumentation();
 	}, [] );
+
+	// Add copy buttons to code blocks after content loads
+	useEffect( () => {
+		if ( content ) {
+			// Wait for DOM to update
+			setTimeout( () => {
+				const preElements = document.querySelectorAll( '.wordpress-mcp-documentation pre' );
+				preElements.forEach( ( pre ) => {
+					// Skip if copy button already exists
+					if ( pre.querySelector( '.copy-button' ) ) {
+						return;
+					}
+
+					// Create copy button
+					const copyButton = document.createElement( 'button' );
+					copyButton.className = 'copy-button';
+					copyButton.textContent = 'Copy';
+					copyButton.onclick = () => {
+						const codeText = pre.textContent || pre.innerText;
+						copyToClipboard( codeText );
+					};
+
+					pre.appendChild( copyButton );
+				} );
+			}, 100 );
+		}
+	}, [ content ] );
+
+	// Clear copy success message after 2 seconds
+	useEffect( () => {
+		if ( copySuccess ) {
+			const timer = setTimeout( () => {
+				setCopySuccess( false );
+			}, 2000 );
+			return () => clearTimeout( timer );
+		}
+	}, [ copySuccess ] );
+
+	const copyToClipboard = ( text ) => {
+		// Try using the Clipboard API first
+		if ( navigator.clipboard && window.isSecureContext ) {
+			navigator.clipboard.writeText( text ).then(
+				() => {
+					setCopySuccess( true );
+				},
+				() => {
+					// Fallback if Clipboard API fails
+					fallbackCopyToClipboard( text );
+				}
+			);
+		} else {
+			// Fallback for non-secure contexts or when Clipboard API is not available
+			fallbackCopyToClipboard( text );
+		}
+	};
+
+	const fallbackCopyToClipboard = ( text ) => {
+		// Create a temporary textarea element
+		const textArea = document.createElement( 'textarea' );
+		textArea.value = text;
+
+		// Make the textarea out of viewport
+		textArea.style.position = 'fixed';
+		textArea.style.left = '-999999px';
+		textArea.style.top = '-999999px';
+		document.body.appendChild( textArea );
+
+		// Select and copy the text
+		textArea.focus();
+		textArea.select();
+
+		try {
+			document.execCommand( 'copy' );
+			setCopySuccess( true );
+		} catch ( err ) {
+			setError( __( 'Failed to copy to clipboard', 'wordpress-mcp' ) );
+		}
+
+		// Clean up
+		document.body.removeChild( textArea );
+	};
 
 	if ( isLoading ) {
 		return (
@@ -112,10 +194,40 @@ const DocumentationTab = () => {
 				<h2>{ __( 'Documentation', 'wordpress-mcp' ) }</h2>
 			</CardHeader>
 			<CardBody>
+				{ copySuccess && (
+					<div className="notice notice-success inline" style={{ marginTop: '10px', marginBottom: '20px' }}>
+						<p>{ __( 'Configuration copied to clipboard!', 'wordpress-mcp' ) }</p>
+					</div>
+				) }
 				<div
 					className="wordpress-mcp-documentation"
 					dangerouslySetInnerHTML={ { __html: content } }
 				/>
+				<style>{ `
+					.wordpress-mcp-documentation pre {
+						position: relative;
+					}
+					.wordpress-mcp-documentation pre:hover .copy-button {
+						opacity: 1;
+					}
+					.copy-button {
+						position: absolute;
+						top: 8px;
+						right: 8px;
+						opacity: 0;
+						transition: opacity 0.2s;
+						background: #0073aa;
+						color: white;
+						border: none;
+						padding: 4px 8px;
+						font-size: 11px;
+						border-radius: 3px;
+						cursor: pointer;
+					}
+					.copy-button:hover {
+						background: #005a87;
+					}
+				` }</style>
 			</CardBody>
 		</Card>
 	);
