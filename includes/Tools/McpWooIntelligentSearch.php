@@ -121,17 +121,14 @@ class McpWooIntelligentSearch {
                         'brand_name' => array(
                             'type'        => 'string',
                             'description' => 'Brand name to search for',
-                            'required'    => false,
                         ),
                         'brand' => array(
                             'type'        => 'string',
                             'description' => 'Brand name (alias for brand_name)',
-                            'required'    => false,
                         ),
                         'query' => array(
                             'type'        => 'string',
                             'description' => 'Brand name or search query',
-                            'required'    => false,
                         ),
                         'per_page' => array('type' => 'integer', 'default' => 20, 'minimum' => 1, 'maximum' => 100),
                         'page' => array('type' => 'integer', 'default' => 1, 'minimum' => 1),
@@ -155,12 +152,10 @@ class McpWooIntelligentSearch {
                         'category' => array(
                             'type'        => 'string',
                             'description' => 'Category name or slug',
-                            'required'    => false,
                         ),
                         'query' => array(
                             'type'        => 'string',
                             'description' => 'Category name, slug, or search query',
-                            'required'    => false,
                         ),
                         'per_page' => array('type' => 'integer', 'default' => 20),
                         'page' => array('type' => 'integer', 'default' => 1),
@@ -184,12 +179,10 @@ class McpWooIntelligentSearch {
                         'attributes' => array(
                             'type'        => 'object',
                             'description' => 'Key-value pairs of attributes (e.g., {"color": "red", "size": "large"})',
-                            'required'    => false,
                         ),
                         'query' => array(
                             'type'        => 'string',
                             'description' => 'Attribute search query (will be parsed for key-value pairs)',
-                            'required'    => false,
                         ),
                         'per_page' => array('type' => 'integer', 'default' => 20),
                         'page' => array('type' => 'integer', 'default' => 1),
@@ -215,7 +208,6 @@ class McpWooIntelligentSearch {
                         'query' => array(
                             'type' => 'string',
                             'description' => 'General search query (will be parsed for filters)',
-                            'required' => false,
                         ),
                         'price_range' => array(
                             'type' => 'object',
@@ -249,12 +241,10 @@ class McpWooIntelligentSearch {
                         'id' => array(
                             'type'        => 'integer',
                             'description' => 'Product ID',
-                            'required'    => false,
                         ),
                         'query' => array(
                             'type'        => 'string',
                             'description' => 'Product ID as string or search term',
-                            'required'    => false,
                         ),
                     ),
                     'required' => array(),

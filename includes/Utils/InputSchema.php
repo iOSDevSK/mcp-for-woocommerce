@@ -30,6 +30,12 @@ class InputSchema {
 						$input_schema['properties'][ $property_name ]['type'] = reset( $property['type'] );
 					}
 				}
+				
+				// Remove invalid 'required' field from individual properties
+				// In JSON Schema, 'required' should only exist at the root level as an array
+				if ( isset( $property['required'] ) ) {
+					unset( $input_schema['properties'][ $property_name ]['required'] );
+				}
 			}
 		}
 
