@@ -18,11 +18,6 @@ WordPress MCP supports two transport protocols:
 -   More secure than application passwords
 -   Required for Streamable transport
 
-### Application Passwords
-
--   WordPress built-in authentication method
--   Only works with STDIO transport via proxy
--   Generate from `Users > Profile > Application Passwords`
 
 ## Client Configurations
 
@@ -52,32 +47,13 @@ Add to your Claude Desktop `claude_desktop_config.json`:
 			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
 			"env": {
 				"WP_API_URL": "{{your-website.com}}",
-				"JWT_TOKEN": "your-jwt-token-here",
-				"LOG_FILE": "optional-path-to-log-file"
+				"JWT_TOKEN": "your-jwt-token-here"
 			}
 		}
 	}
 }
 ```
 
-#### Using Application Password with mcp-wordpress-remote
-
-```json
-{
-	"mcpServers": {
-		"wordpress-mcp": {
-			"command": "npx",
-			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
-			"env": {
-				"WP_API_URL": "{{your-website.com}}",
-				"WP_API_USERNAME": "your-username",
-				"WP_API_PASSWORD": "your-application-password",
-				"LOG_FILE": "optional-full-path-to-log-file"
-			}
-		}
-	}
-}
-```
 
 #### Local Development Configuration
 
@@ -108,8 +84,7 @@ Add to your Cursor MCP configuration file:
 			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
 			"env": {
 				"WP_API_URL": "{{your-website.com}}",
-				"JWT_TOKEN": "your-jwt-token-here",
-				"LOG_FILE": "optional-full-path-to-log-file"
+				"JWT_TOKEN": "your-jwt-token-here"
 			}
 		}
 	}
@@ -146,20 +121,6 @@ npx @modelcontextprotocol/inspector \
   -e JWT_TOKEN=your-jwt-token-here \
   -e WOO_CUSTOMER_KEY=optional-woo-customer-key \
   -e WOO_CUSTOMER_SECRET=optional-woo-customer-secret \
-  -e LOG_FILE="optional-full-path-to-log-file"
-  npx @automattic/mcp-wordpress-remote@latest
-```
-
-#### Using Application Password with proxy
-
-```bash
-npx @modelcontextprotocol/inspector \
-  -e WP_API_URL={{your-website.com}} \
-  -e WP_API_USERNAME=your-username \
-  -e WP_API_PASSWORD=your-application-password \
-  -e WOO_CUSTOMER_KEY=optional-woo-customer-key \
-  -e WOO_CUSTOMER_SECRET=optional-woo-customer-secret \
-  -e LOG_FILE="optional-full-path-to-log-file"
   npx @automattic/mcp-wordpress-remote@latest
 ```
 
@@ -169,14 +130,14 @@ npx @modelcontextprotocol/inspector \
 
 -   **Endpoint**: `/wp-json/wp/v2/wpmcp`
 -   **Format**: WordPress-style REST API
--   **Authentication**: JWT tokens OR Application passwords
+-   **Authentication**: JWT tokens only
 -   **Use Case**: Legacy compatibility, works with most MCP clients
 -   **Proxy Required**: Yes (`mcp-wordpress-remote`)
 
 #### Advantages:
 
 -   Compatible with all MCP clients
--   Supports both authentication methods
+-   Secure JWT authentication
 -   Enhanced features via proxy (WooCommerce, logging)
 
 #### Example Tools Available:
@@ -223,8 +184,7 @@ npx @modelcontextprotocol/inspector \
 			"args": [ "/path/to/mcp-wordpress-remote/dist/proxy.js" ],
 			"env": {
 				"WP_API_URL": "http://localhost:8080/",
-				"JWT_TOKEN": "your-local-jwt-token",
-				"LOG_FILE": "/tmp/wordpress-mcp-local.log"
+				"JWT_TOKEN": "your-local-jwt-token"
 			}
 		}
 	}
@@ -244,8 +204,8 @@ npx @modelcontextprotocol/inspector \
 #### Authentication Failed
 
 -   Verify JWT token is correctly copied
--   Check application password format (username:password)
 -   Ensure user has appropriate permissions
+-   Check token expiration time
 
 #### Connection Timeout
 
@@ -265,7 +225,7 @@ npx @modelcontextprotocol/inspector \
 ## Security Best Practices
 
 1. **Use JWT tokens** instead of application passwords when possible
-2. **Set shortest expiration time** needed for your use case (1-24 hours) or never
+2. **Set appropriate expiration time** for your use case (1-24 hours or never)
 3. **Revoke unused tokens** promptly from the admin interface
 4. **Never commit tokens** to version control systems
 5. **Use HTTPS** for production environments
@@ -275,6 +235,6 @@ npx @modelcontextprotocol/inspector \
 
 For additional help:
 
--   Check the [WordPress MCP documentation](https://github.com/Automattic/wordpress-mcp)
+-   Check the [Woo MCP website](https://woomcp.dev)
 -   Visit the [mcp-wordpress-remote repository](https://github.com/Automattic/mcp-wordpress-remote)
--   Report issues on [GitHub Issues](https://github.com/Automattic/wordpress-mcp/issues)
+-   Report issues on [GitHub Issues](https://github.com/iOSDevSK/woo-mcp/issues)
