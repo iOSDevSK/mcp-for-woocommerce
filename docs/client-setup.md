@@ -1,10 +1,10 @@
 # MCP Client Setup Guide
 
-This guide explains how to connect various MCP clients to your WordPress MCP server using different transport protocols and authentication methods.
+This guide explains how to connect various MCP clients to your Woo MCP server using different transport protocols and authentication methods.
 
 ## Overview
 
-WordPress MCP supports two transport protocols:
+Woo MCP supports two transport protocols:
 
 -   **STDIO Transport**: Traditional transport via `mcp-wordpress-remote` proxy
 -   **Streamable Transport**: Direct HTTP-based transport with JSON-RPC 2.0
@@ -25,7 +25,7 @@ WordPress MCP supports two transport protocols:
 
 #### Using HTTP Transport with JWT Token (Recommended)
 
-Add your WordPress MCP server directly to Claude Code using the HTTP transport:
+Add your Woo MCP server directly to Claude Code using the HTTP transport:
 
 ```bash
 claude mcp add --transport http woo-mcp {{your-website.com}}/wp-json/wp/v2/wpmcp/streamable --header "Authorization: Bearer your-jwt-token-here"
@@ -142,10 +142,11 @@ npx @modelcontextprotocol/inspector \
 
 #### Example Tools Available:
 
--   `wp_get_posts` - Retrieve WordPress posts
--   `wp_create_post` - Create new posts
--   `wp_update_post` - Update existing posts
--   `wp_get_users` - Get user information
+-   `wc_products_search` - Universal product search for ANY store type
+-   `wc_get_product_variations` - Get all variations (colors, sizes, etc.) for a variable WooCommerce product
+-   `wc_get_categories` - Get a specific product variation by ID
+-   `wordpress_posts_get` - Get a single WordPress post by ID
+-   `wordpress_pages_get` - Get a single WordPress page by ID
 -   And many more...
 
 ### Streamable Transport
