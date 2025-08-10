@@ -8,7 +8,7 @@ use Automattic\WordpressMcp\Tools\McpWordPressPages;
 
 use Automattic\WordpressMcp\Tools\McpRestApiCrud;
 use Automattic\WordpressMcp\Tools\McpWooProducts;
-use Automattic\WordpressMcp\Prompts\McpAnalyzeSales;
+// use Automattic\WordpressMcp\Prompts\McpAnalyzeSales; // Disabled - not used in Woo MCP
 use Automattic\WordpressMcp\Resources\McpWooSearchGuide;
 
 use InvalidArgumentException;
@@ -206,7 +206,9 @@ class WpMcp {
 	 * Initialize the default prompts (WooCommerce only).
 	 */
 	private function init_default_prompts(): void {
-		new McpAnalyzeSales(); // Only WooCommerce sales analysis
+		// new McpAnalyzeSales(); // Disabled - sales analysis prompt not used in Woo MCP
+		
+		// Add future prompts here when needed
 	}
 
 	/**
