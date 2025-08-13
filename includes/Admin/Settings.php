@@ -198,7 +198,6 @@ class Settings {
 				McpProxyGenerator::remove_proxy_file();
 			}
 		}
-		}
 
 		wp_send_json_success( array( 'message' => __( 'Settings saved successfully!', 'wordpress-mcp' ) ) );
 	}
