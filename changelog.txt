@@ -1,5 +1,57 @@
 === Woo MCP Plugin Changelog ===
 
+= Version 1.1.5 - Release #000010 - August 13, 2025 @ CET =
+
+**JWT AUTHENTICATION SYSTEM ENHANCEMENTS & MAJOR FIXES**
+
+* #000017 - Fix TypeError in JWT authentication system
+  Date: August 13, 2025
+  - FIXED: TypeError in JWT token verification process
+  - RESOLVED: Authentication system stability issues
+  - IMPROVED: Error handling in JWT validation flow
+
+* #000018 - Fix fatal error: check WordPress functions availability before calling get_option
+  Date: August 13, 2025  
+  - FIXED: Fatal error when WordPress functions not available during initialization
+  - ADDED: Function availability checks before calling get_option()
+  - ENHANCED: Plugin loading safety and graceful degradation
+
+* #000019 - Add debug logging and JWT option initialization
+  Date: August 13, 2025
+  - ADDED: Comprehensive debug logging for JWT authentication flow
+  - IMPROVED: JWT option initialization process
+  - ENHANCED: Troubleshooting capabilities for authentication issues
+
+* #000020 - Fix streamable and stdio transport authentication consistency
+  Date: August 13, 2025
+  - FIXED: Authentication inconsistencies between streamable and stdio transports
+  - UNIFIED: Authentication handling across different transport methods
+  - STABILIZED: Cross-transport authentication reliability
+
+* #000021 - Fix JWT authentication 500 error by removing Settings class dependency
+  Date: August 13, 2025
+  - FIXED: 500 error caused by Settings class dependency in JWT authentication
+  - REMOVED: Problematic Settings class coupling from authentication flow
+  - IMPROVED: Authentication system independence and reliability
+
+* #000022 - Add Webtalkbot integration note to JWT authentication settings
+  Date: August 13, 2025
+  - ADDED: Integration documentation for Webtalkbot platform
+  - ENHANCED: User guidance for JWT authentication setup
+  - IMPROVED: Settings UI with integration examples
+
+* #000023 - Disable Authentication Tokens tab when JWT is disabled  
+  Date: August 13, 2025
+  - IMPROVED: UI logic to hide tokens tab when JWT authentication is disabled
+  - ENHANCED: User experience by preventing confusion
+  - STREAMLINED: Settings interface based on authentication method
+
+* #000024 - Add JWT authentication toggle feature
+  Date: August 13, 2025
+  - ADDED: Toggle switch for enabling/disabling JWT authentication
+  - IMPLEMENTED: Dynamic authentication method switching
+  - ENHANCED: Flexible authentication configuration options
+
 = Version 1.0.2 - beta - Release #000008 - August 2, 2025 @ 22:00 CET =
 
 **CRITICAL FIXES AND TOOL PRIORITY REORDERING**
