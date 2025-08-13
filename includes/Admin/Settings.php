@@ -136,6 +136,7 @@ class Settings {
 				'toolStates'          => get_option( self::TOOL_STATES_OPTION, array() ),
 				'jwtRequired'         => get_option( self::JWT_REQUIRED_OPTION, true ),
 				'pluginUrl'           => WORDPRESS_MCP_URL,
+				'claudeSetupInstructions' => McpProxyGenerator::should_generate_proxy() ? McpProxyGenerator::get_claude_setup_instructions() : null,
 				'strings'             => array(
 					'enableMcp'                        => __( 'Enable MCP functionality', 'wordpress-mcp' ),
 					'enableMcpDescription'             => __( 'Toggle to enable or disable the MCP plugin functionality.', 'wordpress-mcp' ),
@@ -152,9 +153,13 @@ class Settings {
 					'securityWarning'                  => __( 'Security Warning', 'wordpress-mcp' ),
 					'neverExpiringTokens'              => __( 'Never-Expiring Tokens:', 'wordpress-mcp' ),
 					'requireJwtAuth'                   => __( 'Require JWT Authentication', 'wordpress-mcp' ),
-					'requireJwtAuthDescription'        => __( 'When enabled, all MCP requests must include a valid JWT token. When disabled, MCP endpoints are accessible without authentication (readonly mode only).', 'wordpress-mcp' ),
+					'requireJwtAuthDescription'        => __( 'When enabled, all MCP requests must include a valid JWT token. When disabled, MCP endpoints are accessible without authentication (readonly mode only) and can be used as a Claude.ai Desktop connector.', 'wordpress-mcp' ),
 					'webtalkbotNote'                   => __( 'Note for Webtalkbot users:', 'wordpress-mcp' ),
-					'webtalkbotDescription'            => __( 'JWT Authentication is recommended if you want to create a WooCommerce AI Agent in', 'wordpress-mcp' ),
+					'webtalkbotDescription'            => __( 'JWT Authentication must be enabled if you want to create a WooCommerce AI Agent in', 'wordpress-mcp' ),
+					'claudeConnectorNote'              => __( 'Claude.ai Desktop Connector:', 'wordpress-mcp' ),
+					'claudeConnectorDescription'       => __( 'When JWT Authentication is disabled, this plugin can be used as a connector in Claude.ai Desktop. A proxy file will be automatically generated for easy setup.', 'wordpress-mcp' ),
+					'proxyFileGenerated'               => __( 'MCP Proxy file generated at:', 'wordpress-mcp' ),
+					'claudeSetupInstructions'          => __( 'To use with Claude.ai Desktop, add this configuration to your claude_desktop_config.json:', 'wordpress-mcp' ),
 				),
 			)
 		);
@@ -180,16 +185,19 @@ class Settings {
 
 		// Handle JWT required setting separately
 		$jwt_required = isset( $_POST['jwt_required'] ) ? filter_var( $_POST['jwt_required'], FILTER_VALIDATE_BOOLEAN ) : true;
+		$old_jwt_required = get_option( self::JWT_REQUIRED_OPTION, true );
 		update_option( self::JWT_REQUIRED_OPTION, $jwt_required );
 
-		// Handle proxy file generation/removal based on JWT setting
-		$generator = new McpProxyGenerator();
-		if ( ! $jwt_required ) {
-			// JWT disabled - generate proxy file
-			$generator->generate_proxy_file();
-		} else {
-			// JWT enabled - remove proxy file  
-			$generator->remove_proxy_file();
+		// Handle MCP proxy file generation/removal
+		if ( $old_jwt_required !== $jwt_required ) {
+			if ( ! $jwt_required ) {
+				// JWT disabled - generate proxy file
+				McpProxyGenerator::generate_proxy_file();
+			} else {
+				// JWT enabled - remove proxy file
+				McpProxyGenerator::remove_proxy_file();
+			}
+		}
 		}
 
 		wp_send_json_success( array( 'message' => __( 'Settings saved successfully!', 'wordpress-mcp' ) ) );
