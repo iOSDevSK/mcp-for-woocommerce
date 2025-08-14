@@ -8,7 +8,7 @@ import { createRoot } from '@wordpress/element';
  * Internal dependencies
  */
 import './settings/style.css';
-import { SettingsApp } from './settings';
+import { SettingsApp } from './settings/index.js';
 
 // Initialize the app when the DOM is ready
 document.addEventListener( 'DOMContentLoaded', function () {

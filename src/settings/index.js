@@ -6,12 +6,12 @@ import { Notice, TabPanel } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 // Import the extracted components
-import SettingsTab, { AuthenticationCard } from './SettingsTab';
-import ToolsTab from './ToolsTab';
-import ResourcesTab from './ResourcesTab';
-import PromptsTab from './PromptsTab';
-import AuthenticationTokensTab from './AuthenticationTokensTab';
-import DocumentationTab from './DocumentationTab';
+import SettingsTab, { AuthenticationCard } from './SettingsTab.js';
+import ToolsTab from './ToolsTab.js';
+import ResourcesTab from './ResourcesTab.js';
+import PromptsTab from './PromptsTab.js';
+import AuthenticationTokensTab from './AuthenticationTokensTab.js';
+import DocumentationTab from './DocumentationTab.js';
 
 /**
  * Settings App Component
