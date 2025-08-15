@@ -1,7 +1,7 @@
 {% set og_title = page.title | default(config.site_name) %}
 {% set og_desc = page.meta.summary | default(config.site_description) %}
 {% set og_url = (config.site_url | d('')) + (page.url | d('')) %}
-{% set og_image = config.site_url ~ (page.meta.image | default('/assets/images/woo-mcp-social-card.png')) %}
+{% set og_image = config.site_url ~ (page.meta.image | default('/assets/images/woo-mcp-social-card.svg')) %}
 
 <!-- Standard HTML meta tags -->
 <meta name="description" content="{{ og_desc }}">

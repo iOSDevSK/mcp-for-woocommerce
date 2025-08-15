@@ -1,0 +1,28 @@
+<svg width="1200" height="628" viewBox="0 0 1200 628" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="628" fill="url(#bg)"/>
+  
+  <!-- Logo/Icon Area -->
+  <circle cx="200" cy="314" r="80" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <text x="200" y="330" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="48" font-weight="bold">W</text>
+  
+  <!-- Main Title -->
+  <text x="320" y="280" fill="white" font-family="Arial, sans-serif" font-size="52" font-weight="bold">Woo MCP</text>
+  
+  <!-- Subtitle -->
+  <text x="320" y="330" fill="rgba(255,255,255,0.9)" font-family="Arial, sans-serif" font-size="28">WooCommerce MCP Server</text>
+  
+  <!-- Description -->
+  <text x="320" y="380" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif" font-size="18">WordPress MCP plugin for AI integration</text>
+  
+  <!-- Bottom right badge -->
+  <rect x="950" y="520" width="200" height="60" rx="30" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+  <text x="1050" y="555" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="16">Open Source</text>
+</svg>
