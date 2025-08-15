@@ -35,7 +35,7 @@ class Settings {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_ajax_wordpress_mcp_save_settings', array( $this, 'ajax_save_settings' ) );
 		add_action( 'wp_ajax_wordpress_mcp_toggle_tool', array( $this, 'ajax_toggle_tool' ) );
-		add_filter( 'plugin_action_links_' . plugin_basename( WORDPRESS_MCP_PATH . 'wordpress-mcp.php' ), array( $this, 'plugin_action_links' ) );
+		add_filter( 'plugin_action_links_' . plugin_basename( WORDPRESS_MCP_PATH . 'woo-mcp.php' ), array( $this, 'plugin_action_links' ) );
 		
 		// Initialize JWT required option with default value if not exists
 		add_action( 'init', array( $this, 'init_jwt_option' ) );
@@ -55,7 +55,7 @@ class Settings {
 	 */
 	public function add_settings_page(): void {
 		// Get plugin version from main plugin file header
-		$plugin_data = get_file_data( WORDPRESS_MCP_PATH . 'wordpress-mcp.php', array( 'Version' => 'Version' ) );
+		$plugin_data = get_file_data( WORDPRESS_MCP_PATH . 'woo-mcp.php', array( 'Version' => 'Version' ) );
 		$version = ! empty( $plugin_data['Version'] ) ? $plugin_data['Version'] : '';
 		
 		// Create page title with version

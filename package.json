@@ -1,5 +1,5 @@
 {
-    "name": "wordpress-mcp",
+    "name": "woo-mcp",
     "version": "1.1.5",
     "type": "module",
     "description": "Advanced AI integration plugin that connects WooCommerce & WordPress with Model Context Protocol (MCP). Provides comprehensive AI-accessible interfaces to WooCommerce products, orders, categories, shipping, payments, and WordPress posts/pages through standardized tools, resources, and prompts. Enables AI assistants to seamlessly interact with your e-commerce data and content.",
@@ -35,8 +35,12 @@
         "build",
         "includes",
         "vendor",
-        "wordpress-mcp.php",
-        "docs"
+        "woo-mcp.php",
+        "docs",
+        "readme.txt",
+        "uninstall.php",
+        "languages",
+        ".wordpress-org"
     ],
     "scripts": {
         "build": "wp-scripts build",

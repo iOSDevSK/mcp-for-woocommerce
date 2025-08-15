@@ -1,22 +1,21 @@
----
-title: MCP Client Setup Guide
-summary: Complete guide for connecting MCP clients to Woo MCP server using STDIO and HTTP protocols with JWT authentication.
-tags: [client-setup, mcp, authentication, jwt, stdio, http, configuration]
----
-
-# MCP Client Setup Guide
-
-## About Woo MCP
-
-Woo MCP is a specialized version of the [WordPress MCP](https://github.com/Automattic/wordpress-mcp) plugin by Automattic, specifically designed for WooCommerce integration. This plugin provides read-only access to publicly available WooCommerce store data, including products, categories, orders, and customer information.
-
-The plugin is designed to work seamlessly with [Webtalkbot](https://webtalkbot.com), a platform that enables you to create intelligent WooCommerce AI chatbots that can be deployed directly on your WooCommerce-powered website. These chatbots can assist customers with product inquiries, product shipping, and Terms & Conditions using real-time data from your WooCommerce store.
-
-All updates to the original WordPress MCP plugin that are relevant to WooCommerce functionality will be continuously integrated into Woo MCP to ensure compatibility and feature parity.
-
-This guide explains how to connect various MCP clients to your Woo MCP server using different transport protocols and authentication methods.
-
 ## Overview
+
+Woo MCP provides a secure, read-only interface to your WooCommerce store data through the Model Context Protocol (MCP). This enables AI assistants to access and understand your store information including:
+
+- **Products** - Access product catalog, descriptions, pricing, and inventory
+- **Categories** - Browse product categories and hierarchies  
+- **Orders** - View order information and customer data
+- **Reviews** - Access customer reviews and ratings
+- **Store Settings** - Retrieve basic store configuration
+
+## Features
+
+- ✅ **Read-only access** - No data modification capabilities for security
+- ✅ **JWT Authentication** - Secure token-based authentication
+- ✅ **Multiple protocols** - STDIO and HTTP transport support
+- ✅ **WordPress integration** - Full WordPress + WooCommerce compatibility
+
+## Transport Protocols
 
 Woo MCP supports two transport protocols:
 
@@ -250,6 +249,6 @@ npx @modelcontextprotocol/inspector \
 
 For additional help:
 
--   Check the [Woo MCP website](https://woomcp.dev)
--   Visit the [mcp-wordpress-remote repository](https://github.com/Automattic/mcp-wordpress-remote)
--   Report issues on [GitHub Issues](https://github.com/iOSDevSK/woo-mcp/issues)
+-   Check the <a href="https://woo-mcp.com" target="_blank">Woo MCP website</a>
+-   Visit the <a href="https://github.com/Automattic/mcp-wordpress-remote" target="_blank">mcp-wordpress-remote repository</a>
+-   Report issues on <a href="https://github.com/iOSDevSK/woo-mcp/issues" target="_blank">GitHub Issues</a>
