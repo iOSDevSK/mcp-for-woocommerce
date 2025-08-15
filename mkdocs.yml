@@ -9,6 +9,7 @@ theme:
     - navigation.indexes
     - content.code.copy
     - content.action.edit
+  custom_dir: docs/overrides
 markdown_extensions:
   - toc:
       permalink: true
@@ -21,8 +22,17 @@ plugins:
   - sitemap:
       changefreq: weekly
       priority: 0.6
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/iOSDevSK/woo-mcp
+    - icon: fontawesome/solid/globe
+      link: https://iosdevsk.github.io/woo-mcp/
 nav:
   - Overview: index.md
+  - Announcement: announcement.md
+  - Use Cases: use-cases.md
+  - LLM Integration: integration.md
   - WooCommerce MCP:
     - What is WooCommerce MCP Server?: woocommerce-mcp-server/what-is.md
     - Install: woocommerce-mcp-server/install.md

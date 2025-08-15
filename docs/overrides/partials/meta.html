@@ -1,0 +1,15 @@
+{% set og_title = page.title | default(config.site_name) %}
+{% set og_desc = page.meta.summary | default(config.site_description) %}
+{% set og_url = (config.site_url | d('')) + (page.url | d('')) %}
+{% set og_image = 'https://opengraph.githubassets.com/1/iOSDevSK/woo-mcp' %}
+
+<meta property="og:title" content="{{ og_title }}">
+<meta property="og:description" content="{{ og_desc }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ og_url }}">
+<meta property="og:image" content="{{ og_image }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ og_title }}">
+<meta name="twitter:description" content="{{ og_desc }}">
+<meta name="twitter:image" content="{{ og_image }}">
+
