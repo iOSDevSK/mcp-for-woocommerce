@@ -2,6 +2,7 @@ site_name: Woo MCP
 site_description: WooCommerce MCP Server — WordPress MCP plugin implementing the Model Context Protocol (MCP)
 repo_url: https://github.com/iOSDevSK/woo-mcp
 site_url: https://iosdevsk.github.io/woo-mcp/
+edit_uri: edit/main/
 theme:
   name: material
   features:
