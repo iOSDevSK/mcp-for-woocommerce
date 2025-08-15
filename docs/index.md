@@ -40,6 +40,34 @@ Project links:
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Woo MCP",
+  "description": "WordPress MCP plugin that exposes WooCommerce and WordPress data to Model Context Protocol (MCP) clients via STDIO and HTTP streamable endpoints with JWT authentication.",
+  "applicationCategory": "PluginApplication",
+  "operatingSystem": "WordPress",
+  "softwareVersion": "0.2.9",
+  "dateModified": "2025-08-15",
+  "url": "https://github.com/iOSDevSK/woo-mcp",
+  "downloadUrl": "https://github.com/iOSDevSK/woo-mcp/releases",
+  "author": {
+    "@type": "Organization",
+    "name": "iOSDevSK"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage", 
+    "@id": "https://iosdevsk.github.io/woo-mcp/"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
   "@type": "TechArticle",
   "headline": "Woo MCP — WooCommerce MCP Server for WordPress",
   "about": "WooCommerce MCP server implementing the Model Context Protocol (MCP)",

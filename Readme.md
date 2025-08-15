@@ -4,13 +4,9 @@
 
 Your all‑in‑one WooCommerce MCP Server and WordPress MCP plugin. Expose WooCommerce and WordPress data to MCP clients (Claude, VS Code MCP, custom apps) and easily power a WooCommerce AI Chatbot or AI Agent for your website via Webtalkbot.
 
-Keywords: WooCommerce MCP, Woo MCP, WordPress MCP, WooCommerce MCP Server, WooCommerce Plugin, WordPress MCP Plugin, WooCommerce MCP plugin, WooCommerce AI Chatbot, WooCommerce AI Agent, Webtalkbot.
-
-[Woo MCP](https://woo-mcp.com) is a specialized, read‑only WooCommerce MCP plugin for [WooCommerce](https://woocommerce.com) built on [Automattic’s official WordPress MCP](https://github.com/Automattic/wordpress-mcp). It exposes public store data (products, categories, tags, attributes, reviews, shipping, payments, taxes, system status) and WordPress content (posts, pages) to AI clients via the Model Context Protocol (MCP). It does not expose customer data, order PII, or private details.
+[Woo MCP](https://woo-mcp.com) is a specialized, read‑only WooCommerce MCP plugin for [WooCommerce](https://woocommerce.com) built on [Automattic's official WordPress MCP](https://github.com/Automattic/wordpress-mcp). It exposes public store data (products, categories, tags, attributes, reviews, shipping, payments, taxes, system status) and WordPress content (posts, pages) to AI clients via the Model Context Protocol (MCP). It does not expose customer data, order PII, or private details.
 
 This plugin acts as a WooCommerce MCP Server (WordPress MCP plugin) and integrates seamlessly with Webtalkbot to deliver a production‑ready WooCommerce AI Chatbot / AI Agent on your website.
-
-Common searches we address: “WooCommerce MCP”, “WooCommerce MCP Server”, “WordPress MCP plugin”, “Woo MCP”, “WooCommerce AI chatbot”, “WooCommerce AI agent”, “MCP server for WooCommerce”, “connect Claude to WooCommerce”, “MCP WordPress plugin for WooCommerce”.
 
 ## Key Features
 

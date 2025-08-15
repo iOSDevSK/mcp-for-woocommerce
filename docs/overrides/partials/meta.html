@@ -1,13 +1,24 @@
 {% set og_title = page.title | default(config.site_name) %}
 {% set og_desc = page.meta.summary | default(config.site_description) %}
 {% set og_url = (config.site_url | d('')) + (page.url | d('')) %}
-{% set og_image = 'https://opengraph.githubassets.com/1/iOSDevSK/woo-mcp' %}
+{% set og_image = config.site_url ~ (page.meta.image | default('/assets/images/woo-mcp-social-card.png')) %}
 
+<!-- Standard HTML meta tags -->
+<meta name="description" content="{{ og_desc }}">
+{% if page.meta.tags %}
+<meta name="keywords" content="{{ page.meta.tags | join(', ') }}, WooCommerce MCP, WordPress MCP plugin, MCP server, WooCommerce AI chatbot">
+{% else %}
+<meta name="keywords" content="WooCommerce MCP, WordPress MCP plugin, MCP server, WooCommerce AI chatbot, Model Context Protocol, WordPress plugin, WooCommerce integration">
+{% endif %}
+
+<!-- Open Graph meta tags -->
 <meta property="og:title" content="{{ og_title }}">
 <meta property="og:description" content="{{ og_desc }}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ og_url }}">
 <meta property="og:image" content="{{ og_image }}">
+
+<!-- Twitter Card meta tags -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ og_title }}">
 <meta name="twitter:description" content="{{ og_desc }}">
