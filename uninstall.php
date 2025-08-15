@@ -118,11 +118,17 @@ function woo_mcp_recursive_rmdir( $dir ) {
         if ( is_dir( $path ) ) {
             woo_mcp_recursive_rmdir( $path );
         } else {
-            unlink( $path );
+            wp_delete_file( $path );
         }
     }
     
-    rmdir( $dir );
+    // Use WP_Filesystem for directory operations
+    global $wp_filesystem;
+    if ( empty( $wp_filesystem ) ) {
+        require_once ABSPATH . '/wp-admin/includes/file.php';
+        WP_Filesystem();
+    }
+    $wp_filesystem->rmdir( $dir );
 }
 
 // Execute cleanup functions
@@ -132,7 +138,3 @@ woo_mcp_cleanup_user_meta();
 woo_mcp_cleanup_custom_tables();
 woo_mcp_clear_caches();
 
-// Log the uninstall for debugging purposes (if WordPress debug logging is enabled)
-if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
-    error_log( 'Woo MCP plugin has been uninstalled and all data cleaned up.' );
-}

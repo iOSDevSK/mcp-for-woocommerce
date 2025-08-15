@@ -609,9 +609,6 @@ class JwtAuth {
    			sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? 'unknown' ) ),
    			sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? 'unknown' ) )
    		);
-   		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-   			error_log( $log_message );
-   		}
    	}
    }
 

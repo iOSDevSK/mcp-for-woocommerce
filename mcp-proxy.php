@@ -43,8 +43,6 @@ class McpPhpProxyStandalone {
      */
     public function run(): void {
         // Error log to stderr for debugging
-        error_log("[PHP MCP Proxy] Starting WordPress MCP Proxy Server");
-        error_log("[PHP MCP Proxy] Connecting to: " . $this->wordpress_mcp_url);
         
         while (true) {
             $input = fgets(STDIN);
@@ -61,7 +59,6 @@ class McpPhpProxyStandalone {
             try {
                 $request = json_decode($input, true);
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    error_log("[PHP MCP Proxy] Invalid JSON: " . $input);
                     continue;
                 }
                 
@@ -72,7 +69,6 @@ class McpPhpProxyStandalone {
                 }
                 
             } catch (\Exception $e) {
-                error_log("[PHP MCP Proxy] Error: " . $e->getMessage());
                 $error_response = [
                     'jsonrpc' => '2.0',
                     'id' => $request['id'] ?? 0,
@@ -95,7 +91,6 @@ class McpPhpProxyStandalone {
         $params = $request['params'] ?? [];
         $id = $request['id'] ?? 0;
         
-        error_log("[PHP MCP Proxy] Handling method: " . $method);
         
         switch ($method) {
             case 'initialize':
@@ -124,7 +119,6 @@ class McpPhpProxyStandalone {
                 return $this->proxyRequest('prompts/get', $params, $id);
                 
             default:
-                error_log("[PHP MCP Proxy] Unknown method: " . $method);
                 return [
                     'jsonrpc' => '2.0',
                     'id' => $id,
@@ -140,7 +134,6 @@ class McpPhpProxyStandalone {
      * Handle initialization request
      */
     private function handleInitialize(int $id, array $params): array {
-        error_log("[PHP MCP Proxy] Initialize request received");
         
         return [
             'jsonrpc' => '2.0',
@@ -250,7 +243,7 @@ class McpPhpProxyStandalone {
      */
     private function logConnectionAttempt(string $method, array $request_body): void {
         $log_data = [
-            'timestamp' => date('Y-m-d H:i:s'),
+            'timestamp' => gmdate('Y-m-d H:i:s'),
             'event' => 'proxy_connection_attempt',
             'method' => $method,
             'endpoint' => $this->wordpress_mcp_url,
@@ -258,7 +251,6 @@ class McpPhpProxyStandalone {
             'pid' => getmypid()
         ];
         
-        error_log("[PHP MCP Proxy] CONNECTION_ATTEMPT: " . json_encode($log_data));
     }
     
     /**
@@ -266,7 +258,7 @@ class McpPhpProxyStandalone {
      */
     private function logConnectionFailure(string $method, string $error, float $duration): void {
         $log_data = [
-            'timestamp' => date('Y-m-d H:i:s'),
+            'timestamp' => gmdate('Y-m-d H:i:s'),
             'event' => 'proxy_connection_failure',
             'method' => $method,
             'endpoint' => $this->wordpress_mcp_url,
@@ -275,7 +267,6 @@ class McpPhpProxyStandalone {
             'pid' => getmypid()
         ];
         
-        error_log("[PHP MCP Proxy] CONNECTION_FAILURE: " . json_encode($log_data));
     }
     
     /**
@@ -283,7 +274,7 @@ class McpPhpProxyStandalone {
      */
     private function logConnectionSuccess(string $method, array $response, float $duration): void {
         $log_data = [
-            'timestamp' => date('Y-m-d H:i:s'),
+            'timestamp' => gmdate('Y-m-d H:i:s'),
             'event' => 'proxy_connection_success',
             'method' => $method,
             'endpoint' => $this->wordpress_mcp_url,
@@ -294,7 +285,6 @@ class McpPhpProxyStandalone {
             'pid' => getmypid()
         ];
         
-        error_log("[PHP MCP Proxy] CONNECTION_SUCCESS: " . json_encode($log_data));
     }
 }
 

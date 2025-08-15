@@ -43,8 +43,13 @@ class McpProxyGenerator {
             );
         }
 
-        // Make file executable
-        chmod($proxy_path, 0755);
+        // Make file executable using WP_Filesystem
+        global $wp_filesystem;
+        if ( empty( $wp_filesystem ) ) {
+            require_once ABSPATH . '/wp-admin/includes/file.php';
+            WP_Filesystem();
+        }
+        $wp_filesystem->chmod( $proxy_path, 0755 );
 
         return true;
     }
@@ -58,7 +63,7 @@ class McpProxyGenerator {
         $proxy_path = self::get_proxy_file_path();
 
         if (file_exists($proxy_path)) {
-            return unlink($proxy_path);
+            return wp_delete_file($proxy_path);
         }
 
         return true; // File doesn't exist, consider it "removed"
@@ -119,117 +124,101 @@ class McpProxyGenerator {
         $mcp_endpoint = rest_url('wp/v2/wpmcp/streamable');
         $generated_time = current_time('c');
 
-        return <<<JS
-#!/usr/bin/env node
-/**
- * MCP Proxy Server for WordPress MCP Plugin
- * Automatically generated - connects Claude.ai Desktop to WordPress MCP endpoints
- *
- * Generated on: {$generated_time}
- * WordPress Site: {$site_url}
- * MCP Endpoint: {$mcp_endpoint}
- */
+        $js_content = '#!/usr/bin/env node' . "\n" .
+'/**' . "\n" .
+' * MCP Proxy Server for WordPress MCP Plugin' . "\n" .
+' * Automatically generated - connects Claude.ai Desktop to WordPress MCP endpoints' . "\n" .
+' *' . "\n" .
+' * Generated on: ' . $generated_time . "\n" .
+' * WordPress Site: ' . $site_url . "\n" .
+' * MCP Endpoint: ' . $mcp_endpoint . "\n" .
+' */' . "\n" . "\n" .
+'import { Server } from \'@modelcontextprotocol/sdk/server/index.js\';' . "\n" .
+'import { StdioServerTransport } from \'@modelcontextprotocol/sdk/server/stdio.js\';' . "\n" .
+'import { ListToolsRequestSchema, CallToolRequestSchema } from \'@modelcontextprotocol/sdk/types.js\';' . "\n" . "\n" .
+'const WORDPRESS_MCP_URL = \'' . $mcp_endpoint . '\';' . "\n" . "\n" .
+'class McpProxy {' . "\n" .
+'  constructor() {' . "\n" .
+'    this.server = new Server(' . "\n" .
+'      {' . "\n" .
+'        name: \'woocommerce-mcp-proxy\',' . "\n" .
+'        version: \'1.0.0\',' . "\n" .
+'      },' . "\n" .
+'      {' . "\n" .
+'        capabilities: {' . "\n" .
+'          tools: {},' . "\n" .
+'        },' . "\n" .
+'      }' . "\n" .
+'    );' . "\n" . "\n" .
+'    this.setupHandlers();' . "\n" .
+'    this.setupErrorHandling();' . "\n" .
+'  }' . "\n" . "\n" .
+'  setupErrorHandling() {' . "\n" .
+'    this.server.onerror = (error) => {' . "\n" .
+'      console.error(\'[MCP Proxy] Server error:\', error);' . "\n" .
+'    };' . "\n" . "\n" .
+'    process.on(\'SIGINT\', async () => {' . "\n" .
+'      await this.server.close();' . "\n" .
+'      process.exit(0);' . "\n" .
+'    });' . "\n" .
+'  }' . "\n" . "\n" .
+'  setupHandlers() {' . "\n" .
+'    // Proxy tools/list requests' . "\n" .
+'    this.server.setRequestHandler(ListToolsRequestSchema, async () => {' . "\n" .
+'      try {' . "\n" .
+'        const response = await this.forwardRequest(\'tools/list\', {});' . "\n" .
+'        return response.result || { tools: [] };' . "\n" .
+'      } catch (error) {' . "\n" .
+'        console.error(\'Error forwarding tools/list:\', error);' . "\n" .
+'        return { tools: [] };' . "\n" .
+'      }' . "\n" .
+'    });' . "\n" . "\n" .
+'    // Proxy tools/call requests' . "\n" .
+'    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {' . "\n" .
+'      try {' . "\n" .
+'        const response = await this.forwardRequest(\'tools/call\', request.params);' . "\n" .
+'        return response.result || { content: [{ type: \'text\', text: \'Error executing tool\' }] };' . "\n" .
+'      } catch (error) {' . "\n" .
+'        console.error(\'Error forwarding tools/call:\', error);' . "\n" .
+'        return { content: [{ type: \'text\', text: `Error: ${error.message}` }] };' . "\n" .
+'      }' . "\n" .
+'    });' . "\n" .
+'  }' . "\n" . "\n" .
+'  async forwardRequest(method, params) {' . "\n" .
+'    const requestBody = {' . "\n" .
+'      jsonrpc: \'2.0\',' . "\n" .
+'      id: Math.random().toString(36).substring(7),' . "\n" .
+'      method: method,' . "\n" .
+'      params: params || {}' . "\n" .
+'    };' . "\n" . "\n" .
+'    const headers = {' . "\n" .
+'      \'Content-Type\': \'application/json\',' . "\n" .
+'      \'Accept\': \'application/json, text/event-stream\'' . "\n" .
+'    };' . "\n" . "\n" .
+'    const response = await fetch(WORDPRESS_MCP_URL, {' . "\n" .
+'      method: \'POST\',' . "\n" .
+'      headers: headers,' . "\n" .
+'      body: JSON.stringify(requestBody)' . "\n" .
+'    });' . "\n" . "\n" .
+'    if (!response.ok) {' . "\n" .
+'      throw new Error(`HTTP ${response.status}: ${response.statusText}`);' . "\n" .
+'    }' . "\n" . "\n" .
+'    const data = await response.json();' . "\n" .
+'    ' . "\n" .
+'    if (data.error) {' . "\n" .
+'      throw new Error(`MCP Error: ${data.error.message}`);' . "\n" .
+'    }' . "\n" . "\n" .
+'    return data;' . "\n" .
+'  }' . "\n" . "\n" .
+'  async run() {' . "\n" .
+'    const transport = new StdioServerTransport();' . "\n" .
+'    await this.server.connect(transport);' . "\n" .
+'    console.error(\'[MCP Proxy] WordPress MCP Proxy Server running\');' . "\n" .
+'  }' . "\n" .
+'}' . "\n" . "\n" .
+'const server = new McpProxy();' . "\n" .
+'server.run().catch(console.error);';
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-
-const WORDPRESS_MCP_URL = '{$mcp_endpoint}';
-
-class McpProxy {
-  constructor() {
-    this.server = new Server(
-      {
-        name: 'woocommerce-mcp-proxy',
-        version: '1.0.0',
-      },
-      {
-        capabilities: {
-          tools: {},
-        },
-      }
-    );
-
-    this.setupHandlers();
-    this.setupErrorHandling();
-  }
-
-  setupErrorHandling() {
-    this.server.onerror = (error) => {
-      console.error('[MCP Proxy] Server error:', error);
-    };
-
-    process.on('SIGINT', async () => {
-      await this.server.close();
-      process.exit(0);
-    });
-  }
-
-  setupHandlers() {
-    // Proxy tools/list requests
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
-      try {
-        const response = await this.forwardRequest('tools/list', {});
-        return response.result || { tools: [] };
-      } catch (error) {
-        console.error('Error forwarding tools/list:', error);
-        return { tools: [] };
-      }
-    });
-
-    // Proxy tools/call requests
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      try {
-        const response = await this.forwardRequest('tools/call', request.params);
-        return response.result || { content: [{ type: 'text', text: 'Error executing tool' }] };
-      } catch (error) {
-        console.error('Error forwarding tools/call:', error);
-        return { content: [{ type: 'text', text: `Error: \${error.message}` }] };
-      }
-    });
-  }
-
-  async forwardRequest(method, params) {
-    const requestBody = {
-      jsonrpc: '2.0',
-      id: Math.random().toString(36).substring(7),
-      method: method,
-      params: params || {}
-    };
-
-    const headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json, text/event-stream'
-    };
-
-    const response = await fetch(WORDPRESS_MCP_URL, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(requestBody)
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP \${response.status}: \${response.statusText}`);
-    }
-
-    const data = await response.json();
-    
-    if (data.error) {
-      throw new Error(`MCP Error: \${data.error.message}`);
-    }
-
-    return data;
-  }
-
-  async run() {
-    const transport = new StdioServerTransport();
-    await this.server.connect(transport);
-    console.error('[MCP Proxy] WordPress MCP Proxy Server running');
-  }
-}
-
-const server = new McpProxy();
-server.run().catch(console.error);
-JS;
+        return $js_content;
     }
 }
