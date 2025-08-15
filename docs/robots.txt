@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Sitemap: https://iosdevsk.github.io/woo-mcp/sitemap.xml
+
