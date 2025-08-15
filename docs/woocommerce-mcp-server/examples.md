@@ -70,6 +70,77 @@ Filter by attribute (e.g., color=red):
 }
 ```
 
+List product tags:
+```
+{
+  "jsonrpc": "2.0",
+  "id": "6",
+  "method": "tools.call",
+  "params": { "name": "wc_get_tags", "arguments": {} }
+}
+```
+
+List global product attributes (definitions):
+```
+{
+  "jsonrpc": "2.0",
+  "id": "7",
+  "method": "tools.call",
+  "params": { "name": "wc_get_product_attributes", "arguments": {} }
+}
+```
+
+Get product reviews:
+```
+{
+  "jsonrpc": "2.0",
+  "id": "8",
+  "method": "tools.call",
+  "params": {
+    "name": "wc_get_product_reviews",
+    "arguments": { "product_id": 123, "page": 1, "per_page": 5 }
+  }
+}
+```
+
+Get shipping methods and zones:
+```
+{
+  "jsonrpc": "2.0",
+  "id": "9",
+  "method": "tools.call",
+  "params": { "name": "wc_get_shipping_methods", "arguments": {} }
+}
+```
+```
+{
+  "jsonrpc": "2.0",
+  "id": "10",
+  "method": "tools.call",
+  "params": { "name": "wc_get_shipping_zones", "arguments": {} }
+}
+```
+
+Get payment gateways:
+```
+{
+  "jsonrpc": "2.0",
+  "id": "11",
+  "method": "tools.call",
+  "params": { "name": "wc_get_payment_gateways", "arguments": {} }
+}
+```
+
+Check system status (debug info):
+```
+{
+  "jsonrpc": "2.0",
+  "id": "12",
+  "method": "tools.call",
+  "params": { "name": "wc_get_system_status", "arguments": {} }
+}
+```
+
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
