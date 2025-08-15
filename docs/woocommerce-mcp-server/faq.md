@@ -22,6 +22,27 @@ A: Yes. Pair Woo MCP with Webtalkbot to add a storefront chatbot/agent in minute
 Q: Are product links included?
 A: Yes. Tools return `permalink` for products and variations.
 
+Q: Is Woo MCP read‑only?
+A: Yes, by design all built‑in tools are read‑only and safe for public data exposure.
+
+Q: Which MCP clients are supported?
+A: Claude (Code/Desktop), VS Code MCP Extension, MCP Inspector, and custom clients supporting STDIO or HTTP JSON‑RPC 2.0.
+
+Q: What’s the difference between STDIO vs HTTP streamable?
+A: STDIO maximizes compatibility; HTTP streamable offers low latency and simpler network setups with JWT.
+
+Q: Can I disable specific tools?
+A: Yes. Use the Tools toggles in Settings → Woo MCP to disable any tool you don’t want exposed.
+
+Q: Do I need WooCommerce installed?
+A: Yes, for WooCommerce tools to work. The plugin also includes WordPress content tools (posts/pages).
+
+Q: How do I test endpoints quickly?
+A: Use MCP Inspector or cURL with JSON‑RPC requests to `/wpmcp/streamable` and include the JWT header.
+
+Q: Is this compatible with Automattic’s WordPress MCP?
+A: Yes. It’s based on the official implementation and licensed GPL‑2.0‑or‑later.
+
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -35,4 +56,3 @@ A: Yes. Tools return `permalink` for products and variations.
   ]
 }
 </script>
-

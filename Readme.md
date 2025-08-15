@@ -85,6 +85,17 @@ Setup (3 steps):
 
 Result: a WooCommerce AI Chatbot/Agent connected to your catalog that can answer questions with product links and variations.
 
+## Documentation Site
+
+- Browse the documentation site (after GitHub Pages is enabled): `https://iosdevsk.github.io/woo-mcp/`
+- Quick links:
+  - What is WooCommerce MCP Server? `docs/woocommerce-mcp-server/what-is.md`
+  - Install: `docs/woocommerce-mcp-server/install.md`
+  - Configure: `docs/woocommerce-mcp-server/configure.md`
+  - Examples: `docs/woocommerce-mcp-server/examples.md`
+  - Troubleshooting: `docs/woocommerce-mcp-server/troubleshooting.md`
+  - FAQ: `docs/woocommerce-mcp-server/faq.md`
+
 ## Admin Settings
 
 - Location: Settings > Woo MCP

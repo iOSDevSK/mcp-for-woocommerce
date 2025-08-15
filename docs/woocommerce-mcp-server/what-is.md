@@ -9,14 +9,23 @@ updated: 2025-08-15
 
 TL;DR: A WooCommerce MCP Server is a WordPress MCP plugin that implements the Model Context Protocol (MCP) for WooCommerce and WordPress. It exposes standardized read‑only tools (e.g., product search with permalinks) to MCP clients via STDIO and an HTTP JSON‑RPC 2.0 streamable endpoint secured by JWT.
 
-Why it matters:
-- Standard tools that LLM/agents can discover and call
-- WooCommerce‑focused: products, variations, categories, attributes, reviews
-- Safe by default: read‑only data; includes permalinks for clickable answers
+Key capabilities:
+- WooCommerce‑focused tools: products, variations, categories, tags, attributes, reviews, shipping, payments, taxes.
+- WordPress content tools: posts and pages with permalinks.
+- Built‑in permissions: read‑only by design; no customer/order PII.
+- Dual transports: STDIO for broad compatibility; HTTP streamable for low‑latency JSON‑RPC 2.0.
+
+Typical use cases:
+- Power an on‑site WooCommerce AI Chatbot/Agent (via Webtalkbot) with real product links.
+- Let developer tools (Claude, VS Code MCP) query products, categories, attributes.
+- Build custom MCP clients that fetch catalog content safely.
 
 Related endpoints:
 - STDIO: `/wp-json/wp/v2/wpmcp`
 - HTTP streamable: `/wp-json/wp/v2/wpmcp/streamable`
+
+Synonyms people search for:
+- WooCommerce MCP, Woo MCP, WordPress MCP, WooCommerce MCP Server, WooCommerce MCP plugin, WordPress MCP Plugin, WooCommerce AI Chatbot/Agent, Webtalkbot.
 
 <script type="application/ld+json">
 {
@@ -28,4 +37,3 @@ Related endpoints:
   "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/what-is"}
 }
 </script>
-

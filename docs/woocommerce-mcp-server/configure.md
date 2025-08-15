@@ -18,6 +18,11 @@ Best practices:
 - Keep JWT required for production; rotate tokens periodically.
 - Disable tools you don’t want public.
 
+Security notes:
+- With JWT required, clients must send a valid token; otherwise requests receive 401.
+- The plugin is read‑only by design; customer/order PII is not exposed by default.
+- Permissions align with WordPress capabilities; prefer least‑privilege tokens.
+
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -28,4 +33,3 @@ Best practices:
   "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/configure"}
 }
 </script>
-

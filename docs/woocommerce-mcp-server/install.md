@@ -7,10 +7,11 @@ updated: 2025-08-15
 
 # How to install Woo MCP (WooCommerce MCP Server)
 
-1) WordPress Admin
-- Upload/activate the plugin in Plugins → Add New → Upload
+1) WordPress Admin (quick install)
+- Plugins → Add New → Upload → select ZIP of the plugin
+- Activate “Woo MCP”
 
-2) Development install
+2) Development install (from GitHub)
 ```
 cd wp-content/plugins/
 git clone https://github.com/iOSDevSK/woo-mcp.git woo-mcp
@@ -19,23 +20,30 @@ composer install
 npm install && npm run build
 ```
 
-3) Configure in Admin → Settings → Woo MCP
+3) Prerequisites
+- WordPress 6.4+, PHP 8.0+
+- WooCommerce active and working
+
+4) Configure in Admin → Settings → Woo MCP
 - Enable MCP functionality
-- (Recommended) Require JWT authentication
-- Generate a JWT token
+- Require JWT Authentication (recommended)
+- Create a JWT token in “Authentication Tokens”
 
-4) Connect clients
-- HTTP (streamable): `https://your-site.com/wp-json/wp/v2/wpmcp/streamable`
-- Header: `Authorization: Bearer YOUR_JWT`
+5) Endpoints
+- STDIO: `/wp-json/wp/v2/wpmcp`
+- HTTP (streamable): `/wp-json/wp/v2/wpmcp/streamable`
 
-Claude Code (example):
+6) Connect clients
+- HTTP header: `Authorization: Bearer YOUR_JWT`
+
+Claude Code (HTTP example):
 ```
 claude mcp add --transport http \
   woo-mcp https://your-site.com/wp-json/wp/v2/wpmcp/streamable \
   --header "Authorization: Bearer YOUR_JWT"
 ```
 
-VS Code MCP Extension (example):
+VS Code MCP Extension (HTTP example):
 ```
 {
   "servers": {
@@ -43,6 +51,22 @@ VS Code MCP Extension (example):
       "type": "http",
       "url": "https://your-site.com/wp-json/wp/v2/wpmcp/streamable",
       "headers": { "Authorization": "Bearer YOUR_JWT" }
+    }
+  }
+}
+```
+
+Claude Desktop (STDIO via proxy):
+```
+{
+  "mcpServers": {
+    "woo-mcp": {
+      "command": "npx",
+      "args": ["-y", "@automattic/mcp-wordpress-remote@latest"],
+      "env": {
+        "WP_API_URL": "https://your-site.com",
+        "JWT_TOKEN": "YOUR_JWT"
+      }
     }
   }
 }
@@ -58,4 +82,3 @@ VS Code MCP Extension (example):
   "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/install"}
 }
 </script>
-

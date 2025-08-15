@@ -37,6 +37,39 @@ Get product details (with permalink):
 }
 ```
 
+List product categories:
+```
+{
+  "jsonrpc": "2.0",
+  "id": "3",
+  "method": "tools.call",
+  "params": { "name": "wc_get_categories", "arguments": { } }
+}
+```
+
+Get variations of a product:
+```
+{
+  "jsonrpc": "2.0",
+  "id": "4",
+  "method": "tools.call",
+  "params": { "name": "wc_get_product_variations", "arguments": { "parent_id": 123 } }
+}
+```
+
+Filter by attribute (e.g., color=red):
+```
+{
+  "jsonrpc": "2.0",
+  "id": "5",
+  "method": "tools.call",
+  "params": {
+    "name": "wc_get_products_filtered",
+    "arguments": { "attributes": [{ "name": "color", "values": ["red"] }] }
+  }
+}
+```
+
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -47,4 +80,3 @@ Get product details (with permalink):
   "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/examples"}
 }
 </script>
-
