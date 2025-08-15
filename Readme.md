@@ -1,5 +1,7 @@
 # Woo MCP — WooCommerce MCP Server Plugin for WordPress
 
+[![docs](https://github.com/iOSDevSK/woo-mcp/actions/workflows/gh-pages.yml/badge.svg)](https://github.com/iOSDevSK/woo-mcp/actions/workflows/gh-pages.yml)
+
 Your all‑in‑one WooCommerce MCP Server and WordPress MCP plugin. Expose WooCommerce and WordPress data to MCP clients (Claude, VS Code MCP, custom apps) and easily power a WooCommerce AI Chatbot or AI Agent for your website via Webtalkbot.
 
 Keywords: WooCommerce MCP, Woo MCP, WordPress MCP, WooCommerce MCP Server, WooCommerce Plugin, WordPress MCP Plugin, WooCommerce MCP plugin, WooCommerce AI Chatbot, WooCommerce AI Agent, Webtalkbot.
