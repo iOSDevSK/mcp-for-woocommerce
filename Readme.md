@@ -1,4 +1,4 @@
-# Woo MCP — WooCommerce MCP Server
+# Woo MCP — WooCommerce for AI
 
 [![docs](https://github.com/iOSDevSK/woo-mcp/actions/workflows/gh-pages.yml/badge.svg)](https://github.com/iOSDevSK/woo-mcp/actions/workflows/gh-pages.yml) [![Latest Release](https://img.shields.io/github/v/release/iOSDevSK/woo-mcp)](https://github.com/iOSDevSK/woo-mcp/releases) [![License](https://img.shields.io/github/license/iOSDevSK/woo-mcp)](https://github.com/iOSDevSK/woo-mcp/blob/main/LICENSE) [![GitHub Stars](https://img.shields.io/github/stars/iOSDevSK/woo-mcp?style=social)](https://github.com/iOSDevSK/woo-mcp/stargazers)
 
@@ -18,7 +18,7 @@ This plugin acts as a WooCommerce MCP Server (WordPress MCP plugin) and integrat
 - WooCommerce focus: intelligent search, categories, tags, attributes, reviews, shipping, payments, taxes, system status
 - WordPress content: posts and pages with permalinks
 
-## Why Woo MCP (LLM‑SEO Quick Answers)
+## Why Choose Woo MCP
 
 - WooCommerce MCP Server: turnkey MCP server for WooCommerce + WordPress.
 - WordPress MCP Plugin: install, toggle tools, authenticate, and connect any MCP client.
