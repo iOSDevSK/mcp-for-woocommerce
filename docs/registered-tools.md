@@ -1,3 +1,9 @@
+---
+title: Registered Tools Documentation
+summary: Comprehensive reference of all available MCP tools for WordPress and WooCommerce integration.
+tags: [tools, api-reference, wordpress, woocommerce, mcp-tools, documentation]
+---
+
 # Registered Tools Documentation
 
 This document provides a comprehensive list of all tools registered in the WordPress MCP plugin.

@@ -1,3 +1,9 @@
+---
+title: Registered Resources Documentation
+summary: Complete reference of all available MCP resources for accessing WordPress and WooCommerce data.
+tags: [resources, api-reference, wordpress, woocommerce, mcp-resources, documentation]
+---
+
 # Registered Resources Documentation
 
 This document provides a comprehensive list of all resources registered in the WordPress MCP plugin.

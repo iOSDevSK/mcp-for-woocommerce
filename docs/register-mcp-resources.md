@@ -1,3 +1,9 @@
+---
+title: RegisterMcpResources API Documentation
+summary: Developer guide for registering custom MCP resources to expose WordPress and WooCommerce data to AI models.
+tags: [development, custom-resources, api-documentation, mcp-development, data-exposure]
+---
+
 # RegisterMcpResources API Documentation
 
 The RegisterMcpResources API allows you to register and manage resources that provide data to AI models in WordPress.

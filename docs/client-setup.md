@@ -1,3 +1,9 @@
+---
+title: MCP Client Setup Guide
+summary: Complete guide for connecting MCP clients to Woo MCP server using STDIO and HTTP protocols with JWT authentication.
+tags: [client-setup, mcp, authentication, jwt, stdio, http, configuration]
+---
+
 # MCP Client Setup Guide
 
 ## About Woo MCP

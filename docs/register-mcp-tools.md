@@ -1,3 +1,9 @@
+---
+title: RegisterMcpTools API Documentation
+summary: Developer guide for registering custom MCP tools that AI models can use to perform actions in WordPress.
+tags: [development, custom-tools, api-documentation, mcp-development, plugin-development]
+---
+
 # RegisterMcpTools API Documentation
 
 The RegisterMcpTools API allows you to register and manage tools that can be used by AI models to perform actions in WordPress.

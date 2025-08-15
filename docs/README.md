@@ -1,3 +1,9 @@
+---
+title: WordPress Model Context Protocol (MCP) Plugin
+summary: Technical documentation for the WordPress MCP plugin enabling AI integration through tools, resources, and prompts.
+tags: [wordpress-mcp, technical-docs, plugin-architecture, mcp-protocol, ai-integration]
+---
+
 # WordPress Model Context Protocol (MCP) Plugin
 
 ## Overview

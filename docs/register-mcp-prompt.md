@@ -1,3 +1,9 @@
+---
+title: RegisterMcpPrompt API Documentation
+summary: Developer guide for creating custom MCP prompts and templates for AI interactions with WordPress.
+tags: [development, custom-prompts, api-documentation, ai-prompts, template-development]
+---
+
 # RegisterMcpPrompt API Documentation
 
 The RegisterMcpPrompt API allows you to register and manage prompts that structure AI model interactions in WordPress.

@@ -1,3 +1,9 @@
+---
+title: Registered Prompts Documentation
+summary: Available MCP prompts for common WordPress and WooCommerce AI tasks and interactions.
+tags: [prompts, ai-prompts, wordpress, woocommerce, mcp-prompts, templates]
+---
+
 # Registered Prompts Documentation
 
 This document provides a comprehensive list of all prompts registered in the WordPress MCP plugin.

@@ -1,3 +1,9 @@
+---
+title: AI Assistant Reference - Woo MCP Architecture
+summary: Comprehensive technical reference for AI assistants and developers covering plugin architecture, tools, resources, and extension points.
+tags: [ai-reference, architecture, development, tools, resources, prompts, mcp-protocol]
+---
+
 Copy-paste this file into any AI chat or share it with a human developer. It is a single, compressed reference that explains what the plugin does, how its pieces fit together, and how to extend it with your own Tools, Resources, and Prompts.
 
 ---
