@@ -254,6 +254,7 @@ Common integration patterns:
 - Configure platform to use MCP endpoint  
 - Provide your WordPress site URL
 - Authenticate with generated JWT token
+- Example platforms: Webtalkbot, custom chatbots, AI assistants
 
 **Best practices:**
 - Test with common customer questions
