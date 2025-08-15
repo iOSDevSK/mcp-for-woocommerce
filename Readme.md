@@ -6,7 +6,7 @@
 
 [Woo MCP](https://woo-mcp.com) transforms your WordPress site into an AI-accessible data source built on [Automattic's official WordPress MCP](https://github.com/Automattic/wordpress-mcp). It safely exposes public store information—products, categories, tags, reviews, shipping options, and WordPress content—while protecting customer data and private details.
 
-Perfect for building AI-powered shopping assistants with [Webtalkbot](https://webtalkbot.com) or integrating with custom AI applications.
+Perfect for building AI-powered shopping assistants or integrating with custom AI applications.
 
 ## Key Features
 
@@ -22,7 +22,7 @@ Perfect for building AI-powered shopping assistants with [Webtalkbot](https://we
 
 - WooCommerce MCP Server: turnkey MCP server for WooCommerce + WordPress.
 - WordPress MCP Plugin: install, toggle tools, authenticate, and connect any MCP client.
-- WooCommerce AI Chatbot/Agent: integrate with Webtalkbot to deploy on-site chat in minutes.
+- AI Chatbot/Agent: integrate with chat platforms to deploy on-site assistance in minutes.
 - Read-only and safe: no PII; tools return permalinks for clickable product links.
 - Works with Claude, VS Code MCP, MCP Inspector, custom MCP clients.
 
@@ -69,19 +69,20 @@ npm install && npm run build
 
 ## AI Shopping Assistant
 
-Deploy a production-ready WooCommerce AI Chatbot or AI Agent on your site by pairing Woo MCP with [Webtalkbot](https://webtalkbot.com).
+Deploy AI-powered customer assistance on your site using the MCP data interface.
 
 Benefits:
-- Native WooCommerce understanding via Woo MCP tools
-- Secure JWT auth, fast search, reliable product links
-- No coding needed — add a widget to your storefront
+- Direct WooCommerce data access via standardized tools
+- Secure authentication with JWT tokens  
+- Product information with clickable links
+- Compatible with various AI platforms
 
-Setup (3 steps):
-1) In Webtalkbot, choose WooCommerce as the data source.
-2) Copy a JWT token from WordPress Admin → Settings → Woo MCP → Tokens.
-3) Paste the token in Webtalkbot and deploy the chat widget.
+Setup process:
+1) Configure your AI platform to use the MCP endpoint
+2) Copy a JWT token from WordPress Admin → Settings → Woo MCP → Tokens
+3) Deploy your chosen chat interface or assistant
 
-Result: a WooCommerce AI Chatbot/Agent connected to your catalog that can answer questions with product links and variations.
+Result: an AI assistant connected to your catalog that can answer questions with product links and variations.
 
 ## Documentation Site
 
@@ -233,36 +234,32 @@ Notes:
 - Some analytics/report helpers are available as REST aliases (read-only).
 
 
-## Deployment Guide
+## Integration Examples
 
-Build a customer-facing shopping assistant powered by [Woo MCP](https://woo-mcp.com) and [Webtalkbot](https://webtalkbot.com).
+Connect various AI platforms to your WooCommerce data.
 
 Prerequisites:
 - Woo MCP installed and enabled
 - JWT token generated in WordPress Admin (Settings > Woo MCP)
-- Webtalkbot account at https://webtalkbot.com
+- Your chosen AI platform or chatbot service
 
-Step 1 — Choose WooCommerce data source (in Webtalkbot dashboard):
-- Create New Chatbot → select “WooCommerce” as data source (product data is pulled automatically)
+Common integration patterns:
 
-Step 2 — Configure your AI agent:
-- Chatbot name: a friendly public name
-- Website URL: full `https://your-shop.com`
-- Woo-MCP JWT Token: paste the token from your WordPress admin
+**API Endpoint Integration:**
+- Use streamable endpoint: `/wp-json/wp/v2/wpmcp/streamable`
+- Include JWT token in Authorization header
+- Follow JSON-RPC 2.0 protocol for requests
 
-Step 3 — Deploy your assistant:
-- Chat bubble widget (floating UI on your store)
-- Direct link (standalone support assistant for campaigns)
+**Chat Platform Setup:**
+- Configure platform to use MCP endpoint  
+- Provide your WordPress site URL
+- Authenticate with generated JWT token
 
-Best practices:
-- Keep product data updated
-- Test common customer questions
-- Place widgets on high-traffic pages
-- Monitor usage/credits
-
-Resources:
-- Webtalkbot documentation: https://webtalkbot.com/docs/
-- Support: https://webtalkbot.com/contact/
+**Best practices:**
+- Test with common customer questions
+- Ensure product links are included in responses
+- Monitor API usage and performance
+- Keep JWT tokens secure and rotate regularly
 
 ## Security
 
@@ -340,7 +337,7 @@ Use the Streamable endpoint <code>/wp-json/wp/v2/wpmcp/streamable</code> with a 
 <details>
 <summary><strong>Can I add an AI Chatbot to my website?</strong></summary>
 <br>
-Yes. Pair Woo MCP with Webtalkbot to deploy an on-site WooCommerce AI Chatbot/Agent in minutes. Create a JWT token in Woo MCP settings and paste it into Webtalkbot.
+Yes. Use the MCP interface to connect your store data with AI chatbot platforms. Create a JWT token in Woo MCP settings and configure your chosen AI platform to use the provided endpoints.
 </details>
 
 <details>
