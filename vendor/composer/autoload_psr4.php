@@ -6,10 +6,6 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
-    'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
-    'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
-    'Automattic\\WordpressMcp\\Tests\\' => array($baseDir . '/tests/phpunit'),
     'Automattic\\WordpressMcp\\' => array($baseDir . '/includes'),
 );

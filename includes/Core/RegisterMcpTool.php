@@ -282,32 +282,32 @@ class RegisterMcpTool {
 
 		// Validate that the input schema is a valid JSON Schema object.
 		if ( ! isset( $this->args['inputSchema']['type'] ) || 'object' !== $this->args['inputSchema']['type'] ) {
-			throw new InvalidArgumentException( esc_html__( 'The input schema must be an object type.', 'wordpress-mcp' ) );
+			throw new InvalidArgumentException( esc_html__( 'The input schema must be an object type.', 'woo-mcp' ) );
 		}
 
 		// Validate properties field exists and is an object.
 		// If ( ! isset( $this->args['inputSchema']['properties'] ) || ! is_array($this->args['inputSchema']['properties'] ) ) {
-		// throw new \InvalidArgumentException( esc_html__( 'The input schema must have a properties field that is an object.', 'wordpress-mcp' ) );
+		// throw new \InvalidArgumentException( esc_html__( 'The input schema must have a properties field that is an object.', 'woo-mcp' ) );
 		// }.
 
 		// Validate each property has a type.
 		foreach ( $this->args['inputSchema']['properties'] as $property_name => $property ) {
 			if ( ! isset( $property['type'] ) ) {
 				// translators: %s: Property name.
-				throw new InvalidArgumentException( sprintf( esc_html__( "Property '%s' must have a type field.", 'wordpress-mcp' ), esc_html( $property_name ) ) );
+				throw new InvalidArgumentException( sprintf( esc_html__( "Property '%s' must have a type field.", 'woo-mcp' ), esc_html( $property_name ) ) );
 			}
 
 			// Validate property type is a valid JSON Schema type.
 			$valid_types = array( 'string', 'number', 'integer', 'boolean', 'array', 'object', 'null' );
 			if ( ! in_array( $property['type'], $valid_types, true ) ) {
 				// translators: 1: Property name, 2: Property type.
-				throw new InvalidArgumentException( sprintf( esc_html__( "Property '%1\$s' has invalid type '%2\$s'.", 'wordpress-mcp' ), esc_html( $property_name ), esc_html( $property['type'] ) ) );
+				throw new InvalidArgumentException( sprintf( esc_html__( "Property '%1\$s' has invalid type '%2\$s'.", 'woo-mcp' ), esc_html( $property_name ), esc_html( $property['type'] ) ) );
 			}
 
 			// If the type is array, the validate items field exists.
 			if ( 'array' === $property['type'] && ! isset( $property['items'] ) ) {
 				// translators: %s: Property name.
-				throw new InvalidArgumentException( sprintf( esc_html__( "Array property '%s' must have an items field.", 'wordpress-mcp' ), esc_html( $property_name ) ) );
+				throw new InvalidArgumentException( sprintf( esc_html__( "Array property '%s' must have an items field.", 'woo-mcp' ), esc_html( $property_name ) ) );
 			}
 		}
 
@@ -315,14 +315,14 @@ class RegisterMcpTool {
 		if ( isset( $this->args['inputSchema']['required'] ) ) {
 			// Ensure required field is an array.
 			if ( ! is_array( $this->args['inputSchema']['required'] ) ) {
-				throw new InvalidArgumentException( esc_html__( 'The required field must be an array.', 'wordpress-mcp' ) );
+				throw new InvalidArgumentException( esc_html__( 'The required field must be an array.', 'woo-mcp' ) );
 			}
 
 			// Check all required properties exist in properties.
 			foreach ( $this->args['inputSchema']['required'] as $required_property ) {
 				if ( ! isset( $this->args['inputSchema']['properties'][ $required_property ] ) ) {
 					// translators: %s: Required property.
-					throw new InvalidArgumentException( sprintf( esc_html__( "Required property '%s' does not exist in properties.", 'wordpress-mcp' ), esc_html( $required_property ) ) );
+					throw new InvalidArgumentException( sprintf( esc_html__( "Required property '%s' does not exist in properties.", 'woo-mcp' ), esc_html( $required_property ) ) );
 				}
 			}
 		}

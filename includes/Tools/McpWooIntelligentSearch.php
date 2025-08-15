@@ -275,7 +275,7 @@ class McpWooIntelligentSearch {
         $page = intval( $params['page'] ?? 1 );
         $debug = (bool) ( $params['debug'] ?? false );
 
-        if ( $debug ) {
+        if ( $debug && defined( 'WP_DEBUG' ) && WP_DEBUG ) {
             error_log( "=== INTELLIGENT SEARCH DEBUG ===" );
             error_log( "Query: " . $query );
             error_log( "Per page: " . $per_page );
@@ -297,7 +297,7 @@ class McpWooIntelligentSearch {
         $categories = $this->get_categories_safe();
         $tags = $this->get_tags_safe();
 
-        if ( $debug ) {
+        if ( $debug && defined( 'WP_DEBUG' ) && WP_DEBUG ) {
             error_log( "Available categories: " . print_r( array_column( $categories, 'name' ), true ) );
         }
 
@@ -855,7 +855,9 @@ class McpWooIntelligentSearch {
 
             return $data;
         } catch ( Exception $e ) {
-            error_log( "Error converting product: " . $e->getMessage() );
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( "Error converting product: " . $e->getMessage() );
+            }
             return null;
         }
     }

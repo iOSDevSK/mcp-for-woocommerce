@@ -38,14 +38,18 @@ class PromptsHandler {
 	 */
 	private function check_permission(): ?array {
 		// Force debug log to see if method is called
-		error_log( '[MCP PromptsHandler] check_permission() called' );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP PromptsHandler] check_permission() called' );
+		}
 		
 		// Check JWT required setting
 		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
 		
 		// Debug logging
-		error_log( '[MCP PromptsHandler] JWT required: ' . ( $jwt_required ? 'true' : 'false' ) );
-		error_log( '[MCP PromptsHandler] User can manage_options: ' . ( current_user_can( 'manage_options' ) ? 'true' : 'false' ) );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP PromptsHandler] JWT required: ' . ( $jwt_required ? 'true' : 'false' ) );
+			error_log( '[MCP PromptsHandler] User can manage_options: ' . ( current_user_can( 'manage_options' ) ? 'true' : 'false' ) );
+		}
 		
 		if ( ! $jwt_required ) {
 			// JWT is disabled, allow access without authentication (readonly mode)
@@ -76,9 +80,13 @@ class PromptsHandler {
 	 * @return array
 	 */
 	public function list_prompts(): array {
-		error_log( '[MCP PromptsHandler] list_prompts() method called' );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP PromptsHandler] list_prompts() method called' );
+		}
 		$permission_error = $this->check_permission();
-		error_log( '[MCP PromptsHandler] permission_error result: ' . print_r( $permission_error, true ) );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP PromptsHandler] permission_error result: ' . print_r( $permission_error, true ) );
+		}
 		if ( $permission_error ) {
 			return $permission_error;
 		}

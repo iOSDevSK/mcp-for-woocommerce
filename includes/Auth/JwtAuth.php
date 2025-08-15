@@ -208,7 +208,7 @@ class JwtAuth {
 		// If not authenticated via cookies, return error with details
 		return new WP_Error(
 			'rest_forbidden',
-			__( 'You need to be logged in as an administrator to access JWT tokens.', 'wordpress-mcp' ),
+			__( 'You need to be logged in as an administrator to access JWT tokens.', 'woo-mcp' ),
 			array( 'status' => 401 )
 		);
 	}
@@ -606,10 +606,12 @@ class JwtAuth {
    			'[WPMCP JWT Auth] %s: %s (IP: %s, URI: %s)',
    			$event,
    			$details,
-   			$_SERVER['REMOTE_ADDR'] ?? 'unknown',
-   			$_SERVER['REQUEST_URI'] ?? 'unknown'
+   			sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? 'unknown' ) ),
+   			sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? 'unknown' ) )
    		);
-   		error_log( $log_message );
+   		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+   			error_log( $log_message );
+   		}
    	}
    }
 

@@ -77,14 +77,18 @@ class McpStreamableTransport extends McpTransportBase {
 	 */
 	public function check_permission(): WP_Error|bool {
 		try {
-			error_log( '[MCP AUTH] Permission check started' );
-			error_log( '[MCP AUTH] Request URI: ' . ( $_SERVER['REQUEST_URI'] ?? 'not set' ) );
-			error_log( '[MCP AUTH] Request method: ' . ( $_SERVER['REQUEST_METHOD'] ?? 'not set' ) );
-			error_log( '[MCP AUTH] User agent: ' . ( $_SERVER['HTTP_USER_AGENT'] ?? 'not set' ) );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP AUTH] Permission check started' );
+				error_log( '[MCP AUTH] Request URI: ' . ( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? 'not set' ) ) ) );
+				error_log( '[MCP AUTH] Request method: ' . ( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? 'not set' ) ) ) );
+				error_log( '[MCP AUTH] User agent: ' . ( sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ?? 'not set' ) ) ) );
+			}
 			
 			// If MCP is disabled, deny access.
 			if ( ! $this->is_mcp_enabled() ) {
-				error_log( '[MCP AUTH] MCP is disabled in settings' );
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( '[MCP AUTH] MCP is disabled in settings' );
+				}
 				return new WP_Error(
 					'mcp_disabled',
 					'MCP functionality is currently disabled.',
@@ -95,14 +99,18 @@ class McpStreamableTransport extends McpTransportBase {
 			// Check JWT required setting
 			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
 			
-			error_log( '[MCP AUTH] MCP enabled: true' );
-			error_log( '[MCP AUTH] JWT required: ' . ( $jwt_required ? 'true' : 'false' ) );
-			error_log( '[MCP AUTH] User logged in: ' . ( is_user_logged_in() ? 'true' : 'false' ) );
-			error_log( '[MCP AUTH] Current user ID: ' . get_current_user_id() );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP AUTH] MCP enabled: true' );
+				error_log( '[MCP AUTH] JWT required: ' . ( $jwt_required ? 'true' : 'false' ) );
+				error_log( '[MCP AUTH] User logged in: ' . ( is_user_logged_in() ? 'true' : 'false' ) );
+				error_log( '[MCP AUTH] Current user ID: ' . get_current_user_id() );
+			}
 			
 			if ( ! $jwt_required ) {
 				// JWT is disabled, allow access without authentication (readonly mode)
-				error_log( '[MCP AUTH] JWT disabled - ALLOWING ACCESS' );
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( '[MCP AUTH] JWT disabled - ALLOWING ACCESS' );
+				}
 				return true;
 			}
 			
@@ -110,10 +118,14 @@ class McpStreamableTransport extends McpTransportBase {
 			// The JWT authentication is handled by the rest_authentication_errors filter
 			// which runs before permission callbacks
 			$result = is_user_logged_in();
-			error_log( '[MCP AUTH] JWT required mode - permission result: ' . ( $result ? 'ALLOWED' : 'DENIED' ) );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP AUTH] JWT required mode - permission result: ' . ( $result ? 'ALLOWED' : 'DENIED' ) );
+			}
 			
 			if ( ! $result ) {
-				error_log( '[MCP AUTH] AUTHENTICATION FAILED - returning WP_Error' );
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( '[MCP AUTH] AUTHENTICATION FAILED - returning WP_Error' );
+				}
 				return new WP_Error(
 					'rest_forbidden',
 					'You do not have permission to access this endpoint.',
@@ -125,8 +137,10 @@ class McpStreamableTransport extends McpTransportBase {
 			
 		} catch ( Exception $e ) {
 			// Log any exceptions
-			error_log( '[MCP AUTH] EXCEPTION in permission check: ' . $e->getMessage() );
-			error_log( '[MCP AUTH] Exception trace: ' . $e->getTraceAsString() );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP AUTH] EXCEPTION in permission check: ' . $e->getMessage() );
+				error_log( '[MCP AUTH] Exception trace: ' . $e->getTraceAsString() );
+			}
 			return new WP_Error(
 				'permission_check_error',
 				'Error checking permissions: ' . $e->getMessage(),
@@ -142,14 +156,18 @@ class McpStreamableTransport extends McpTransportBase {
 	 * @return WP_REST_Response
 	 */
 	public function handle_request( WP_REST_Request $request ) {
-		error_log( '[MCP STREAMABLE] Request received' );
-		error_log( '[MCP STREAMABLE] Method: ' . $request->get_method() );
-		error_log( '[MCP STREAMABLE] Route: ' . $request->get_route() );
-		error_log( '[MCP STREAMABLE] Headers: ' . print_r( $request->get_headers(), true ) );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP STREAMABLE] Request received' );
+			error_log( '[MCP STREAMABLE] Method: ' . $request->get_method() );
+			error_log( '[MCP STREAMABLE] Route: ' . $request->get_route() );
+			error_log( '[MCP STREAMABLE] Headers: ' . print_r( $request->get_headers(), true ) );
+		}
 		
 		// Handle preflight requests
 		if ( 'OPTIONS' === $request->get_method() ) {
-			error_log( '[MCP STREAMABLE] Handling OPTIONS preflight' );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP STREAMABLE] Handling OPTIONS preflight' );
+			}
 			$this->stream_response( null, 204 );
 			return;
 		}
@@ -157,7 +175,9 @@ class McpStreamableTransport extends McpTransportBase {
 		$method = $request->get_method();
 
 		if ( 'POST' === $method ) {
-			error_log( '[MCP STREAMABLE] Handling POST request' );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP STREAMABLE] Handling POST request' );
+			}
 			$this->handle_streamable_post_request( $request );
 			return;
 		}
@@ -248,7 +268,8 @@ class McpStreamableTransport extends McpTransportBase {
 		
 		// Add custom headers
 		foreach ( $headers as $key => $value ) {
-			header( $key . ': ' . $value );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTTP headers, values are controlled by application
+			header( sanitize_key( $key ) . ': ' . sanitize_text_field( $value ) );
 		}
 		
 		// Stream the response
@@ -280,7 +301,9 @@ class McpStreamableTransport extends McpTransportBase {
 	 */
 	private function write_chunk( string $data ) {
 		$length = strlen( $data );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTTP chunked transfer encoding protocol
 		echo dechex( $length ) . "\r\n";
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTTP chunked transfer encoding protocol
 		echo $data . "\r\n";
 		flush();
 	}
@@ -566,17 +589,23 @@ class McpStreamableTransport extends McpTransportBase {
 	 */
 	public function handle_cors_preflight( $served, $result, $request, $server ) {
 		// Debug log all CORS requests
-		error_log( '[MCP CORS] Request route: ' . $request->get_route() );
-		error_log( '[MCP CORS] Request method: ' . $request->get_method() );
-		error_log( '[MCP CORS] Request headers: ' . print_r( $request->get_headers(), true ) );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP CORS] Request route: ' . $request->get_route() );
+			error_log( '[MCP CORS] Request method: ' . $request->get_method() );
+			error_log( '[MCP CORS] Request headers: ' . print_r( $request->get_headers(), true ) );
+		}
 		
 		// Only handle our MCP endpoint
 		if ( strpos( $request->get_route(), '/wpmcp/streamable' ) === false ) {
-			error_log( '[MCP CORS] Not MCP endpoint, skipping CORS' );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP CORS] Not MCP endpoint, skipping CORS' );
+			}
 			return $served;
 		}
 
-		error_log( '[MCP CORS] Setting CORS headers for MCP endpoint' );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP CORS] Setting CORS headers for MCP endpoint' );
+		}
 		
 		// Set CORS headers for all requests to our endpoint - allow all domains with Claude.ai specific headers
 		header( 'Access-Control-Allow-Origin: *' );
@@ -588,7 +617,9 @@ class McpStreamableTransport extends McpTransportBase {
 
 		// Handle OPTIONS preflight request
 		if ( $request->get_method() === 'OPTIONS' ) {
-			error_log( '[MCP CORS] Handling OPTIONS preflight request' );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP CORS] Handling OPTIONS preflight request' );
+			}
 			http_response_code( 204 );
 			exit;
 		}
@@ -667,17 +698,23 @@ class McpStreamableTransport extends McpTransportBase {
 	 * @param WP_REST_Request $request The request object.
 	 */
 	private function handle_streamable_proxy_mode( WP_REST_Request $request ) {
-		error_log( '[MCP STREAMABLE PROXY] Streamable proxy mode activated' );
-		error_log( '[MCP STREAMABLE PROXY] Request method: ' . $request->get_method() );
-		error_log( '[MCP STREAMABLE PROXY] Request headers: ' . print_r( $request->get_headers(), true ) );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP STREAMABLE PROXY] Streamable proxy mode activated' );
+			error_log( '[MCP STREAMABLE PROXY] Request method: ' . $request->get_method() );
+			error_log( '[MCP STREAMABLE PROXY] Request headers: ' . print_r( $request->get_headers(), true ) );
+		}
 		
 		// Get the request body
 		$body = $request->get_body();
-		error_log( '[MCP STREAMABLE PROXY] Request body length: ' . strlen( $body ) );
-		error_log( '[MCP STREAMABLE PROXY] Request body: ' . $body );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( '[MCP STREAMABLE PROXY] Request body length: ' . strlen( $body ) );
+			error_log( '[MCP STREAMABLE PROXY] Request body: ' . $body );
+		}
 		
 		if ( empty( $body ) ) {
-			error_log( '[MCP STREAMABLE PROXY] Empty request body - returning error' );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP STREAMABLE PROXY] Empty request body - returning error' );
+			}
 			$this->stream_error_response(
 				array(
 					'jsonrpc' => '2.0',
@@ -815,7 +852,9 @@ class McpStreamableTransport extends McpTransportBase {
 		// Also log to separate file for easier debugging
 		$log_file = WP_CONTENT_DIR . '/mcp-claude-debug.log';
 		$log_entry = "[" . date('Y-m-d H:i:s') . "] CLAUDE.AI REQUEST:\n" . wp_json_encode( $log_data, JSON_PRETTY_PRINT ) . "\n\n";
-		error_log( $log_entry, 3, $log_file );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( $log_entry, 3, $log_file );
+		}
 	}
 
 	/**
@@ -844,7 +883,9 @@ class McpStreamableTransport extends McpTransportBase {
 		// Also log to separate file for easier debugging
 		$log_file = WP_CONTENT_DIR . '/mcp-claude-debug.log';
 		$log_entry = "[" . date('Y-m-d H:i:s') . "] CLAUDE.AI RESPONSE:\n" . wp_json_encode( $log_data, JSON_PRETTY_PRINT ) . "\n" . str_repeat('-', 80) . "\n\n";
-		error_log( $log_entry, 3, $log_file );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( $log_entry, 3, $log_file );
+		}
 	}
 
 	/**
@@ -916,13 +957,17 @@ class McpStreamableTransport extends McpTransportBase {
 		// Log to dedicated connection log file
 		$connection_log_file = WP_CONTENT_DIR . '/mcp-connections.log';
 		$connection_entry = "[" . date('Y-m-d H:i:s') . "] CONNECTION_ATTEMPT: " . wp_json_encode( $connection_log ) . "\n";
-		error_log( $connection_entry, 3, $connection_log_file );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( $connection_entry, 3, $connection_log_file );
+		}
 		
 		// Also log failed connections to separate error log
 		if ( $log_data['connection_source'] === 'claude.ai-webapp' ) {
 			$claude_connection_log = WP_CONTENT_DIR . '/mcp-claude-connections.log';
 			$claude_entry = "[" . date('Y-m-d H:i:s') . "] CLAUDE.AI_CONNECTION: " . wp_json_encode( $connection_log ) . "\n";
-			error_log( $claude_entry, 3, $claude_connection_log );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( $claude_entry, 3, $claude_connection_log );
+			}
 		}
 	}
 	
@@ -944,13 +989,17 @@ class McpStreamableTransport extends McpTransportBase {
 		// Log connection results
 		$connection_log_file = WP_CONTENT_DIR . '/mcp-connections.log';
 		$result_entry = "[" . date('Y-m-d H:i:s') . "] CONNECTION_RESULT: " . wp_json_encode( $result_log ) . "\n";
-		error_log( $result_entry, 3, $connection_log_file );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( $result_entry, 3, $connection_log_file );
+		}
 		
 		// Log failed connections separately for easier analysis
 		if ( !$log_data['success'] ) {
 			$failed_log_file = WP_CONTENT_DIR . '/mcp-connection-failures.log';
 			$failed_entry = "[" . date('Y-m-d H:i:s') . "] FAILED_CONNECTION: " . wp_json_encode( $result_log ) . "\n";
-			error_log( $failed_entry, 3, $failed_log_file );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( $failed_entry, 3, $failed_log_file );
+			}
 		}
 	}
 

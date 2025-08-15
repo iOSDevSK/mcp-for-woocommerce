@@ -31,7 +31,7 @@ const DocumentationTab = () => {
 
 				// Fetch the markdown file from the plugin directory
 				const response = await fetch(
-					`${ window.wordpressMcpSettings.pluginUrl }/docs/client-setup.md`
+					`${ window.wordpressMcpSettings.pluginUrl }/client-setup.md`
 				);
 
 				if ( ! response.ok ) {

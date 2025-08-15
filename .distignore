@@ -1,103 +1,69 @@
 # Development files
-/.git
-/.gitignore
-/.gitmodules
-# Assets are now included
+.git
+.gitignore
+.github/
+.wp-env.json
+.phpcs.xml.dist
+.distignore
 
 # Node.js
-/node_modules
-/npm-debug.log
-/yarn-error.log
-/pnpm-lock.yaml
-/package-lock.json
+node_modules/
+package.json
+package-lock.json
+pnpm-lock.yaml
 
-# Composer development dependencies
-/vendor/bin
-/vendor/composer/installers
-/vendor/squizlabs
-/vendor/wp-coding-standards
-/vendor/dealerdirect
-/vendor/phpcompatibility
+# PHP development
+composer.json
+composer.lock
+phpunit.xml.dist
+
+# Keep vendor/ for WordPress.org (Firebase JWT dependency)
+# vendor/
 
 # Build tools
-/webpack.config.js
-/.babelrc
-/.eslintrc.js
-/.eslintignore
-/phpcs.xml
-/phpcs.xml.dist
-/phpunit.xml
-/phpunit.xml.dist
+bin/
+src/
+mkdocs.yml
 
-# Source files (since we have built files)
-/src
+# Documentation and development
+docs/
+README.md
+Readme.md
+CREATE_REMAINING_ASSETS.md
+RELEASE_INSTRUCTIONS.md
+WORDPRESS_SUBMISSION_GUIDE.md
+claude-ai-connector-setup.md
+MCP-CONNECTION-LOGGING.md
+commits.md
+history.txt
 
-# Documentation that's not needed in the distributed plugin
-/docs
-/CLAUDE.md
-/RELEASE_INSTRUCTIONS.md
-/MCP-CONNECTION-LOGGING.md
-/claude-ai-connector-setup.md
-/commits.md
-/history.txt
-/changelog.txt
+# Keep client-setup.md for documentation tab
+# client-setup.md
 
 # Test files
-/tests
-/test-*.php
-/test-*.js
+tests/
+test-*.php
+debug*.php
+mcp-server*.php
 
-# CI/CD files
-/.github
-/.gitlab-ci.yml
-/Jenkinsfile
+# Development scripts
+*.js
+!build/*.js
+mcp-proxy.js
+test-proxy.js
+mcp-settings-fix.js
+mcp-server-simple.js
 
-# IDE files
-/.vscode
-/.idea
-*.swp
-*.swo
-*~
+# Static files
+static-files/
 
-# OS files
+# Security files
+security/
+
+# Build artifacts
 .DS_Store
-Thumbs.db
-
-# Temporary files
-*.tmp
-*.log
-*.cache
-
-# Release files
-/releases
-
-# Security files (these should not be in public repo anyway)
-/security
+*.zip
 
 # Backup files
 *.backup
-*.bak
-
-# Debug files
-/debug-*.php
-/debug_*.php
-/mcp-proxy.js
-/mcp-proxy.php
-/mcp-server-native.php
-/mcp-server-simple.js
-/mcp-server.php
-/test-connection-logging.php
-/test-proxy.js
-/test-streamable.php
-
-# Static documentation files
-/static-files
-/mkdocs.yml
-
-# Binary files that might be accidentally included
-*.exe
-*.dmg
-*.iso
-
-# Exclude old assets folder (keep only .wordpress-org)
-/assets
+includes/Tools/McpWooIntelligentSearch.backup

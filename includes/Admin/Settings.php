@@ -63,7 +63,7 @@ class Settings {
 		
 		add_options_page(
 			$page_title,
-			__( 'Woo MCP', 'wordpress-mcp' ),
+			__( 'Woo MCP', 'woo-mcp' ),
 			'manage_options',
 			'wordpress-mcp-settings',
 			array( $this, 'render_settings_page' )
@@ -138,28 +138,30 @@ class Settings {
 				'pluginUrl'           => WORDPRESS_MCP_URL,
 				'claudeSetupInstructions' => McpProxyGenerator::should_generate_proxy() ? McpProxyGenerator::get_claude_setup_instructions() : null,
 				'strings'             => array(
-					'enableMcp'                        => __( 'Enable MCP functionality', 'wordpress-mcp' ),
-					'enableMcpDescription'             => __( 'Toggle to enable or disable the MCP plugin functionality.', 'wordpress-mcp' ),
-					'saveSettings'                     => __( 'Save Settings', 'wordpress-mcp' ),
-					'settingsSaved'                    => __( 'Settings saved successfully!', 'wordpress-mcp' ),
-					'settingsError'                    => __( 'Error saving settings. Please try again.', 'wordpress-mcp' ),
-					'toolEnabled'                      => __( 'Tool %1$s has been %2$s.', 'wordpress-mcp' ),
-					'toolDisabled'                     => __( 'Tool %1$s has been %2$s.', 'wordpress-mcp' ),
+					'enableMcp'                        => __( 'Enable MCP functionality', 'woo-mcp' ),
+					'enableMcpDescription'             => __( 'Toggle to enable or disable the MCP plugin functionality.', 'woo-mcp' ),
+					'saveSettings'                     => __( 'Save Settings', 'woo-mcp' ),
+					'settingsSaved'                    => __( 'Settings saved successfully!', 'woo-mcp' ),
+					'settingsError'                    => __( 'Error saving settings. Please try again.', 'woo-mcp' ),
+					// translators: %1$s is the tool name, %2$s is the status (enabled/disabled).
+					'toolEnabled'                      => __( 'Tool %1$s has been %2$s.', 'woo-mcp' ),
+					// translators: %1$s is the tool name, %2$s is the status (enabled/disabled).
+					'toolDisabled'                     => __( 'Tool %1$s has been %2$s.', 'woo-mcp' ),
 
-					'neverExpireWarning'               => __( 'Never-expiring tokens pose significant security risks. If compromised, they cannot be invalidated through expiration. Only use this option if you fully understand the security implications and have proper token management procedures in place.', 'wordpress-mcp' ),
-					'neverExpires'                     => __( 'Never expires', 'wordpress-mcp' ),
-					'activeNeverExpires'               => __( 'Active (Never expires)', 'wordpress-mcp' ),
-					'thisTokenNeverExpires'            => __( 'This token never expires', 'wordpress-mcp' ),
-					'securityWarning'                  => __( 'Security Warning', 'wordpress-mcp' ),
-					'neverExpiringTokens'              => __( 'Never-Expiring Tokens:', 'wordpress-mcp' ),
-					'requireJwtAuth'                   => __( 'Require JWT Authentication', 'wordpress-mcp' ),
-					'requireJwtAuthDescription'        => __( 'When enabled, all MCP requests must include a valid JWT token. When disabled, MCP endpoints are accessible without authentication (readonly mode only) and can be used as a Claude.ai Desktop connector.', 'wordpress-mcp' ),
-					'webtalkbotNote'                   => __( 'Note for Webtalkbot users:', 'wordpress-mcp' ),
-					'webtalkbotDescription'            => __( 'JWT Authentication must be enabled if you want to create a WooCommerce AI Agent in', 'wordpress-mcp' ),
-					'claudeConnectorNote'              => __( 'Claude.ai Desktop Connector:', 'wordpress-mcp' ),
-					'claudeConnectorDescription'       => __( 'When JWT Authentication is disabled, this plugin can be used as a connector in Claude.ai Desktop. A proxy file will be automatically generated for easy setup.', 'wordpress-mcp' ),
-					'proxyFileGenerated'               => __( 'MCP Proxy file generated at:', 'wordpress-mcp' ),
-					'claudeSetupInstructions'          => __( 'To use with Claude.ai Desktop, add this configuration to your claude_desktop_config.json:', 'wordpress-mcp' ),
+					'neverExpireWarning'               => __( 'Never-expiring tokens pose significant security risks. If compromised, they cannot be invalidated through expiration. Only use this option if you fully understand the security implications and have proper token management procedures in place.', 'woo-mcp' ),
+					'neverExpires'                     => __( 'Never expires', 'woo-mcp' ),
+					'activeNeverExpires'               => __( 'Active (Never expires)', 'woo-mcp' ),
+					'thisTokenNeverExpires'            => __( 'This token never expires', 'woo-mcp' ),
+					'securityWarning'                  => __( 'Security Warning', 'woo-mcp' ),
+					'neverExpiringTokens'              => __( 'Never-Expiring Tokens:', 'woo-mcp' ),
+					'requireJwtAuth'                   => __( 'Require JWT Authentication', 'woo-mcp' ),
+					'requireJwtAuthDescription'        => __( 'When enabled, all MCP requests must include a valid JWT token. When disabled, MCP endpoints are accessible without authentication (readonly mode only) and can be used as a Claude.ai Desktop connector.', 'woo-mcp' ),
+					'webtalkbotNote'                   => __( 'Note for Webtalkbot users:', 'woo-mcp' ),
+					'webtalkbotDescription'            => __( 'JWT Authentication must be enabled if you want to create a WooCommerce AI Agent in', 'woo-mcp' ),
+					'claudeConnectorNote'              => __( 'Claude.ai Desktop Connector:', 'woo-mcp' ),
+					'claudeConnectorDescription'       => __( 'When JWT Authentication is disabled, this plugin can be used as a connector in Claude.ai Desktop. A proxy file will be automatically generated for easy setup.', 'woo-mcp' ),
+					'proxyFileGenerated'               => __( 'MCP Proxy file generated at:', 'woo-mcp' ),
+					'claudeSetupInstructions'          => __( 'To use with Claude.ai Desktop, add this configuration to your claude_desktop_config.json:', 'woo-mcp' ),
 				),
 			)
 		);
@@ -170,12 +172,12 @@ class Settings {
 	 */
 	public function ajax_save_settings(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'wordpress-mcp' ) ) );
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'woo-mcp' ) ) );
 		}
 
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, 'wordpress_mcp_settings' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid nonce. Please refresh the page and try again.', 'wordpress-mcp' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid nonce. Please refresh the page and try again.', 'woo-mcp' ) ) );
 		}
 
 		// Sanitize the settings input.
@@ -184,7 +186,7 @@ class Settings {
 		update_option( self::OPTION_NAME, $settings );
 
 		// Handle JWT required setting separately
-		$jwt_required = isset( $_POST['jwt_required'] ) ? filter_var( $_POST['jwt_required'], FILTER_VALIDATE_BOOLEAN ) : true;
+		$jwt_required = isset( $_POST['jwt_required'] ) ? filter_var( wp_unslash( $_POST['jwt_required'] ), FILTER_VALIDATE_BOOLEAN ) : true;
 		$old_jwt_required = get_option( self::JWT_REQUIRED_OPTION, true );
 		update_option( self::JWT_REQUIRED_OPTION, $jwt_required );
 
@@ -199,7 +201,7 @@ class Settings {
 			}
 		}
 
-		wp_send_json_success( array( 'message' => __( 'Settings saved successfully!', 'wordpress-mcp' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Settings saved successfully!', 'woo-mcp' ) ) );
 	}
 
 	/**
@@ -249,7 +251,7 @@ class Settings {
 	 * @return array
 	 */
 	public function plugin_action_links( array $actions ): array {
-		$settings_link = '<a href="' . admin_url( 'options-general.php?page=wordpress-mcp-settings' ) . '">' . __( 'Settings', 'wordpress-mcp' ) . '</a>';
+		$settings_link = '<a href="' . admin_url( 'options-general.php?page=wordpress-mcp-settings' ) . '">' . __( 'Settings', 'woo-mcp' ) . '</a>';
 		array_unshift( $actions, $settings_link );
 		return $actions;
 	}
@@ -259,33 +261,34 @@ class Settings {
 	 */
 	public function ajax_toggle_tool(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'wordpress-mcp' ) ) );
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'woo-mcp' ) ) );
 		}
 
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, 'wordpress_mcp_settings' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid nonce. Please refresh the page and try again.', 'wordpress-mcp' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid nonce. Please refresh the page and try again.', 'woo-mcp' ) ) );
 		}
 
 		$tool_name = isset( $_POST['tool'] ) ? sanitize_text_field( wp_unslash( $_POST['tool'] ) ) : '';
-		$enabled   = isset( $_POST['tool_enabled'] ) ? filter_var( $_POST['tool_enabled'], FILTER_VALIDATE_BOOLEAN ) : false;
+		$enabled   = isset( $_POST['tool_enabled'] ) ? filter_var( wp_unslash( $_POST['tool_enabled'] ), FILTER_VALIDATE_BOOLEAN ) : false;
 
 		if ( empty( $tool_name ) ) {
-			wp_send_json_error( array( 'message' => __( 'Tool name is required.', 'wordpress-mcp' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Tool name is required.', 'woo-mcp' ) ) );
 		}
 
 		$success = $this->toggle_tool( $tool_name, $enabled );
 
 		if ( ! $success ) {
-			wp_send_json_error( array( 'message' => __( 'Failed to toggle tool state.', 'wordpress-mcp' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Failed to toggle tool state.', 'woo-mcp' ) ) );
 		}
 
 		wp_send_json_success(
 			array(
 				'message' => sprintf(
-					__( 'Tool %1$s has been %2$s.', 'wordpress-mcp' ),
+					// translators: %1$s is the tool name, %2$s is the status (enabled/disabled).
+					__( 'Tool %1$s has been %2$s.', 'woo-mcp' ),
 					$tool_name,
-					$enabled ? __( 'enabled', 'wordpress-mcp' ) : __( 'disabled', 'wordpress-mcp' )
+					$enabled ? __( 'enabled', 'woo-mcp' ) : __( 'disabled', 'woo-mcp' )
 				),
 			)
 		);
@@ -304,7 +307,10 @@ class Settings {
 		try {
 			update_option( self::TOOL_STATES_OPTION, $tool_states, 'no' );
 		} catch ( \Exception $e ) {
-			error_log( 'Failed to update tool states option: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			// Log error only in debug mode
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'Failed to update tool states option: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			}
 			return false;
 		}
 		return true;

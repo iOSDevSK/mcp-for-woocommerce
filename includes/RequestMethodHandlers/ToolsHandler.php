@@ -46,13 +46,17 @@ class ToolsHandler {
 		
 		try {
 			$tools = $this->mcp->get_tools();
-			error_log( '[MCP ToolsHandler] Returning ' . count( $tools ) . ' tools to client' );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP ToolsHandler] Returning ' . count( $tools ) . ' tools to client' );
+			}
 			
 			return array(
 				'tools' => array_values( $tools ),
 			);
 		} catch ( \Throwable $e ) {
-			error_log( '[MCP ToolsHandler] Error in list_tools: ' . $e->getMessage() );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[MCP ToolsHandler] Error in list_tools: ' . $e->getMessage() );
+			}
 			// Return empty tools list instead of failing completely
 			return array(
 				'tools' => array(),
