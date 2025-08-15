@@ -7,7 +7,8 @@
  * Tested up to:      6.7
  * Requires PHP:      8.0
  * Author:            Filip Dvoran, Claude, Automattic AI, Ovidiu Galatan
- * Author URI:        https://woo-mcp.com
+ * Author URI:        https://github.com/iOSDevSK/woo-mcp
+ * Plugin URI:        https://woo-mcp.com
  * License:           GPL-2.0-or-later
  * License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
  * Text Domain:       woo-mcp
