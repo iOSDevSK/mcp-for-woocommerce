@@ -118,17 +118,21 @@ class McpWooTaxes {
             $where_values[] = $params['state'];
         }
         
-        $where_clause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
-        
-        $base_query = "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates {$where_clause} ORDER BY tax_rate_order";
-        
-        if (!empty($where_values)) {
-            $query = $wpdb->prepare($base_query, ...$where_values);
+        if (!empty($where)) {
+            $where_clause = 'WHERE ' . implode(' AND ', $where);
+            $tax_rates = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates {$where_clause} ORDER BY tax_rate_order",
+                    ...$where_values
+                ),
+                ARRAY_A
+            );
         } else {
-            $query = $base_query;
+            $tax_rates = $wpdb->get_results(
+                "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates ORDER BY tax_rate_order",
+                ARRAY_A
+            );
         }
-        
-        $tax_rates = $wpdb->get_results($query, ARRAY_A);
         $results = [];
         
         foreach ($tax_rates as $rate) {
