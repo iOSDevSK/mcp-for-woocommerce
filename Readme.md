@@ -1,4 +1,4 @@
-# Woo MCP — WooCommerce MCP Server Plugin for WordPress
+# Woo MCP — WooCommerce MCP Server
 
 [![docs](https://github.com/iOSDevSK/woo-mcp/actions/workflows/gh-pages.yml/badge.svg)](https://github.com/iOSDevSK/woo-mcp/actions/workflows/gh-pages.yml) [![Latest Release](https://img.shields.io/github/v/release/iOSDevSK/woo-mcp)](https://github.com/iOSDevSK/woo-mcp/releases) [![License](https://img.shields.io/github/license/iOSDevSK/woo-mcp)](https://github.com/iOSDevSK/woo-mcp/blob/main/LICENSE) [![GitHub Stars](https://img.shields.io/github/stars/iOSDevSK/woo-mcp?style=social)](https://github.com/iOSDevSK/woo-mcp/stargazers)
 
@@ -323,25 +323,46 @@ AI Assistant Tips (best practice):
 - Never hardcode product IDs; use IDs returned from search
 - Always include clickable `permalink` links in user‑facing answers
 
-## SEO FAQ — WooCommerce MCP, WordPress MCP, AI Chatbot/Agent
+## Frequently Asked Questions
 
-Q: What is a WooCommerce MCP Server?
-A: It’s a server implementation of the Model Context Protocol that exposes WooCommerce and WordPress data to MCP clients (e.g., Claude, VS Code MCP). Woo MCP is a WordPress MCP plugin that acts as that server.
+<details>
+<summary><strong>What is a WooCommerce MCP Server?</strong></summary>
+<br>
+A server implementation of the Model Context Protocol that exposes WooCommerce and WordPress data to MCP clients (e.g., Claude, VS Code MCP). Woo MCP is a WordPress plugin that acts as that server.
+</details>
 
-Q: How do I install the WooCommerce MCP plugin on WordPress?
-A: Upload/activate the plugin, run `composer install` and `npm run build` for development installs, then configure settings in WordPress Admin → Settings → Woo MCP.
+<details>
+<summary><strong>How do I install the plugin?</strong></summary>
+<br>
+Upload and activate the plugin, run <code>composer install</code> and <code>npm run build</code> for development installs, then configure settings in WordPress Admin → Settings → Woo MCP.
+</details>
 
-Q: How do I connect Claude or VS Code to my WooCommerce MCP Server?
-A: Use the Streamable endpoint `/wp-json/wp/v2/wpmcp/streamable` with a JWT header. Examples are in the “Authentication and Clients” section.
+<details>
+<summary><strong>How do I connect Claude or VS Code?</strong></summary>
+<br>
+Use the Streamable endpoint <code>/wp-json/wp/v2/wpmcp/streamable</code> with a JWT header. Examples are in the "Authentication and Clients" section.
+</details>
 
-Q: Can I add a WooCommerce AI Chatbot / AI Agent to my website?
-A: Yes. Pair Woo MCP with Webtalkbot to deploy an on‑site WooCommerce AI Chatbot/Agent in minutes. Create a JWT token in Woo MCP settings and paste it into Webtalkbot.
+<details>
+<summary><strong>Can I add an AI Chatbot to my website?</strong></summary>
+<br>
+Yes. Pair Woo MCP with Webtalkbot to deploy an on‑site WooCommerce AI Chatbot/Agent in minutes. Create a JWT token in Woo MCP settings and paste it into Webtalkbot.
+</details>
 
-Q: Is this read‑only? Does it include product links?
-A: Yes, all tools are read‑only and include `permalink` fields for products/variations, ideal for customer‑facing answers.
+<details>
+<summary><strong>Is this read‑only? Does it include product links?</strong></summary>
+<br>
+Yes, all tools are read‑only and include <code>permalink</code> fields for products/variations, ideal for customer‑facing answers.
+</details>
 
-Q: Is customer/order PII exposed?
-A: No. The plugin focuses on public store/catalog data and WordPress content.
+<details>
+<summary><strong>Is customer/order data exposed?</strong></summary>
+<br>
+No. The plugin focuses on public store/catalog data and WordPress content. No PII is exposed.
+</details>
 
-Q: Is this compatible with Automattic’s WordPress MCP?
-A: Yes, Woo MCP is built on Automattic’s official WordPress MCP and follows GPL‑2.0‑or‑later.
+<details>
+<summary><strong>Is this compatible with Automattic's WordPress MCP?</strong></summary>
+<br>
+Yes, Woo MCP is built on Automattic's official WordPress MCP and follows GPL‑2.0‑or‑later.
+</details>
