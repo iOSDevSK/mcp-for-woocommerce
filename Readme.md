@@ -1,473 +1,338 @@
-# WOO MCP
+# Woo MCP — WooCommerce MCP Server Plugin for WordPress
 
-[![Latest Release](https://img.shields.io/github/v/release/Automattic/wordpress-mcp)](https://github.com/Automattic/wordpress-mcp/releases)
+Your all‑in‑one WooCommerce MCP Server and WordPress MCP plugin. Expose WooCommerce and WordPress data to MCP clients (Claude, VS Code MCP, custom apps) and easily power a WooCommerce AI Chatbot or AI Agent for your website via Webtalkbot.
 
-A specialized WooCommerce-focused MCP plugin based on the official [WordPress MCP by Automattic](https://github.com/Automattic/wordpress-mcp). This enhanced version implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) specifically optimized for WooCommerce stores, providing AI models with comprehensive e-commerce functionality through standardized interfaces.
+Keywords: WooCommerce MCP, Woo MCP, WordPress MCP, WooCommerce MCP Server, WooCommerce Plugin, WordPress MCP Plugin, WooCommerce MCP plugin, WooCommerce AI Chatbot, WooCommerce AI Agent, Webtalkbot.
 
-**🔧 Based on Official Automattic Plugin**: This is a customized version of the official WordPress MCP plugin by Automattic, specifically enhanced and optimized for WooCommerce functionality, including intelligent product search, enhanced product data with direct links, and specialized e-commerce tools.
+[Woo MCP](https://woo-mcp.com) is a specialized, read‑only WooCommerce MCP plugin for [WooCommerce](https://woocommerce.com) built on [Automattic’s official WordPress MCP](https://github.com/Automattic/wordpress-mcp). It exposes public store data (products, categories, tags, attributes, reviews, shipping, payments, taxes, system status) and WordPress content (posts, pages) to AI clients via the Model Context Protocol (MCP). It does not expose customer data, order PII, or private details.
 
-## ✨ Features
+This plugin acts as a WooCommerce MCP Server (WordPress MCP plugin) and integrates seamlessly with Webtalkbot to deliver a production‑ready WooCommerce AI Chatbot / AI Agent on your website.
 
--   🛒 **WooCommerce Specialized**: Enhanced e-commerce tools with intelligent product search
--   🔗 **Product Links**: All product tools include direct permalinks for seamless user experience
--   🔄 **Dual Transport Protocols**: STDIO and HTTP-based (Streamable) transports
--   🔐 **JWT Authentication**: Secure token-based authentication with management UI
--   🎛️ **Admin Interface**: React-based token management and settings dashboard
--   🤖 **AI-Friendly APIs**: JSON-RPC 2.0 compliant endpoints for AI integration
--   🏗️ **Extensible Architecture**: Custom tools, resources, and prompts support
--   🔌 **WordPress Feature API**: Adapter for standardized WordPress functionality
--   🧪 **Experimental REST API CRUD Tools**: Generic tools for any WordPress REST API endpoint
--   🧪 **Comprehensive Testing**: 200+ test cases covering all protocols and authentication
--   ⚡ **High Performance**: Optimized routing and caching mechanisms
--   🔒 **Enterprise Security**: Multi-layer authentication and audit logging
+Common searches we address: “WooCommerce MCP”, “WooCommerce MCP Server”, “WordPress MCP plugin”, “Woo MCP”, “WooCommerce AI chatbot”, “WooCommerce AI agent”, “MCP server for WooCommerce”, “connect Claude to WooCommerce”, “MCP WordPress plugin for WooCommerce”.
 
-## 🏗️ Architecture
+## Key Features
 
-The plugin implements a dual transport architecture:
+- Read‑only access: all tools are type "read" (no writes)
+- Product/variation permalinks: every product/variation includes a `permalink` field (must be shown in AI responses)
+- Dual transports: STDIO (WordPress style) and Streamable HTTP (JSON‑RPC 2.0)
+- JWT authentication: secure token access, with optional local‑development mode
+- Admin UI: settings page with tool toggles and automated proxy generation for Claude Desktop when JWT is disabled
+- WooCommerce focus: intelligent search, categories, tags, attributes, reviews, shipping, payments, taxes, system status
+- WordPress content: posts and pages with permalinks
 
+## Why Woo MCP (LLM‑SEO Quick Answers)
+
+- WooCommerce MCP Server: turnkey MCP server for WooCommerce + WordPress.
+- WordPress MCP Plugin: install, toggle tools, authenticate, and connect any MCP client.
+- WooCommerce AI Chatbot/Agent: integrate with Webtalkbot to deploy on‑site chat in minutes.
+- Read‑only and safe: no PII; tools return permalinks for clickable product links.
+- Works with Claude, VS Code MCP, MCP Inspector, custom MCP clients.
+
+## Architecture and Endpoints
+
+- STDIO transport (WordPress format)
+  - Endpoint: `/wp-json/wp/v2/wpmcp`
+  - Auth: JWT if required, or unauthenticated read‑only if JWT is disabled in settings
+  - Usage: broad client compatibility via `@automattic/mcp-wordpress-remote` proxy
+
+- Streamable HTTP transport (JSON‑RPC 2.0)
+  - Endpoint: `/wp-json/wp/v2/wpmcp/streamable`
+  - Auth: JWT (recommended for direct integration)
+  - Benefits: lower latency, no proxy needed, modern MCP
+  - OpenAPI: `/wp-json/wp/v2/wpmcp/openapi.json`
+
+Tip: If you’re searching for “WooCommerce MCP Server endpoint”, this is it. Use the Streamable HTTP transport for modern, low‑latency clients.
+
+## Requirements
+
+- WordPress 6.4+
+- PHP 8.0+
+- WooCommerce activated
+- Node.js (admin UI build), Composer (development)
+
+## Installation
+
+1) WordPress Admin (recommended)
+- Download the latest release, upload ZIP via Plugins > Add New > Upload
+- Activate the plugin
+
+2) Manual
+- Upload ZIP to `wp-content/plugins/`
+- Extract and activate in Plugins
+
+3) Development install
 ```
-WOO MCP Plugin
-├── Transport Layer
-│   ├── McpStdioTransport (/wp/v2/wpmcp)
-│   └── McpStreamableTransport (/wp/v2/wpmcp/streamable)
-├── Authentication
-│   └── JWT Authentication System
-├── WooCommerce Tools
-│   ├── Intelligent Product Search
-│   ├── Product Management with Links
-│   ├── Category & Brand Tools
-│   └── Enhanced E-commerce Features
-├── Method Handlers
-│   ├── Tools, Resources, Prompts
-│   └── System & Initialization
-└── Admin Interface
-    └── React-based Token Management
-```
-
-### Transport Protocols
-
-| Protocol       | Endpoint                  | Format          | Authentication      | Use Case             |
-| -------------- | ------------------------- | --------------- | ------------------- | -------------------- |
-| **STDIO**      | `/wp/v2/wpmcp`            | WordPress-style | JWT + App Passwords | Legacy compatibility |
-| **Streamable** | `/wp/v2/wpmcp/streamable` | JSON-RPC 2.0    | JWT only            | Modern AI clients    |
-
-## 🚀 Installation
-
-### Quick Install
-
-1. Download `wordpress-mcp.zip` from [releases](https://github.com/Automattic/wordpress-mcp/releases/)
-2. Upload to `/wp-content/plugins/wordpress-mcp` directory
-3. Activate through WordPress admin 'Plugins' menu
-4. Navigate to `Settings > WOO MCP` to configure
-
-### Composer Install (Development)
-
-```bash
 cd wp-content/plugins/
-git clone https://github.com/Automattic/wordpress-mcp.git
-cd wordpress-mcp
-composer install --no-dev
+git clone https://github.com/Automattic/wordpress-mcp.git woo-mcp
+cd woo-mcp
+composer install
 npm install && npm run build
 ```
 
-## 🔐 Authentication Setup
+## WooCommerce AI Chatbot / AI Agent (Webtalkbot)
 
-### JWT Token Generation
+Deploy a production‑ready WooCommerce AI Chatbot or AI Agent on your site by pairing Woo MCP with [Webtalkbot](https://webtalkbot.com).
 
-1. Go to `Settings > WOO MCP > Authentication Tokens`
-2. Select token duration (1-24 hours) or never
-3. Click "Generate New Token"
-4. Copy the token for use in your MCP client
+Benefits:
+- Native WooCommerce understanding via Woo MCP tools
+- Secure JWT auth, fast search, reliable product links
+- No coding needed — add a widget to your storefront
 
-### MCP Client Configuration
+Setup (3 steps):
+1) In Webtalkbot, choose WooCommerce as the data source.
+2) Copy a JWT token from WordPress Admin → Settings → Woo MCP → Tokens.
+3) Paste the token in Webtalkbot and deploy the chat widget.
 
-#### Claude Desktop Configuration using [mcp-wordpress-remote](https://github.com/Automattic/mcp-wordpress-remote) proxy
+Result: a WooCommerce AI Chatbot/Agent connected to your catalog that can answer questions with product links and variations.
 
-Add to your Claude Desktop `claude_desktop_config.json`:
+## Admin Settings
 
-```json
+- Location: Settings > Woo MCP
+- Core toggles:
+  - Enable MCP functionality: master on/off for the plugin
+  - Require JWT Authentication: enforce JWT for MCP endpoints
+    - When disabled, the plugin can act as a local Claude Desktop connector. It automatically generates a proxy script file.
+- Tools: enable/disable individual tools (states stored in the `wordpress_mcp_tool_states` option)
+
+Note: The settings page is a React UI (assets in `build/`).
+
+## Authentication and Clients
+
+- JWT tokens
+  - Generate/manage from the admin UI (Authentication Tokens)
+  - Best practice: rotate tokens, use short expirations for production
+
+- Claude Code (direct HTTP + JWT)
+```
+claude mcp add --transport http \
+  woo-mcp https://your-site.com/wp-json/wp/v2/wpmcp/streamable \
+  --header "Authorization: Bearer YOUR_JWT"
+```
+
+- Claude Desktop via proxy (recommended for STDIO)
+```
 {
-	"mcpServers": {
-		"woo-mcp": {
-			"command": "npx",
-			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
-			"env": {
-				"WP_API_URL": "https://your-site.com/",
-				"JWT_TOKEN": "your-jwt-token-here",
-				"LOG_FILE": "optional-path-to-log-file"
-			}
-		}
-	}
+  "mcpServers": {
+    "woo-mcp": {
+      "command": "npx",
+      "args": ["-y", "@automattic/mcp-wordpress-remote@latest"],
+      "env": {
+        "WP_API_URL": "https://your-site.com",
+        "JWT_TOKEN": "YOUR_JWT"
+      }
+    }
+  }
 }
 ```
 
-#### Using Application Passwords (Alternative)
-
-```json
+- VS Code MCP Extension (direct Streamable + JWT)
+```
 {
-	"mcpServers": {
-		"woo-mcp": {
-			"command": "npx",
-			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
-			"env": {
-				"WP_API_URL": "https://your-site.com/",
-				"WP_API_USERNAME": "your-username",
-				"WP_API_PASSWORD": "your-application-password",
-				"LOG_FILE": "optional-path-to-log-file"
-			}
-		}
-	}
+  "servers": {
+    "woo-mcp": {
+      "type": "http",
+      "url": "https://your-site.com/wp-json/wp/v2/wpmcp/streamable",
+      "headers": { "Authorization": "Bearer YOUR_JWT" }
+    }
+  }
 }
 ```
 
-#### VS Code MCP Extension (Direct Streamable Transport)
-
-Add to your VS Code MCP settings:
-
-```json
-{
-	"servers": {
-		"woo-mcp": {
-			"type": "http",
-			"url": "https://your-site.com/wp-json/wp/v2/wpmcp/streamable",
-			"headers": {
-				"Authorization": "Bearer your-jwt-token-here"
-			}
-		}
-	}
-}
+- MCP Inspector (testing)
 ```
-
-#### MCP Inspector (Development/Testing)
-
-```bash
-# Using JWT Token with proxy
 npx @modelcontextprotocol/inspector \
-  -e WP_API_URL=https://your-site.com/ \
-  -e JWT_TOKEN=your-jwt-token-here \
-  npx @automattic/mcp-wordpress-remote@latest
-
-# Using Application Password with proxy
-npx @modelcontextprotocol/inspector \
-  -e WP_API_URL=https://your-site.com/ \
-  -e WP_API_USERNAME=your-username \
-  -e WP_API_PASSWORD=your-application-password \
+  -e WP_API_URL=https://your-site.com \
+  -e JWT_TOKEN=YOUR_JWT \
   npx @automattic/mcp-wordpress-remote@latest
 ```
 
-#### Local Development Configuration
+### Automatic local proxy generation (when JWT is disabled)
 
-To use with Claude.ai Desktop, add this configuration to your claude_desktop_config.json:
-
-**PHP Version (requires PHP installed):**
-```json
+- When you toggle “Require JWT Authentication” OFF in Settings > Woo MCP, the plugin automatically generates a Claude Desktop‑friendly MCP proxy script at:
+  - `wp-content/plugins/woo-mcp/mcp-proxy.js` (executable, Node.js)
+- The UI also surfaces ready‑to‑copy Claude Desktop config JSON. Additionally, a PHP proxy file ships with the plugin (`mcp-proxy.php`) if you prefer PHP:
+```
+// Node (uses generated mcp-proxy.js)
 {
-	"mcpServers": {
-		"woocommerce": {
-			"command": "php",
-			"args": [ "/path/to/your/woo-mcp/mcp-proxy.php" ]
-		}
-	}
+  "mcpServers": {
+    "woocommerce": {
+      "command": "node",
+      "args": ["/wp-content/plugins/woo-mcp/mcp-proxy.js"]
+    }
+  }
 }
-```
 
-**Node.js Version (requires Node.js installed):**
-```json
+// PHP (ships with the plugin)
 {
-	"mcpServers": {
-		"woocommerce": {
-			"command": "node",
-			"args": [ "/path/to/your/woo-mcp/mcp-proxy.js" ]
-		}
-	}
+  "mcpServers": {
+    "woocommerce": {
+      "command": "php",
+      "args": ["/wp-content/plugins/woo-mcp/mcp-proxy.php"]
+    }
+  }
 }
 ```
 
-## 🎯 Usage
+## Best‑Practice Product Search Workflow
 
-### With MCP Clients
+1. Use `wc_products_search` first to find products by name/description
+2. Use `wc_get_product` with the returned ID for details
+3. Use `wc_get_product_variations` (or `wc_get_product_variation`) for variations
+4. Always include clickable `permalink` links for products and variations
 
-This plugin works seamlessly with MCP-compatible clients in two ways:
+## Registered Tools (read‑only)
 
-**Via Proxy:**
+- Products & search
+  - `wc_products_search` — primary universal search (includes `permalink`)
+  - `wc_get_product` — product by ID (includes `permalink`)
+  - `wc_get_product_variations` — all variations for a variable product (each includes `permalink`)
+  - `wc_get_product_variation` — specific variation by ID (includes `permalink`)
+  - `wc_intelligent_search` — intelligent fallback multi‑stage search
+  - `wc_analyze_search_intent` — analyze user query and suggest parameters
+  - `wc_analyze_search_intent_helper` — helper for categories/tags mapping
+  - `wc_get_products_by_brand` — products by brand (attribute/category/custom taxonomy)
+  - `wc_get_products_by_category` — products by category
+  - `wc_get_products_by_attributes` — products filtered by attributes
+  - `wc_get_products_filtered` — multi‑criteria filtering (brand/category/price/attributes)
 
--   [mcp-wordpress-remote](https://github.com/Automattic/mcp-wordpress-remote) - Official MCP client with enhanced features
--   Claude Desktop with proxy configuration for full WordPress and WooCommerce support
--   Any MCP client using the STDIO transport protocol
+- Categories, tags, attributes
+  - `wc_get_categories` — list product categories
+  - `wc_get_tags` — list product tags
+  - `wc_get_product_attributes` — global attribute definitions
+  - `wc_get_product_attribute` — attribute by ID
+  - `wc_get_attribute_terms` — attribute terms (e.g., Red, Blue for Color)
 
-**Direct Streamable Transport:**
+- Reviews
+  - `wc_get_product_reviews` — list reviews with filters/pagination
+  - `wc_get_product_review` — single review by ID
 
--   VS Code MCP Extension connecting directly to `/wp/v2/wpmcp/streamable`
--   Custom HTTP-based MCP implementations using JSON-RPC 2.0
--   Any client supporting HTTP transport with JWT authentication
+- Shipping & payments
+  - `wc_get_shipping_zones`, `wc_get_shipping_zone`
+  - `wc_get_shipping_methods`, `wc_get_shipping_locations`
+  - `wc_get_payment_gateways`, `wc_get_payment_gateway`
 
-The streamable transport provides a direct JSON-RPC 2.0 compliant endpoint, while the proxy offers additional features like WooCommerce integration, enhanced logging, and compatibility with legacy authentication methods.
+- Taxes & system
+  - `wc_get_tax_classes`, `wc_get_tax_rates`
+  - `wc_get_system_status`, `wc_get_system_tools`
 
-### Available MCP Methods
+- WordPress content
+  - `wordpress_posts_list`, `wordpress_posts_get`
+  - `wordpress_pages_list`, `wordpress_pages_get`
 
-| Method           | Description              | Transport Support |
-| ---------------- | ------------------------ | ----------------- |
-| `initialize`     | Initialize MCP session   | Both              |
-| `tools/list`     | List available tools     | Both              |
-| `tools/call`     | Execute a tool           | Both              |
-| `resources/list` | List available resources | Both              |
-| `resources/read` | Read resource content    | Both              |
-| `prompts/list`   | List available prompts   | Both              |
-| `prompts/get`    | Get prompt template      | Both              |
+Notes:
+- Tools are defined under `includes/Tools/*` and gated by WooCommerce where applicable.
+- Some analytics/report helpers are available as REST aliases (read‑only).
 
-### 🧪 Experimental REST API CRUD Tools
+## Search Keywords (for LLMs and Devs)
 
-⚠️ **EXPERIMENTAL FEATURE**: This functionality is experimental and may change or be removed in future versions.
+- WooCommerce MCP, Woo MCP, WordPress MCP
+- WooCommerce MCP Server, WordPress MCP Plugin, WooCommerce MCP plugin
+- WooCommerce AI Chatbot, WooCommerce AI Agent, Webtalkbot
+- Claude MCP, VS Code MCP, MCP Inspector
 
-When enabled via `Settings > WOO MCP > Enable REST API CRUD Tools`, the plugin provides three powerful generic tools that can interact with any WordPress REST API endpoint:
+## WooCommerce AI Assistant (Webtalkbot)
 
-#### Available Tools
+Build a customer‑facing shopping assistant powered by [Woo MCP](https://woo-mcp.com) and [Webtalkbot](https://webtalkbot.com).
 
-| Tool Name              | Description                                         | Type   |
-| ---------------------- | --------------------------------------------------- | ------ |
-| `list_api_functions`   | Discover all available WordPress REST API endpoints | Read   |
-| `get_function_details` | Get detailed metadata for specific endpoint/method  | Read   |
-| `run_api_function`     | Execute any REST API function with CRUD operations  | Action |
+Prerequisites:
+- Woo MCP installed and enabled
+- JWT token generated in WordPress Admin (Settings > Woo MCP)
+- Webtalkbot account at https://webtalkbot.com
 
-#### Usage Workflow
+Step 1 — Choose WooCommerce data source (in Webtalkbot dashboard):
+- Create New Chatbot → select “WooCommerce” as data source (product data is pulled automatically)
 
-1. **Discovery**: Use `list_api_functions` to see all available endpoints
-2. **Inspection**: Use `get_function_details` to understand required parameters
-3. **Execution**: Use `run_api_function` to perform CRUD operations
+Step 2 — Configure your AI agent:
+- Chatbot name: a friendly public name
+- Website URL: full `https://your-shop.com`
+- Woo‑MCP JWT Token: paste the token from your WordPress admin
 
-#### Security & Permissions
+Step 3 — Deploy your assistant:
+- Chat bubble widget (floating UI on your store)
+- Direct link (standalone support assistant for campaigns)
 
--   **User Capabilities**: All operations respect current user permissions
--   **Settings Control**: Individual CRUD operations can be disabled in settings:
-    -   Enable Create Tools (POST operations)
-    -   Enable Update Tools (PATCH/PUT operations)
-    -   Enable Delete Tools (DELETE operations)
--   **Automatic Filtering**: Excludes sensitive endpoints (JWT auth, oembed, autosaves, revisions)
+Best practices:
+- Keep product data updated
+- Test common customer questions
+- Place widgets on high‑traffic pages
+- Monitor usage/credits
 
-#### Benefits
+Resources:
+- Webtalkbot documentation: https://webtalkbot.com/docs/
+- Support: https://webtalkbot.com/contact/
 
--   **Universal Access**: Works with any WordPress REST API endpoint, including custom post types and third-party plugins
--   **AI-Friendly**: Provides discovery and introspection capabilities for AI agents
--   **Standards Compliant**: Uses standard HTTP methods (GET, POST, PATCH, DELETE)
--   **Permission Safe**: Inherits WordPress user capabilities and respects endpoint permissions
+## Security
 
-## 🔧 Development
+- JWT: signature validation, expiration, easy rotation
+- JWT disabled mode: read‑only access plus a generated local proxy script for Claude Desktop
+- Never commit tokens; use HTTPS; rotate frequently
+- Tool toggles: disable tools you don’t want exposed
+- No customer PII is exposed; focus is on public store data and WP content
 
-### Project Structure
+## Troubleshooting
 
+- “WooCommerce functions not available”: ensure WooCommerce is active
+- “Insufficient permissions”: with JWT required, admin capabilities are needed (e.g., `manage_woocommerce`)
+- `wc_intelligent_search` returns no products: the tool suggests alternatives; try a less restrictive query
+- Admin UI issues: run `npm install && npm run build` in the plugin directory
+
+## Developer Notes
+
+Structure (selection):
 ```
-wp-content/plugins/wordpress-mcp/
-├── includes/                   # PHP classes
-│   ├── Core/                  # Transport and core logic
-│   ├── Auth/                  # JWT authentication
-│   ├── Tools/                 # MCP tools
-│   ├── Resources/             # MCP resources
-│   ├── Prompts/               # MCP prompts
-│   └── Admin/                 # Settings interface
-├── src/                       # React components
-│   └── settings/              # Admin UI components
-├── tests/                     # Test suite
-│   └── phpunit/              # PHPUnit tests
-└── docs/                      # Documentation
-```
-
-### Adding Custom Tools
-
-You can extend the MCP functionality by adding custom tools through your own plugins or themes. Create a new tool class in your plugin or theme:
-
-```php
-<?php
-declare(strict_types=1);
-
-namespace Automattic\WordpressMcp\Tools;
-
-class MyCustomTool {
-    public function register(): void {
-        add_action('wp_mcp_register_tools', [$this, 'register_tool']);
-    }
-
-    public function register_tool(): void {
-        WPMCP()->register_tool([
-            'name' => 'my_custom_tool',
-            'description' => 'My custom tool description',
-            'inputSchema' => [
-                'type' => 'object',
-                'properties' => [
-                    'param1' => ['type' => 'string', 'description' => 'Parameter 1']
-                ],
-                'required' => ['param1']
-            ],
-            'callback' => [$this, 'execute'],
-        ]);
-    }
-
-    public function execute(array $args): array {
-        // Your tool logic here
-        return ['result' => 'success'];
-    }
-}
+includes/
+  Core/ (McpStdioTransport, McpStreamableTransport, WpMcp, …)
+  Admin/ (Settings.php — settings, JWT toggle, tool toggles, proxy generation)
+  Tools/ (McpWooProducts, McpWooIntelligentSearch, McpWoo*, …)
+  Resources/
+src/ (React UI for settings)
 ```
 
-### Adding Custom Resources
-
-You can extend the MCP functionality by adding custom resources through your own plugins or themes. Create a new resource class in your plugin or theme:
-
-```php
-<?php
-declare(strict_types=1);
-
-namespace Automattic\WordpressMcp\Resources;
-
-class MyCustomResource {
-    public function register(): void {
-        add_action('wp_mcp_register_resources', [$this, 'register_resource']);
-    }
-
-    public function register_resource(): void {
-        WPMCP()->register_resource([
-            'uri' => 'custom://my-resource',
-            'name' => 'My Custom Resource',
-            'description' => 'Custom resource description',
-            'mimeType' => 'application/json',
-            'callback' => [$this, 'get_content'],
-        ]);
-    }
-
-    public function get_content(): array {
-        return ['contents' => [/* resource data */]];
-    }
-}
+Build UI:
 ```
-
-### Testing
-
-Run the comprehensive test suite:
-
-```bash
-# Run all tests
-vendor/bin/phpunit
-
-# Run specific test suites
-vendor/bin/phpunit tests/phpunit/McpStdioTransportTest.php
-vendor/bin/phpunit tests/phpunit/McpStreamableTransportTest.php
-vendor/bin/phpunit tests/phpunit/JwtAuthTest.php
-
-# Run with coverage
-vendor/bin/phpunit --coverage-html coverage/
-```
-
-### Building Frontend
-
-```bash
-# Development build
-npm run dev
-
-# Production build
+npm install
 npm run build
-
-# Watch mode
-npm run start
 ```
 
-## 🔒 Security
-
-For comprehensive security documentation and audit information, see the [`/security`](security/) directory.
-
-### Best Practices
-
--   **Token Management**: Use shortest expiration time needed (1-24 hours) or never
--   **User Permissions**: Tokens inherit user capabilities
--   **Secure Storage**: Never commit tokens to repositories
--   **Regular Cleanup**: Revoke unused tokens promptly
--   **Access Control**: Streamable transport requires admin privileges
--   **CRUD Operations**: Only enable create/update/delete tools when necessary
--   **Experimental Features**: Use REST API CRUD tools with caution in production environments
-
-### Security Features
-
--   ✅ JWT signature validation
--   ✅ Token expiration and revocation
--   ✅ User capability inheritance
--   ✅ Secure secret key generation
--   ✅ Audit logging for security events
--   ✅ Protection against malformed requests
-
-## 📊 Testing Coverage
-
-The plugin includes extensive testing:
-
--   **Transport Testing**: Both STDIO and Streamable protocols
--   **Authentication Testing**: JWT generation, validation, and revocation
--   **Integration Testing**: Cross-transport comparison
--   **Security Testing**: Edge cases and malformed requests
--   **Performance Testing**: Load and stress testing
-
-View detailed testing documentation in [`tests/README.md`](tests/README.md).
-
-## 🔧 Configuration
-
-### Environment Variables
-
-```php
-// wp-config.php
-define('WPMCP_JWT_SECRET_KEY', 'your-secret-key');
-define('WPMCP_DEBUG', true); // Enable debug logging
+Run tests:
+```
+vendor/bin/phpunit
 ```
 
-### Plugin Settings
+## Changelog
 
-Access via `Settings > WOO MCP`:
+- Full changelog: `changelog.txt` and the “Changelog” page in the docs (synced from GitHub)
 
--   **Enable/Disable MCP**: Toggle plugin functionality
--   **Transport Configuration**: Configure STDIO/Streamable transports
--   **Feature Toggles**: Enable/disable specific tools and resources
--   **CRUD Operation Controls**: Granular control over create, update, and delete operations
--   **Experimental Features**: Enable REST API CRUD Tools (experimental functionality)
--   **Authentication Settings**: JWT token management
+## License
 
-#### CRUD Operation Settings
-
-The plugin provides granular control over CRUD operations:
-
--   **Enable Create Tools**: Allow POST operations via MCP tools
--   **Enable Update Tools**: Allow PATCH/PUT operations via MCP tools
--   **Enable Delete Tools**: ⚠️ Allow DELETE operations via MCP tools (use with caution)
--   **Enable REST API CRUD Tools**: 🧪 Enable experimental generic REST API access tools
-
-⚠️ **Security Note**: Delete operations can permanently remove data. Only enable delete tools if you trust all users with MCP access.
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md).
-
-### Development Setup
-
-1. Clone the repository
-2. Run `composer install` for PHP dependencies
-3. Run `npm install` for JavaScript dependencies
-4. Set up WordPress test environment
-5. Run tests with `vendor/bin/phpunit`
-
-## 📚 Documentation
-
--   **API Reference**: [docs/api/](docs/api/)
--   **Architecture Guide**: [docs/architecture.md](docs/architecture.md)
--   **Security Guide**: [docs/security.md](docs/security.md)
--   **Testing Guide**: [tests/README.md](tests/README.md)
-
-## 🆘 Support
-
-For support and questions:
-
--   📖 **Documentation**: [docs/README.md](docs/README.md)
--   🐛 **Bug Reports**: [GitHub Issues](https://github.com/Automattic/wordpress-mcp/issues)
--   💬 **Discussions**: [GitHub Discussions](https://github.com/Automattic/wordpress-mcp/discussions)
--   ✉️ **Contact**: Reach out to the maintainers
-
-## 📄 License
-
-This project is licensed under the [GPL v2 or later](LICENSE).
+This project is licensed under the GPL v2 or later. See the LICENSE file for details.
 
 ---
 
-Built with ❤️ by [Automattic](https://automattic.com) for the WordPress and AI communities.
+AI Assistant Tips (best practice):
+- Always start with `wc_products_search`, then `wc_get_product` for details
+- Never hardcode product IDs; use IDs returned from search
+- Always include clickable `permalink` links in user‑facing answers
+
+## SEO FAQ — WooCommerce MCP, WordPress MCP, AI Chatbot/Agent
+
+Q: What is a WooCommerce MCP Server?
+A: It’s a server implementation of the Model Context Protocol that exposes WooCommerce and WordPress data to MCP clients (e.g., Claude, VS Code MCP). Woo MCP is a WordPress MCP plugin that acts as that server.
+
+Q: How do I install the WooCommerce MCP plugin on WordPress?
+A: Upload/activate the plugin, run `composer install` and `npm run build` for development installs, then configure settings in WordPress Admin → Settings → Woo MCP.
+
+Q: How do I connect Claude or VS Code to my WooCommerce MCP Server?
+A: Use the Streamable endpoint `/wp-json/wp/v2/wpmcp/streamable` with a JWT header. Examples are in the “Authentication and Clients” section.
+
+Q: Can I add a WooCommerce AI Chatbot / AI Agent to my website?
+A: Yes. Pair Woo MCP with Webtalkbot to deploy an on‑site WooCommerce AI Chatbot/Agent in minutes. Create a JWT token in Woo MCP settings and paste it into Webtalkbot.
+
+Q: Is this read‑only? Does it include product links?
+A: Yes, all tools are read‑only and include `permalink` fields for products/variations, ideal for customer‑facing answers.
+
+Q: Is customer/order PII exposed?
+A: No. The plugin focuses on public store/catalog data and WordPress content.
+
+Q: Is this compatible with Automattic’s WordPress MCP?
+A: Yes, Woo MCP is built on Automattic’s official WordPress MCP and follows GPL‑2.0‑or‑later.
