@@ -141,6 +141,70 @@ Check system status (debug info):
 }
 ```
 
+List tax classes and tax rates:
+```
+{
+  "jsonrpc": "2.0",
+  "id": "13",
+  "method": "tools.call",
+  "params": { "name": "wc_get_tax_classes", "arguments": {} }
+}
+```
+```
+{
+  "jsonrpc": "2.0",
+  "id": "14",
+  "method": "tools.call",
+  "params": { "name": "wc_get_tax_rates", "arguments": {} }
+}
+```
+
+List WordPress posts and get a post:
+```
+{
+  "jsonrpc": "2.0",
+  "id": "15",
+  "method": "tools.call",
+  "params": { "name": "wordpress_posts_list", "arguments": { "page": 1, "per_page": 5 } }
+}
+```
+```
+{
+  "jsonrpc": "2.0",
+  "id": "16",
+  "method": "tools.call",
+  "params": { "name": "wordpress_posts_get", "arguments": { "id": 1234 } }
+}
+```
+
+List WordPress pages and get a page:
+```
+{
+  "jsonrpc": "2.0",
+  "id": "17",
+  "method": "tools.call",
+  "params": { "name": "wordpress_pages_list", "arguments": { "page": 1, "per_page": 5 } }
+}
+```
+```
+{
+  "jsonrpc": "2.0",
+  "id": "18",
+  "method": "tools.call",
+  "params": { "name": "wordpress_pages_get", "arguments": { "id": 55 } }
+}
+```
+
+List attribute terms (e.g., Color terms):
+```
+{
+  "jsonrpc": "2.0",
+  "id": "19",
+  "method": "tools.call",
+  "params": { "name": "wc_get_attribute_terms", "arguments": { "attribute_id": 12 } }
+}
+```
+
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
