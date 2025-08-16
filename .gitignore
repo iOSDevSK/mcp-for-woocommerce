@@ -1,0 +1,20 @@
+# Claude AI instructions file - keep local only
+CLAUDE.md
+
+# Build outputs
+*.zip
+mcp-for-woocommerce-*.zip
+
+# Development files
+.DS_Store
+*.log
+
+# Node modules
+node_modules/
+
+# Composer vendor (will be rebuilt)
+vendor/
+composer.lock
+
+# Build assets (will be rebuilt)
+build/
