@@ -1,6 +1,6 @@
 ## Overview
 
-Woo MCP provides a secure, read-only interface to your WooCommerce store data through the Model Context Protocol (MCP). This enables AI assistants to access and understand your store information including:
+MCP for WooCommerce provides a secure, read-only interface to your WooCommerce store data through the Model Context Protocol (MCP). This enables AI assistants to access and understand your store information including:
 
 - **Products** - Access product catalog, descriptions, pricing, and inventory
 - **Categories** - Browse product categories and hierarchies  
@@ -17,7 +17,7 @@ Woo MCP provides a secure, read-only interface to your WooCommerce store data th
 
 ## Transport Protocols
 
-Woo MCP supports two transport protocols:
+MCP for WooCommerce supports two transport protocols:
 
 -   **STDIO Transport**: Traditional transport via `mcp-wordpress-remote` proxy
 -   **Streamable Transport**: Direct HTTP-based transport with JSON-RPC 2.0
@@ -38,7 +38,7 @@ Woo MCP supports two transport protocols:
 
 #### Using HTTP Transport with JWT Token (Recommended)
 
-Add your Woo MCP server directly to Claude Code using the HTTP transport:
+Add your MCP for WooCommerce server directly to Claude Code using the HTTP transport:
 
 ```bash
 claude mcp add --transport http woo-mcp {{your-website.com}}/wp-json/wp/v2/wpmcp/streamable --header "Authorization: Bearer your-jwt-token-here"
@@ -249,6 +249,6 @@ npx @modelcontextprotocol/inspector \
 
 For additional help:
 
--   Check the <a href="https://woo-mcp.com" target="_blank">Woo MCP website</a>
+-   Check the <a href="https://mcpforwoocommerce.com" target="_blank">MCP for WooCommerce website</a>
 -   Visit the <a href="https://github.com/Automattic/mcp-wordpress-remote" target="_blank">mcp-wordpress-remote repository</a>
--   Report issues on <a href="https://github.com/iOSDevSK/woo-mcp/issues" target="_blank">GitHub Issues</a>
+-   Report issues on <a href="https://github.com/iOSDevSK/mcp-for-woocommerce/issues" target="_blank">GitHub Issues</a>

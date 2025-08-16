@@ -1,0 +1,53 @@
+# Development files and directories
+.git
+.gitignore
+.github
+node_modules
+src
+.wordpress-org
+.claude
+
+# Build tools and configuration (keep composer.json/lock and package.json for server builds)
+package-lock.json
+pnpm-lock.yaml
+webpack.config.js
+.wp-env.json
+
+# Documentation files that should not be in WordPress.org distribution
+README.md
+Readme.md
+CLAUDE.md
+CREATE_FINAL_ZIP.md
+CREATE_REMAINING_ASSETS.md
+MCP-CONNECTION-LOGGING.md
+RELEASE_INSTRUCTIONS.md
+WORDPRESS_SUBMISSION_GUIDE.md
+claude-ai-connector-setup.md
+commits.md
+history.txt
+
+# Development assets
+assets
+
+# Documentation directory (docs/ contains mkdocs files)
+docs
+mkdocs.yml
+
+# Security and testing
+security
+tests
+
+# Build scripts
+create-wp-build.sh
+create-final-zip.sh
+create-wp-package.sh
+
+# Temporary files
+.DS_Store
+*.zip
+*.log
+
+# Test files
+test-proxy.js
+mcp-server-simple.js
+mcp-settings-fix.js

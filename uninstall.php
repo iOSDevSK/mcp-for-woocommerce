@@ -1,6 +1,6 @@
 <?php
 /**
- * Uninstall script for Woo MCP plugin
+ * Uninstall script for MCP for WooCommerce plugin
  *
  * This file is executed when the plugin is deleted from WordPress.
  * It cleans up all plugin data including options, transients, and any other data.
@@ -16,17 +16,17 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 /**
  * Clean up plugin options
  */
-function woo_mcp_cleanup_options() {
+function mcp_for_woocommerce_cleanup_options() {
     // Remove plugin options
     $options_to_delete = [
         'wordpress_mcp_settings',
-        'woo_mcp_jwt_secret',
-        'woo_mcp_jwt_tokens',
-        'woo_mcp_auth_settings',
-        'woo_mcp_transport_settings',
-        'woo_mcp_debug_mode',
-        'woo_mcp_allowed_origins',
-        'woo_mcp_rate_limit_settings',
+        'mcp_for_woocommerce_jwt_secret',
+        'mcp_for_woocommerce_jwt_tokens',
+        'mcp_for_woocommerce_auth_settings',
+        'mcp_for_woocommerce_transport_settings',
+        'mcp_for_woocommerce_debug_mode',
+        'mcp_for_woocommerce_allowed_origins',
+        'mcp_for_woocommerce_rate_limit_settings',
     ];
 
     foreach ( $options_to_delete as $option ) {
@@ -38,15 +38,15 @@ function woo_mcp_cleanup_options() {
 /**
  * Clean up transients
  */
-function woo_mcp_cleanup_transients() {
+function mcp_for_woocommerce_cleanup_transients() {
     global $wpdb;
 
-    // Delete all transients that start with woo_mcp_
+    // Delete all transients that start with mcp_for_woocommerce_
     $wpdb->query( 
         $wpdb->prepare(
             "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-            '_transient_woo_mcp_%',
-            '_transient_timeout_woo_mcp_%'
+            '_transient_mcp_for_woocommerce_%',
+            '_transient_timeout_mcp_for_woocommerce_%'
         )
     );
 
@@ -55,8 +55,8 @@ function woo_mcp_cleanup_transients() {
         $wpdb->query(
             $wpdb->prepare(
                 "DELETE FROM {$wpdb->sitemeta} WHERE meta_key LIKE %s OR meta_key LIKE %s",
-                '_site_transient_woo_mcp_%',
-                '_site_transient_timeout_woo_mcp_%'
+                '_site_transient_mcp_for_woocommerce_%',
+                '_site_transient_timeout_mcp_for_woocommerce_%'
             )
         );
     }
@@ -65,14 +65,14 @@ function woo_mcp_cleanup_transients() {
 /**
  * Clean up user meta
  */
-function woo_mcp_cleanup_user_meta() {
+function mcp_for_woocommerce_cleanup_user_meta() {
     global $wpdb;
 
     // Delete user meta related to the plugin
     $wpdb->query(
         $wpdb->prepare(
             "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE %s",
-            'woo_mcp_%'
+            'mcp_for_woocommerce_%'
         )
     );
 }
@@ -80,24 +80,24 @@ function woo_mcp_cleanup_user_meta() {
 /**
  * Clean up any custom tables (if any were created)
  */
-function woo_mcp_cleanup_custom_tables() {
+function mcp_for_woocommerce_cleanup_custom_tables() {
     // This plugin doesn't create custom tables, but if it did in the future,
     // we would drop them here
     // global $wpdb;
-    // $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}woo_mcp_logs" );
+    // $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mcp_for_woocommerce_logs" );
 }
 
 /**
  * Clear any cached data
  */
-function woo_mcp_clear_caches() {
+function mcp_for_woocommerce_clear_caches() {
     // Clear object cache
     wp_cache_flush();
     
     // Clear any plugin-specific cache directories
-    $cache_dir = WP_CONTENT_DIR . '/cache/woo-mcp/';
+    $cache_dir = WP_CONTENT_DIR . '/cache/mcp-for-woocommerce/';
     if ( is_dir( $cache_dir ) ) {
-        woo_mcp_recursive_rmdir( $cache_dir );
+        mcp_for_woocommerce_recursive_rmdir( $cache_dir );
     }
 }
 
@@ -106,7 +106,7 @@ function woo_mcp_clear_caches() {
  *
  * @param string $dir Directory path
  */
-function woo_mcp_recursive_rmdir( $dir ) {
+function mcp_for_woocommerce_recursive_rmdir( $dir ) {
     if ( ! is_dir( $dir ) ) {
         return;
     }
@@ -116,7 +116,7 @@ function woo_mcp_recursive_rmdir( $dir ) {
     foreach ( $files as $file ) {
         $path = $dir . '/' . $file;
         if ( is_dir( $path ) ) {
-            woo_mcp_recursive_rmdir( $path );
+            mcp_for_woocommerce_recursive_rmdir( $path );
         } else {
             wp_delete_file( $path );
         }
@@ -132,9 +132,9 @@ function woo_mcp_recursive_rmdir( $dir ) {
 }
 
 // Execute cleanup functions
-woo_mcp_cleanup_options();
-woo_mcp_cleanup_transients();
-woo_mcp_cleanup_user_meta();
-woo_mcp_cleanup_custom_tables();
-woo_mcp_clear_caches();
+mcp_for_woocommerce_cleanup_options();
+mcp_for_woocommerce_cleanup_transients();
+mcp_for_woocommerce_cleanup_user_meta();
+mcp_for_woocommerce_cleanup_custom_tables();
+mcp_for_woocommerce_clear_caches();
 

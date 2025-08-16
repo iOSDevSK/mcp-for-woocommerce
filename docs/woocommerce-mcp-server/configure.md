@@ -1,13 +1,13 @@
 ---
-title: Configure Woo MCP
+title: Configure MCP for WooCommerce
 summary: Settings overview for the WooCommerce MCP Server plugin in WordPress.
 tags: [woocommerce, mcp, settings, wordpress]
 updated: 2025-08-15
 ---
 
-# Configure Woo MCP
+# Configure MCP for WooCommerce
 
-Open WordPress Admin → Settings → Woo MCP.
+Open WordPress Admin → Settings → MCP for WooCommerce.
 
 - Enable MCP functionality: master toggle for all endpoints and tools.
 - Require JWT Authentication: enforce JWT for STDIO/HTTP endpoints.
@@ -27,7 +27,7 @@ Security notes:
 {
   "@context":"https://schema.org",
   "@type":"TechArticle",
-  "headline":"Configure WooCommerce MCP Server (Woo MCP)",
+  "headline":"Configure WooCommerce MCP Server (MCP for WooCommerce)",
   "about":"WordPress settings for the WooCommerce MCP plugin",
   "dateModified":"2025-08-15",
   "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/configure"}

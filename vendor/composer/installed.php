@@ -3,7 +3,7 @@
         'name' => 'automattic/wordpress-mcp',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '7ea6b8176857e79b2338f9ba3d405bc2691fbb1a',
+        'reference' => '8ceb759a34331badbb634cfeb8b08acb4893c005',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'automattic/wordpress-mcp' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '7ea6b8176857e79b2338f9ba3d405bc2691fbb1a',
+            'reference' => '8ceb759a34331badbb634cfeb8b08acb4893c005',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

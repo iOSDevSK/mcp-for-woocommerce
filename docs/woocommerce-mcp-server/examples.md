@@ -1,6 +1,6 @@
 ---
 title: Examples — WooCommerce MCP Server
-summary: End‑to‑end examples calling Woo MCP HTTP streamable endpoint with JWT.
+summary: End‑to‑end examples calling MCP for WooCommerce HTTP streamable endpoint with JWT.
 tags: [woocommerce, mcp, json-rpc, examples]
 updated: 2025-08-15
 ---
@@ -210,7 +210,7 @@ List attribute terms (e.g., Color terms):
   "@context":"https://schema.org",
   "@type":"TechArticle",
   "headline":"Examples — WooCommerce MCP Server",
-  "about":"JSON-RPC examples for Woo MCP HTTP streamable endpoint",
+  "about":"JSON-RPC examples for MCP for WooCommerce HTTP streamable endpoint",
   "dateModified":"2025-08-15",
   "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/examples"}
 }

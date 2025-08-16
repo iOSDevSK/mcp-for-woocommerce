@@ -1,21 +1,21 @@
 ---
-title: Install Woo MCP (WooCommerce MCP Server)
+title: Install MCP for WooCommerce (WooCommerce MCP Server)
 summary: Quick setup for the WordPress MCP plugin providing WooCommerce MCP Server endpoints with JWT.
 tags: [woocommerce, mcp, install, wordpress, jwt]
 updated: 2025-08-15
 ---
 
-# How to install Woo MCP (WooCommerce MCP Server)
+# How to install MCP for WooCommerce (WooCommerce MCP Server)
 
 1) WordPress Admin (quick install)
 - Plugins → Add New → Upload → select ZIP of the plugin
-- Activate “Woo MCP”
+- Activate "MCP for WooCommerce"
 
 2) Development install (from GitHub)
 ```
 cd wp-content/plugins/
-git clone https://github.com/iOSDevSK/woo-mcp.git woo-mcp
-cd woo-mcp
+git clone https://github.com/iOSDevSK/mcp-for-woocommerce.git mcp-for-woocommerce
+cd mcp-for-woocommerce
 composer install
 npm install && npm run build
 ```
@@ -24,7 +24,7 @@ npm install && npm run build
 - WordPress 6.4+, PHP 8.0+
 - WooCommerce active and working
 
-4) Configure in Admin → Settings → Woo MCP
+4) Configure in Admin → Settings → MCP for WooCommerce
 - Enable MCP functionality
 - Require JWT Authentication (recommended)
 - Create a JWT token in “Authentication Tokens”
@@ -77,7 +77,7 @@ Claude Desktop (STDIO via proxy):
   "@context":"https://schema.org",
   "@type":"TechArticle",
   "headline":"How to install WooCommerce MCP Server",
-  "about":"Install and configure Woo MCP with HTTP streamable and STDIO endpoints",
+  "about":"Install and configure MCP for WooCommerce with HTTP streamable and STDIO endpoints",
   "dateModified":"2025-08-15",
   "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/install"}
 }

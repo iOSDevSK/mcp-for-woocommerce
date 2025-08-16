@@ -1,4 +1,4 @@
-=== Woo MCP Plugin Changelog ===
+=== MCP for WooCommerce Plugin Changelog ===
 
 = Version 1.1.5 - Release #000010 - August 13, 2025 @ CET =
 

@@ -1,0 +1,83 @@
+WordPress.org ZIP Package Creation Commands for Woo MCP v1.1.5
+
+Execute these commands in terminal from /Users/filipdvoran/Developer/woo-mcp:
+
+Method 1: Using wp-scripts (Recommended)
+========================================
+cd /Users/filipdvoran/Developer/woo-mcp
+npm run plugin-zip
+
+Method 2: Manual ZIP Creation
+============================
+cd /Users/filipdvoran/Developer/woo-mcp
+chmod +x create_wordpress_org_package.sh
+./create_wordpress_org_package.sh
+
+Method 3: One-liner ZIP Command
+===============================
+cd /Users/filipdvoran/Developer/woo-mcp && \
+rm -f woo-mcp-1.1.5.zip && \
+zip -r woo-mcp-1.1.5.zip \
+  woo-mcp.php \
+  readme.txt \
+  LICENSE \
+  uninstall.php \
+  changelog.txt \
+  composer.json \
+  composer.lock \
+  package.json \
+  client-setup.md \
+  includes/ \
+  build/ \
+  vendor/ \
+  languages/ \
+  static-files/ \
+  -x "*.git*" "*node_modules*" "*src/*" "*package-lock.json*" \
+     "*docs/*" "*tests/*" "*security/*" "*README.md*" "*CLAUDE.md*" \
+     "*CREATE_*" "*RELEASE_*" "*MCP-*" "*Readme.md*" "*WORDPRESS_*" \
+     "*commits.md*" "*history.txt*" "*.sh" "*assets/*" "*pnpm-lock.yaml*" \
+     "*mkdocs.yml*" "*mcp-proxy*" "*mcp-server-simple.js*" \
+     "*mcp-settings-fix.js*" "*test-proxy.js*"
+
+Verification Commands
+====================
+# Check ZIP file was created
+ls -la woo-mcp-1.1.5.zip
+
+# View ZIP contents
+unzip -l woo-mcp-1.1.5.zip
+
+# Check ZIP file size
+du -h woo-mcp-1.1.5.zip
+
+Expected Package Contents:
+==========================
+woo-mcp/
+├── woo-mcp.php (main plugin file)
+├── readme.txt (WordPress.org readme)
+├── LICENSE (GPL license)
+├── uninstall.php (cleanup script)
+├── changelog.txt (version history)
+├── composer.json (PHP dependencies config)
+├── composer.lock (PHP dependencies lock)
+├── package.json (Node.js build config)
+├── client-setup.md (setup documentation)
+├── includes/ (PHP source code with SQL fixes)
+├── build/ (compiled JavaScript/CSS assets)
+├── vendor/ (PHP dependencies from Composer)
+├── languages/ (translation files)
+└── static-files/ (OpenAPI specifications)
+
+Package Purpose:
+===============
+This ZIP package is optimized for WordPress.org submission and includes:
+- All runtime dependencies (vendor/)
+- All compiled assets (build/) 
+- All source code (includes/)
+- Build configuration files for WordPress.org servers
+- Required documentation and licensing
+
+The package allows WordPress.org servers to run:
+- composer install (for PHP dependencies)
+- npm run build (for asset compilation)
+- Full plugin deployment with all components

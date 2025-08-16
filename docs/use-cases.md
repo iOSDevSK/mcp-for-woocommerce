@@ -1,11 +1,11 @@
 ---
-title: Use Cases — Woo MCP (WooCommerce MCP Server)
+title: Use Cases — MCP for WooCommerce (WooCommerce MCP Server)
 summary: Practical scenarios for using the WordPress MCP plugin with WooCommerce and MCP clients.
 tags: [use-cases, woocommerce, mcp]
 updated: 2025-08-15
 ---
 
-# Use Cases — Woo MCP (WooCommerce MCP Server)
+# Use Cases — MCP for WooCommerce (WooCommerce MCP Server)
 
 - Product discovery assistant: Let an AI suggest products with direct permalinks (search → product details → variations).
 - Merchandising support: Generate category overviews, tag lists, and attribute breakdowns for landing pages.

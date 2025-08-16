@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting — WooCommerce MCP Server
-summary: Common errors and fixes for Woo MCP HTTP/STDIO endpoints and JWT.
+summary: Common errors and fixes for MCP for WooCommerce HTTP/STDIO endpoints and JWT.
 tags: [woocommerce, mcp, troubleshooting, jwt]
 updated: 2025-08-15
 ---
@@ -32,8 +32,8 @@ Problem: CORS errors from custom frontends
 - Fix: Use server‑side integrations or configure reverse proxy/CORS; prefer server‑to‑server calls
 
 Problem: Missing `permalink` in results
-- Cause: Using non‑Woo MCP endpoints or incomplete setup
-- Fix: Call Woo MCP tools (`wc_*`) which include permalinks by design
+- Cause: Using non‑MCP for WooCommerce endpoints or incomplete setup
+- Fix: Call MCP for WooCommerce tools (`wc_*`) which include permalinks by design
 
 Problem: Admin UI not reflecting changes
 - Cause: Build assets outdated
@@ -48,7 +48,7 @@ Problem: PHPUnit cannot bootstrap
   "@context":"https://schema.org",
   "@type":"TechArticle",
   "headline":"Troubleshooting — WooCommerce MCP Server",
-  "about":"Common errors and fixes for Woo MCP",
+  "about":"Common errors and fixes for MCP for WooCommerce",
   "dateModified":"2025-08-15",
   "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/troubleshooting"}
 }

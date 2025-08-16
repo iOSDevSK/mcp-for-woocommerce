@@ -1,12 +1,12 @@
 ---
-title: WooCommerce MCP Server — WordPress MCP Plugin (Woo MCP)
+title: WooCommerce MCP Server — WordPress MCP Plugin (MCP for WooCommerce)
 summary: Complete overview of the WordPress MCP plugin that transforms WooCommerce sites into MCP servers for AI integration and chatbot deployment.
 tags: [woocommerce-mcp, woo-mcp, wordpress-mcp, mcp-server, ai-chatbot, webtalkbot, overview]
 ---
 
-# WooCommerce MCP Server — WordPress MCP Plugin (Woo MCP)
+# WooCommerce MCP Server — WordPress MCP Plugin (MCP for WooCommerce)
 
-Woo MCP is a WordPress MCP plugin that turns your WooCommerce site into a WooCommerce MCP Server. It exposes catalog and content data to MCP clients (Claude, VS Code MCP, custom apps), and pairs with Webtalkbot to deliver a WooCommerce AI Chatbot/Agent on your website.
+MCP for WooCommerce is a WordPress MCP plugin that turns your WooCommerce site into a WooCommerce MCP Server. It exposes catalog and content data to MCP clients (Claude, VS Code MCP, custom apps), and pairs with Webtalkbot to deliver a WooCommerce AI Chatbot/Agent on your website.
 
 ## Benefits
 
@@ -17,9 +17,9 @@ Woo MCP is a WordPress MCP plugin that turns your WooCommerce site into a WooCom
 
 ## Quick Start
 
-1) Install and activate Woo MCP.
+1) Install and activate MCP for WooCommerce.
 2) (Dev) `composer install && npm install && npm run build`.
-3) In WordPress Admin → Settings → Woo MCP: enable MCP, configure JWT.
+3) In WordPress Admin → Settings → MCP for WooCommerce: enable MCP, configure JWT.
 4) Connect a client (Claude/VS Code MCP) to the Streamable endpoint:
 
 ```
@@ -35,7 +35,7 @@ https://your-site.com/wp-json/wp/v2/wpmcp
 ## Webtalkbot: WooCommerce AI Chatbot / Agent
 
 Steps:
-1) In Woo MCP, create a JWT token.
+1) In MCP for WooCommerce, create a JWT token.
 2) In Webtalkbot, select WooCommerce as data source and paste the token.
 3) Deploy the chat widget to your storefront.
 

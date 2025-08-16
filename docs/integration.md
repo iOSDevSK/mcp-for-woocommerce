@@ -1,11 +1,11 @@
 ---
-title: LLM Integration Guide — Woo MCP
+title: LLM Integration Guide — MCP for WooCommerce
 summary: How to connect Claude, VS Code MCP, and custom clients to the WooCommerce MCP Server.
 tags: [integration, mcp, claude, vscode]
 updated: 2025-08-15
 ---
 
-# LLM Integration Guide — Woo MCP
+# LLM Integration Guide — MCP for WooCommerce
 
 Claude (HTTP):
 ```

@@ -1,5 +1,5 @@
 ---
-title: AI Assistant Reference - Woo MCP Architecture
+title: AI Assistant Reference - MCP for WooCommerce Architecture
 summary: Comprehensive technical reference for AI assistants and developers covering plugin architecture, tools, resources, and extension points.
 tags: [ai-reference, architecture, development, tools, resources, prompts, mcp-protocol]
 ---

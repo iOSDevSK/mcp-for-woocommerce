@@ -7,7 +7,7 @@
 - **Note**: Full WordPress installation available at this path
 
 ## Project Information
-- **Plugin Name**: Woo MCP
+- **Plugin Name**: MCP for WooCommerce
 - **Main File**: woo-mcp.php
 - **Version**: 1.1.5
 - **WordPress.org Status**: Ready for submission

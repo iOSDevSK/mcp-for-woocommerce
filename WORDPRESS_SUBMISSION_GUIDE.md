@@ -1,6 +1,6 @@
 # WordPress.org Plugin Submission Guide
 
-Your Woo MCP plugin is now ready for submission to the WordPress.org Plugin Directory! Here's what has been prepared and the next steps:
+Your MCP for WooCommerce plugin is now ready for submission to the WordPress.org Plugin Directory! Here's what has been prepared and the next steps:
 
 ## ✅ Completed Preparation
 

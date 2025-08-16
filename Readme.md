@@ -1,10 +1,10 @@
-# Woo MCP — WooCommerce for AI
+# MCP for WooCommerce — WooCommerce for AI
 
-[![docs](https://github.com/iOSDevSK/woo-mcp/actions/workflows/gh-pages.yml/badge.svg)](https://github.com/iOSDevSK/woo-mcp/actions/workflows/gh-pages.yml) [![Latest Release](https://img.shields.io/github/v/release/iOSDevSK/woo-mcp)](https://github.com/iOSDevSK/woo-mcp/releases) [![License](https://img.shields.io/github/license/iOSDevSK/woo-mcp)](https://github.com/iOSDevSK/woo-mcp/blob/main/LICENSE) [![GitHub Stars](https://img.shields.io/github/stars/iOSDevSK/woo-mcp?style=social)](https://github.com/iOSDevSK/woo-mcp/stargazers)
+[![docs](https://github.com/iOSDevSK/mcp-for-woocommerce/actions/workflows/gh-pages.yml/badge.svg)](https://github.com/iOSDevSK/mcp-for-woocommerce/actions/workflows/gh-pages.yml) [![Latest Release](https://img.shields.io/github/v/release/iOSDevSK/mcp-for-woocommerce)](https://github.com/iOSDevSK/mcp-for-woocommerce/releases) [![License](https://img.shields.io/github/license/iOSDevSK/mcp-for-woocommerce)](https://github.com/iOSDevSK/mcp-for-woocommerce/blob/main/LICENSE) [![GitHub Stars](https://img.shields.io/github/stars/iOSDevSK/mcp-for-woocommerce?style=social)](https://github.com/iOSDevSK/mcp-for-woocommerce/stargazers)
 
 **Connect your WooCommerce store to AI assistants like Claude and VS Code.** This WordPress plugin enables AI clients to access your store's product catalog, categories, reviews, and content through a secure, read-only interface.
 
-[Woo MCP](https://woo-mcp.com) transforms your WordPress site into an AI-accessible data source built on [Automattic's official WordPress MCP](https://github.com/Automattic/wordpress-mcp). It safely exposes public store information—products, categories, tags, reviews, shipping options, and WordPress content—while protecting customer data and private details.
+[MCP for WooCommerce](https://mcpforwoocommerce.com) transforms your WordPress site into an AI-accessible data source built on [Automattic's official WordPress MCP](https://github.com/Automattic/wordpress-mcp). It safely exposes public store information—products, categories, tags, reviews, shipping options, and WordPress content—while protecting customer data and private details.
 
 Perfect for building AI-powered shopping assistants or integrating with custom AI applications.
 
@@ -18,7 +18,7 @@ Perfect for building AI-powered shopping assistants or integrating with custom A
 - WooCommerce focus: intelligent search, categories, tags, attributes, reviews, shipping, payments, taxes, system status
 - WordPress content: posts and pages with permalinks
 
-## Why Choose Woo MCP
+## Why Choose MCP for WooCommerce
 
 - WooCommerce MCP Server: turnkey MCP server for WooCommerce + WordPress.
 - WordPress MCP Plugin: install, toggle tools, authenticate, and connect any MCP client.
@@ -79,7 +79,7 @@ Benefits:
 
 Setup process:
 1) Configure your AI platform to use the MCP endpoint
-2) Copy a JWT token from WordPress Admin → Settings → Woo MCP → Tokens
+2) Copy a JWT token from WordPress Admin → Settings → MCP for WooCommerce → Tokens
 3) Deploy your chosen chat interface or assistant
 
 Result: an AI assistant connected to your catalog that can answer questions with product links and variations.
@@ -97,7 +97,7 @@ Result: an AI assistant connected to your catalog that can answer questions with
 
 ## Admin Settings
 
-- Location: Settings > Woo MCP
+- Location: Settings > MCP for WooCommerce
 - Core toggles:
   - Enable MCP functionality: master on/off for the plugin
   - Require JWT Authentication: enforce JWT for MCP endpoints
@@ -158,7 +158,7 @@ npx @modelcontextprotocol/inspector \
 
 ### Automatic local proxy generation (when JWT is disabled)
 
-- When you toggle “Require JWT Authentication” OFF in Settings > Woo MCP, the plugin automatically generates a Claude Desktop-friendly MCP proxy script at:
+- When you toggle “Require JWT Authentication” OFF in Settings > MCP for WooCommerce, the plugin automatically generates a Claude Desktop-friendly MCP proxy script at:
   - `wp-content/plugins/woo-mcp/mcp-proxy.js` (executable, Node.js)
 - The UI also surfaces ready-to-copy Claude Desktop config JSON. Additionally, a PHP proxy file ships with the plugin (`mcp-proxy.php`) if you prefer PHP:
 ```
@@ -239,8 +239,8 @@ Notes:
 Connect various AI platforms to your WooCommerce data.
 
 Prerequisites:
-- Woo MCP installed and enabled
-- JWT token generated in WordPress Admin (Settings > Woo MCP)
+- MCP for WooCommerce installed and enabled
+- JWT token generated in WordPress Admin (Settings > MCP for WooCommerce)
 - Your chosen AI platform or chatbot service
 
 Common integration patterns:
@@ -320,13 +320,13 @@ AI Assistant Tips (best practice):
 <details>
 <summary><strong>What is a WooCommerce MCP Server?</strong></summary>
 <br>
-A server implementation of the Model Context Protocol that exposes WooCommerce and WordPress data to MCP clients (e.g., Claude, VS Code MCP). Woo MCP is a WordPress plugin that acts as that server.
+A server implementation of the Model Context Protocol that exposes WooCommerce and WordPress data to MCP clients (e.g., Claude, VS Code MCP). MCP for WooCommerce is a WordPress plugin that acts as that server.
 </details>
 
 <details>
 <summary><strong>How do I install the plugin?</strong></summary>
 <br>
-Upload and activate the plugin, run <code>composer install</code> and <code>npm run build</code> for development installs, then configure settings in WordPress Admin → Settings → Woo MCP.
+Upload and activate the plugin, run <code>composer install</code> and <code>npm run build</code> for development installs, then configure settings in WordPress Admin → Settings → MCP for WooCommerce.
 </details>
 
 <details>
@@ -338,7 +338,7 @@ Use the Streamable endpoint <code>/wp-json/wp/v2/wpmcp/streamable</code> with a 
 <details>
 <summary><strong>Can I add an AI Chatbot to my website?</strong></summary>
 <br>
-Yes. Use the MCP interface to connect your store data with AI chatbot platforms. Create a JWT token in Woo MCP settings and configure your chosen AI platform to use the provided endpoints.
+Yes. Use the MCP interface to connect your store data with AI chatbot platforms. Create a JWT token in MCP for WooCommerce settings and configure your chosen AI platform to use the provided endpoints.
 </details>
 
 <details>
@@ -356,5 +356,5 @@ No. The plugin focuses on public store/catalog data and WordPress content. No PI
 <details>
 <summary><strong>Is this compatible with Automattic's WordPress MCP?</strong></summary>
 <br>
-Yes, Woo MCP is built on Automattic's official WordPress MCP and follows GPL-2.0-or-later.
+Yes, MCP for WooCommerce is built on Automattic's official WordPress MCP and follows GPL-2.0-or-later.
 </details>

@@ -1,4 +1,4 @@
-=== Woo MCP - WordPress & WooCommerce AI Integration ===
+=== MCP for WooCommerce - WordPress & WooCommerce AI Integration ===
 Contributors: filipdvoran, claude, automattic, ovidiu-galatan
 Tags: ai, mcp, woocommerce, chatbot, ecommerce
 Requires at least: 6.4
@@ -12,7 +12,7 @@ AI integration plugin connecting WooCommerce & WordPress with Model Context Prot
 
 == Description ==
 
-Woo MCP is a comprehensive WordPress plugin that bridges your WooCommerce store and WordPress site with AI assistants through the Model Context Protocol (MCP). This plugin provides a standardized interface for AI assistants to access and interact with your e-commerce data in a secure, read-only manner.
+MCP for WooCommerce is a comprehensive WordPress plugin that bridges your WooCommerce store and WordPress site with AI assistants through the Model Context Protocol (MCP). This plugin provides a standardized interface for AI assistants to access and interact with your e-commerce data in a secure, read-only manner.
 
 **Key Features:**
 
@@ -50,7 +50,7 @@ Model Context Protocol (MCP) is an open standard that enables AI assistants to s
 1. Upload the plugin files to the `/wp-content/plugins/woo-mcp` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Ensure WooCommerce is installed and activated for e-commerce features.
-4. Navigate to Settings → Woo MCP to configure the plugin.
+4. Navigate to Settings → MCP for WooCommerce to configure the plugin.
 5. Generate JWT tokens for secure access or configure public access as needed.
 6. Follow the connection examples provided in the settings page to connect your AI assistant.
 

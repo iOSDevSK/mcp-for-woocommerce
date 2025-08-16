@@ -27,7 +27,7 @@
 
 **Čo zachytiť**:
 1. Aktivuj plugin vo WordPress
-2. Choď na Settings → Woo MCP  
+2. Choď na Settings → MCP for WooCommerce  
 3. Urob screenshot celej stránky nastavení
 4. Uisti sa, že vidno:
    - Plugin name/title

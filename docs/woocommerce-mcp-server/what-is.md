@@ -1,6 +1,6 @@
 ---
 title: What is a WooCommerce MCP Server?
-summary: Short definition of Woo MCP as a WordPress MCP plugin that exposes WooCommerce data to MCP clients via STDIO/HTTP with JWT.
+summary: Short definition of MCP for WooCommerce as a WordPress MCP plugin that exposes WooCommerce data to MCP clients via STDIO/HTTP with JWT.
 tags: [woocommerce, mcp, server, wordpress, json-rpc]
 updated: 2025-08-15
 ---
@@ -25,7 +25,7 @@ Related endpoints:
 - HTTP streamable: `/wp-json/wp/v2/wpmcp/streamable`
 
 Synonyms people search for:
-- WooCommerce MCP, Woo MCP, WordPress MCP, WooCommerce MCP Server, WooCommerce MCP plugin, WordPress MCP Plugin, WooCommerce AI Chatbot/Agent, Webtalkbot.
+- WooCommerce MCP, MCP for WooCommerce, WordPress MCP, WooCommerce MCP Server, WooCommerce MCP plugin, WordPress MCP Plugin, WooCommerce AI Chatbot/Agent, Webtalkbot.
 
 <script type="application/ld+json">
 {

@@ -59,11 +59,11 @@ class Settings {
 		$version = ! empty( $plugin_data['Version'] ) ? $plugin_data['Version'] : '';
 		
 		// Create page title with version
-		$page_title = trim( sprintf( 'Woo MCP %s', $version ) );
+		$page_title = trim( sprintf( 'MCP for WooCommerce %s', $version ) );
 		
 		add_options_page(
 			$page_title,
-			__( 'Woo MCP', 'woo-mcp' ),
+			__( 'MCP for WooCommerce', 'mcp-for-woocommerce' ),
 			'manage_options',
 			'wordpress-mcp-settings',
 			array( $this, 'render_settings_page' )
@@ -219,12 +219,12 @@ class Settings {
 			$sanitized['enabled'] = false;
 		}
 
-		// Hardcode the removed settings for Woo MCP functionality
-		$sanitized['features_adapter_enabled'] = false;     // WordPress Features Adapter disabled for Woo MCP
-		$sanitized['enable_create_tools'] = true;           // Create tools always enabled for Woo MCP
-		$sanitized['enable_update_tools'] = true;           // Update tools always enabled for Woo MCP
-		$sanitized['enable_delete_tools'] = true;           // Delete tools always enabled for Woo MCP
-		$sanitized['enable_rest_api_crud_tools'] = false;   // REST API CRUD tools always disabled for Woo MCP
+		// Hardcode the removed settings for MCP for WooCommerce functionality
+		$sanitized['features_adapter_enabled'] = false;     // WordPress Features Adapter disabled for MCP for WooCommerce
+		$sanitized['enable_create_tools'] = true;           // Create tools always enabled for MCP for WooCommerce
+		$sanitized['enable_update_tools'] = true;           // Update tools always enabled for MCP for WooCommerce
+		$sanitized['enable_delete_tools'] = true;           // Delete tools always enabled for MCP for WooCommerce
+		$sanitized['enable_rest_api_crud_tools'] = false;   // REST API CRUD tools always disabled for MCP for WooCommerce
 
 		return $sanitized;
 	}
