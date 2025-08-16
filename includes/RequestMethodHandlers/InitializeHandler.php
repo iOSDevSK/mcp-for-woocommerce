@@ -85,7 +85,6 @@ class InitializeHandler {
 				$tools_response = $tools_result['tools'] ?? null;
 			} catch ( Exception $e ) {
 				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					error_log( '[MCP Initialize] Failed to get tools for Claude.ai workaround: ' . $e->getMessage() );
 				}
 			}
 		}
@@ -93,7 +92,6 @@ class InitializeHandler {
 		// Use client's protocol version or default to 2024-11-05 for web compatibility
 		$client_protocol_version = $params['protocolVersion'] ?? '2024-11-05';
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( '[MCP Initialize] Client protocol version: ' . $client_protocol_version . ' from params: ' . wp_json_encode( $params ) );
 		}
 		
 		// Send the response according to JSON-RPC 2.0 and InitializeResult schema.
@@ -108,7 +106,6 @@ class InitializeHandler {
         if ( $tools_response ) {
             $response['tools'] = $tools_response;
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( '[MCP Initialize] Added ' . count( $tools_response ) . ' tools to initialize response for Claude.ai compatibility' );
             }
             // Note: additional counts are available via tools/debug
         }

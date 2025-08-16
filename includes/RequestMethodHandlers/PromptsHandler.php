@@ -39,7 +39,6 @@ class PromptsHandler {
 	private function check_permission(): ?array {
 		// Force debug log to see if method is called
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( '[MCP PromptsHandler] check_permission() called' );
 		}
 		
 		// Check JWT required setting
@@ -47,21 +46,17 @@ class PromptsHandler {
 		
 		// Debug logging
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( '[MCP PromptsHandler] JWT required: ' . ( $jwt_required ? 'true' : 'false' ) );
-			error_log( '[MCP PromptsHandler] User can manage_options: ' . ( current_user_can( 'manage_options' ) ? 'true' : 'false' ) );
 		}
 		
 		if ( ! $jwt_required ) {
 			// JWT is disabled, allow access without authentication (readonly mode)
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[MCP PromptsHandler] JWT disabled - allowing access to prompts' );
 			}
 			return null;
 		}
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[MCP PromptsHandler] Permission denied - user cannot manage_options' );
 			}
 			return array(
 				'error' => array(
@@ -81,11 +76,9 @@ class PromptsHandler {
 	 */
 	public function list_prompts(): array {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( '[MCP PromptsHandler] list_prompts() method called' );
 		}
 		$permission_error = $this->check_permission();
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( '[MCP PromptsHandler] permission_error result: ' . print_r( $permission_error, true ) );
 		}
 		if ( $permission_error ) {
 			return $permission_error;

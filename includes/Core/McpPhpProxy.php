@@ -32,12 +32,10 @@ class McpPhpProxy {
         
         // Error log to stderr for debugging
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log("[PHP MCP Proxy] Starting WordPress MCP Proxy Server");
         }
         
         // Send server info to stderr for debugging
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log("[PHP MCP Proxy] Connecting to: " . $this->wordpress_mcp_url);
         }
         
         while (true) {
@@ -56,7 +54,6 @@ class McpPhpProxy {
                 $request = json_decode($input, true);
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                        error_log("[PHP MCP Proxy] Invalid JSON: " . $input);
                     }
                     continue;
                 }
@@ -70,7 +67,6 @@ class McpPhpProxy {
                 
             } catch (\Exception $e) {
                 if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                    error_log("[PHP MCP Proxy] Error: " . $e->getMessage());
                 }
                 $error_response = [
                     'jsonrpc' => '2.0',
@@ -96,7 +92,6 @@ class McpPhpProxy {
         $id = $request['id'] ?? 0;
         
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log("[PHP MCP Proxy] Handling method: " . $method);
         }
         
         switch ($method) {
@@ -127,7 +122,6 @@ class McpPhpProxy {
                 
             default:
                 if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                    error_log("[PHP MCP Proxy] Unknown method: " . $method);
                 }
                 return [
                     'jsonrpc' => '2.0',
@@ -145,7 +139,6 @@ class McpPhpProxy {
      */
     private function handleInitialize(int $id, array $params): array {
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log("[PHP MCP Proxy] Initialize request received");
         }
         
         return [
@@ -175,7 +168,6 @@ class McpPhpProxy {
         ];
         
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log("[PHP MCP Proxy] Proxying to WordPress: " . $method);
         }
         
         $context = stream_context_create([
@@ -194,7 +186,6 @@ class McpPhpProxy {
         
         if ($response === false) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log("[PHP MCP Proxy] HTTP request failed to: " . $this->wordpress_mcp_url);
             }
             return [
                 'jsonrpc' => '2.0',
@@ -209,7 +200,6 @@ class McpPhpProxy {
         $data = json_decode($response, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log("[PHP MCP Proxy] Invalid JSON response: " . $response);
             }
             return [
                 'jsonrpc' => '2.0',

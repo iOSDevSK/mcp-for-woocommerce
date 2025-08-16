@@ -1,4 +1,4 @@
-=== MCP for WooCommerce - WordPress & WooCommerce AI Integration ===
+=== MCP for WooCommerce ===
 Contributors: filipdvoran, claude, automattic, ovidiu-galatan
 Tags: ai, mcp, woocommerce, chatbot, ecommerce
 Requires at least: 6.4

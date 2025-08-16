@@ -47,7 +47,6 @@ class ToolsHandler {
 		try {
 			$tools = $this->mcp->get_tools();
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[MCP ToolsHandler] Returning ' . count( $tools ) . ' tools to client' );
 			}
 			
 			return array(
@@ -55,7 +54,6 @@ class ToolsHandler {
 			);
 		} catch ( \Throwable $e ) {
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[MCP ToolsHandler] Error in list_tools: ' . $e->getMessage() );
 			}
 			// Return empty tools list instead of failing completely
 			return array(

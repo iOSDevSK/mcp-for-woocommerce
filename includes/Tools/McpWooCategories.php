@@ -21,7 +21,6 @@ class McpWooCategories {
         if (!class_exists('WooCommerce')) {
             // Log when WooCommerce is not detected so we know why these tools are missing
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log('[MCP Tools] WooCommerce not active - skipping McpWooCategories tool registration');
             }
             return;
         }

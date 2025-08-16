@@ -154,7 +154,6 @@ class WpMcp {
 		if ( $this->is_mcp_enabled() && ! $this->has_triggered_init ) {
 			// Log that the MCP init hook is firing to help diagnose registration timing
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[MCP Init] Firing wordpress_mcp_init (tools will register now)' );
 			}
 			do_action( 'wordpress_mcp_init', $this );
 			$this->has_triggered_init = true;
@@ -290,7 +289,6 @@ class WpMcp {
 		if ( $is_disabled_by_rest_crud ) {
 			// Log reason for skip to aid debugging why tools are missing
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[MCP Tools] Skipping tool due to REST CRUD: ' . $args['name'] );
 			}
 			return;
 		}
@@ -304,7 +302,6 @@ class WpMcp {
 				$error_bits[] = 'type-disabled';
 			}
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[MCP Tools] Skipping tool ' . $args['name'] . ' because: ' . implode( ',', $error_bits ) );
 			}
 			return; // Skip registration if tool is disabled.
 		}
@@ -336,7 +333,6 @@ class WpMcp {
 
 		// Confirm registration with flags for easier remote debugging
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( '[MCP Tools] Registered tool: ' . $args['name'] . ' type=' . $args['type'] );
 		}
 	}
 

@@ -225,7 +225,6 @@ class McpErrorHandler {
 			if ( ! empty( $context ) ) {
 				$log_message .= ' Context: ' . wp_json_encode( $context );
 			}
-			error_log( $log_message );
 		}
 	}
 

@@ -30,7 +30,6 @@ class McpWooProducts {
         if ( ! $this->is_woocommerce_active() ) {
             // Log when WooCommerce is not detected so we know why these tools are missing
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log('[MCP Tools] WooCommerce not active - skipping McpWooProducts tool registration');
             }
             return;
         }
@@ -414,7 +413,6 @@ class McpWooProducts {
 			);
 		} catch ( \Exception $e ) {
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( "Error converting product to array: " . $e->getMessage() );
 			}
 			return array(
 				'id'        => $product->get_id(),

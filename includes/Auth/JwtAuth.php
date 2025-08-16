@@ -208,7 +208,7 @@ class JwtAuth {
 		// If not authenticated via cookies, return error with details
 		return new WP_Error(
 			'rest_forbidden',
-			__( 'You need to be logged in as an administrator to access JWT tokens.', 'woo-mcp' ),
+			__( 'You need to be logged in as an administrator to access JWT tokens.', 'mcp-for-woocommerce' ),
 			array( 'status' => 401 )
 		);
 	}

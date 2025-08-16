@@ -41,6 +41,10 @@ tests
 create-wp-build.sh
 create-final-zip.sh
 create-wp-package.sh
+create_wordpress_org_package.sh
+create-wordpress-org-zip.sh
+build-release.sh
+BUILD-README.md
 
 # Temporary files
 .DS_Store
