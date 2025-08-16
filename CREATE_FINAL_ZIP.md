@@ -5,21 +5,21 @@ The SQL preparation errors have been fixed in McpWooTaxes.php.
 To create the final WordPress.org compatible ZIP package, please run these commands manually:
 
 ```bash
-cd /Users/filipdvoran/Developer/woo-mcp
+cd /Users/filipdvoran/Developer/mcp-for-woocommerce
 
 # Remove old ZIP
-rm -f woo-mcp-1.1.5.zip
+rm -f mcp-for-woocommerce-1.1.5.zip
 
 # Ensure build is up to date  
 npm run build
 
 # Create temporary build directory
-mkdir -p /tmp/woo-mcp-final
-cd /tmp/woo-mcp-final
-rm -rf woo-mcp
+mkdir -p /tmp/mcp-for-woocommerce-final
+cd /tmp/mcp-for-woocommerce-final
+rm -rf mcp-for-woocommerce
 
-# Create woo-mcp directory
-mkdir woo-mcp
+# Create mcp-for-woocommerce directory
+mkdir mcp-for-woocommerce
 
 # Copy essential files (including client-setup.md for documentation)
 rsync -av \
@@ -41,15 +41,15 @@ rsync -av \
   --exclude='.DS_Store' \
   --exclude='create-wp-build.sh' \
   --exclude='CREATE_FINAL_ZIP.md' \
-  /Users/filipdvoran/Developer/woo-mcp/ ./woo-mcp/
+  /Users/filipdvoran/Developer/mcp-for-woocommerce/ ./mcp-for-woocommerce/
 
-# Create ZIP with woo-mcp root directory
-zip -r woo-mcp-1.1.5.zip woo-mcp
+# Create ZIP with mcp-for-woocommerce root directory
+zip -r mcp-for-woocommerce-1.1.5.zip mcp-for-woocommerce
 
 # Move back to project
-cp woo-mcp-1.1.5.zip /Users/filipdvoran/Developer/woo-mcp/
+cp mcp-for-woocommerce-1.1.5.zip /Users/filipdvoran/Developer/mcp-for-woocommerce/
 
-echo "Final WordPress.org package created: woo-mcp-1.1.5.zip"
+echo "Final WordPress.org package created: mcp-for-woocommerce-1.1.5.zip"
 ```
 
 This will create a ZIP package that:
@@ -58,6 +58,6 @@ This will create a ZIP package that:
 - ✅ Includes client-setup.md (for documentation tab)
 - ✅ Has fixed SQL preparation errors
 - ✅ Excludes all development files
-- ✅ Uses "woo-mcp" as root directory name
+- ✅ Uses "mcp-for-woocommerce" as root directory name
 
 The package should now pass all WordPress.org plugin checks!

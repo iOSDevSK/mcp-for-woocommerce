@@ -34,6 +34,6 @@ Synonyms people search for:
   "headline":"What is a WooCommerce MCP Server?",
   "about":"Model Context Protocol for WooCommerce on WordPress",
   "dateModified":"2025-08-15",
-  "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/what-is"}
+  "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/mcp-for-woocommerce/woocommerce-mcp-server/what-is"}
 }
 </script>

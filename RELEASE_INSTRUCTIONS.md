@@ -7,14 +7,14 @@
 1. **Version Updated**: ✅ Version updated to 1.0.2-beta in `wordpress-mcp.php`
 2. **Changelog Updated**: ✅ Updated `changelog.txt` with release notes
 3. **Code Synchronized**: ✅ All changes pushed to GitHub repository
-4. **ZIP Archive Created**: ✅ Archive `woo-mcp-v1.0.2-beta.zip` (3.8MB) available
+4. **ZIP Archive Created**: ✅ Archive `mcp-for-woocommerce-v1.0.2-beta.zip` (3.8MB) available
 
 ### Step-by-Step Release Process
 
 #### 1. Navigate to GitHub Repository
-- Go to: https://github.com/your-username/woo-mcp
+- Go to: https://github.com/your-username/mcp-for-woocommerce
 - Click on the **"Releases"** section in the right sidebar
-- Or go directly to: https://github.com/your-username/woo-mcp/releases
+- Or go directly to: https://github.com/your-username/mcp-for-woocommerce/releases
 
 #### 2. Create New Release
 - Click **"Create a new release"** button
@@ -72,12 +72,12 @@ Woo-MCP v1.0.2-beta - Critical PHP Error Fix & Tool Priority Reordering
 4. Test product search functionality
 
 ---
-**Full Changelog**: https://github.com/your-username/woo-mcp/compare/v1.0.1-beta...v1.0.2-beta
+**Full Changelog**: https://github.com/your-username/mcp-for-woocommerce/compare/v1.0.1-beta...v1.0.2-beta
 ```
 
 #### 4. Upload ZIP File
 - Scroll to **"Attach binaries by dropping them here or selecting them"**
-- Upload the file: `woo-mcp-v1.0.2-beta.zip`
+- Upload the file: `mcp-for-woocommerce-v1.0.2-beta.zip`
 - Wait for upload to complete
 
 #### 5. Release Configuration
@@ -117,15 +117,15 @@ Woo-MCP v1.0.2-beta - Critical PHP Error Fix & Tool Priority Reordering
 
 ### File Locations
 
-- **ZIP Archive**: `/Users/filipdvoran/Developer/woo-mcp-v1.0.2-beta.zip` (4.3MB)
+- **ZIP Archive**: `/Users/filipdvoran/Developer/mcp-for-woocommerce-v1.0.2-beta.zip` (4.3MB)
 - **Repository**: Local repository is synchronized with GitHub
 - **Changelog**: Full details in `changelog.txt`
 
 ### ZIP Structure Note
 
-✅ **Správna štruktúra pre WordPress**: ZIP súbor obsahuje súbory priamo v koreňovom adresári (nie v podpriečinku `woo-mcp/`). Toto je správny formát pre WordPress pluginy.
+✅ **Správna štruktúra pre WordPress**: ZIP súbor obsahuje súbory priamo v koreňovom adresári (nie v podpriečinku `mcp-for-woocommerce/`). Toto je správny formát pre WordPress pluginy.
 
 Po nahratí do GitHub release a stiahnutí:
 - WordPress administrátori môžu priamo nahrať ZIP súbor cez WordPress admin
-- Po rozbalení vznikne priečinok `woo-mcp/` v `wp-content/plugins/`
+- Po rozbalení vznikne priečinok `mcp-for-woocommerce/` v `wp-content/plugins/`
 - Plugin bude pripravený na aktiváciu

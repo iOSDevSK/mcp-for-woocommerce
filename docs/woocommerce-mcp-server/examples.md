@@ -212,6 +212,6 @@ List attribute terms (e.g., Color terms):
   "headline":"Examples — WooCommerce MCP Server",
   "about":"JSON-RPC examples for MCP for WooCommerce HTTP streamable endpoint",
   "dateModified":"2025-08-15",
-  "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/examples"}
+  "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/mcp-for-woocommerce/woocommerce-mcp-server/examples"}
 }
 </script>

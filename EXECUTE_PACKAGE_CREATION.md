@@ -8,7 +8,7 @@ I've prepared all the necessary files and scripts to create the WordPress.org su
 Open Terminal and run:
 
 ```bash
-cd /Users/filipdvoran/Developer/woo-mcp
+cd /Users/filipdvoran/Developer/mcp-for-woocommerce
 chmod +x create_wordpress_org_package.sh
 ./create_wordpress_org_package.sh
 ```
@@ -16,14 +16,14 @@ chmod +x create_wordpress_org_package.sh
 ## Alternative Method (Using wp-scripts)
 
 ```bash
-cd /Users/filipdvoran/Developer/woo-mcp
+cd /Users/filipdvoran/Developer/mcp-for-woocommerce
 npm run plugin-zip
 ```
 
 ## Package Specifications
 
 ### ✅ INCLUDED Files:
-- **woo-mcp.php** - Main plugin file
+- **mcp-for-woocommerce.php** - Main plugin file
 - **readme.txt** - WordPress.org readme  
 - **LICENSE** - GPL license
 - **uninstall.php** - Cleanup script
@@ -67,8 +67,8 @@ npm run plugin-zip
 ## Expected Result
 
 After execution, you should have:
-- **File**: `/Users/filipdvoran/Developer/woo-mcp/woo-mcp-1.1.5.zip`
-- **Root Directory**: `woo-mcp/` (inside ZIP)
+- **File**: `/Users/filipdvoran/Developer/mcp-for-woocommerce/mcp-for-woocommerce-1.1.5.zip`
+- **Root Directory**: `mcp-for-woocommerce/` (inside ZIP)
 - **Purpose**: Ready for WordPress.org submission
 
 ## WordPress.org Server Compatibility
@@ -85,13 +85,13 @@ After ZIP creation:
 
 ```bash
 # Check file exists
-ls -la woo-mcp-1.1.5.zip
+ls -la mcp-for-woocommerce-1.1.5.zip
 
 # View contents
-unzip -l woo-mcp-1.1.5.zip | head -20
+unzip -l mcp-for-woocommerce-1.1.5.zip | head -20
 
 # Check size
-du -h woo-mcp-1.1.5.zip
+du -h mcp-for-woocommerce-1.1.5.zip
 ```
 
 ## Status: READY TO EXECUTE

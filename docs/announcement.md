@@ -25,7 +25,7 @@ Get started: [Install](woocommerce-mcp-server/install.md) · [Examples](woocomme
   "headline":"Announcing MCP for WooCommerce — WooCommerce MCP Server for WordPress",
   "about":"Model Context Protocol for WooCommerce on WordPress",
   "dateModified":"2025-08-15",
-  "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/announcement"}
+  "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/mcp-for-woocommerce/announcement"}
 }
 </script>
 

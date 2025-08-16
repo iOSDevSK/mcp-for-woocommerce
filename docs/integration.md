@@ -10,7 +10,7 @@ updated: 2025-08-15
 Claude (HTTP):
 ```
 claude mcp add --transport http \
-  woo-mcp https://your-site.com/wp-json/wp/v2/wpmcp/streamable \
+  mcp-for-woocommerce https://your-site.com/wp-json/wp/v2/wpmcp/streamable \
   --header "Authorization: Bearer YOUR_JWT"
 ```
 
@@ -18,7 +18,7 @@ VS Code MCP Extension (HTTP):
 ```
 {
   "servers": {
-    "woo-mcp": {
+    "mcp-for-woocommerce": {
       "type": "http",
       "url": "https://your-site.com/wp-json/wp/v2/wpmcp/streamable",
       "headers": { "Authorization": "Bearer YOUR_JWT" }
@@ -31,7 +31,7 @@ Claude Desktop (STDIO via proxy):
 ```
 {
   "mcpServers": {
-    "woo-mcp": {
+    "mcp-for-woocommerce": {
       "command": "npx",
       "args": ["-y", "@automattic/mcp-wordpress-remote@latest"],
       "env": {

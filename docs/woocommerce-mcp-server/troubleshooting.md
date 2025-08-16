@@ -50,6 +50,6 @@ Problem: PHPUnit cannot bootstrap
   "headline":"Troubleshooting — WooCommerce MCP Server",
   "about":"Common errors and fixes for MCP for WooCommerce",
   "dateModified":"2025-08-15",
-  "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/troubleshooting"}
+  "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/mcp-for-woocommerce/woocommerce-mcp-server/troubleshooting"}
 }
 </script>

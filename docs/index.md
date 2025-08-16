@@ -2,7 +2,7 @@
 title: MCP for WooCommerce — WooCommerce MCP Server
 summary: WordPress MCP plugin that exposes WooCommerce and WordPress data to Model Context Protocol (MCP) clients. Read‑only tools with permalinks; JWT; STDIO and HTTP streamable endpoints.
 tags: [woocommerce, mcp, wordpress, json-rpc, jwt]
-image: /assets/images/woo-mcp-social-card.svg
+image: /assets/images/mcp-for-woocommerce-social-card.svg
 updated: 2025-08-15
 ---
 
@@ -61,7 +61,7 @@ Project links:
   },
   "mainEntityOfPage": {
     "@type": "WebPage", 
-    "@id": "https://iosdevsk.github.io/woo-mcp/"
+    "@id": "https://iosdevsk.github.io/mcp-for-woocommerce/"
   }
 }
 </script>
@@ -74,6 +74,6 @@ Project links:
   "about": "WooCommerce MCP server implementing the Model Context Protocol (MCP)",
   "description": "WordPress MCP plugin that exposes WooCommerce and WordPress data to MCP clients via STDIO and HTTP streamable endpoints with JWT.",
   "dateModified": "2025-08-15",
-  "mainEntityOfPage": {"@type": "WebPage", "@id": "https://iosdevsk.github.io/woo-mcp/"}
+  "mainEntityOfPage": {"@type": "WebPage", "@id": "https://iosdevsk.github.io/mcp-for-woocommerce/"}
 }
 </script>

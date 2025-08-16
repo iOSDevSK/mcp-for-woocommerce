@@ -1,7 +1,7 @@
 ---
 title: WooCommerce MCP Server — WordPress MCP Plugin (MCP for WooCommerce)
 summary: Complete overview of the WordPress MCP plugin that transforms WooCommerce sites into MCP servers for AI integration and chatbot deployment.
-tags: [woocommerce-mcp, woo-mcp, wordpress-mcp, mcp-server, ai-chatbot, webtalkbot, overview]
+tags: [woocommerce-mcp, mcp-for-woocommerce, wordpress-mcp, mcp-server, ai-chatbot, webtalkbot, overview]
 ---
 
 # WooCommerce MCP Server — WordPress MCP Plugin (MCP for WooCommerce)

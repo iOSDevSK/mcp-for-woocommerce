@@ -63,7 +63,7 @@ composer install --no-dev
 npm run plugin-zip
 
 # Check the generated ZIP file
-unzip -l woo-mcp.zip
+unzip -l mcp-for-woocommerce.zip
 ```
 
 ### Step 2: Submit to WordPress.org
@@ -77,14 +77,14 @@ Once approved, you'll receive SVN access:
 
 ```bash
 # Checkout SVN repository
-svn co https://plugins.svn.wordpress.org/woo-mcp
+svn co https://plugins.svn.wordpress.org/mcp-for-woocommerce
 
 # Upload files
-cp -r /path/to/plugin/* woo-mcp/trunk/
-cp .wordpress-org/* woo-mcp/assets/
+cp -r /path/to/plugin/* mcp-for-woocommerce/trunk/
+cp .wordpress-org/* mcp-for-woocommerce/assets/
 
 # Commit to trunk
-cd woo-mcp
+cd mcp-for-woocommerce
 svn add trunk/* assets/*
 svn commit -m "Initial plugin submission"
 
@@ -110,7 +110,7 @@ After initial approval, you can set up automatic deployment from GitHub releases
 
 ## 📝 Notes
 
-- **Plugin Slug**: Your plugin will likely get the slug "woo-mcp" 
+- **Plugin Slug**: Your plugin will likely get the slug "mcp-for-woocommerce" 
 - **Review Time**: First submissions typically take 1-14 days
 - **Updates**: After approval, updates are immediate via SVN
 - **Support**: Use WordPress.org forums for user support

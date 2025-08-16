@@ -1,4 +1,4 @@
-# MCP for WooCommerce — WooCommerce for AI
+# MCP for WooCommerce
 
 [![docs](https://github.com/iOSDevSK/mcp-for-woocommerce/actions/workflows/gh-pages.yml/badge.svg)](https://github.com/iOSDevSK/mcp-for-woocommerce/actions/workflows/gh-pages.yml) [![Latest Release](https://img.shields.io/github/v/release/iOSDevSK/mcp-for-woocommerce)](https://github.com/iOSDevSK/mcp-for-woocommerce/releases) [![License](https://img.shields.io/github/license/iOSDevSK/mcp-for-woocommerce)](https://github.com/iOSDevSK/mcp-for-woocommerce/blob/main/LICENSE) [![GitHub Stars](https://img.shields.io/github/stars/iOSDevSK/mcp-for-woocommerce?style=social)](https://github.com/iOSDevSK/mcp-for-woocommerce/stargazers)
 
@@ -61,8 +61,8 @@ Tip: If you’re searching for “WooCommerce MCP Server endpoint”, this is it
 3) Development install
 ```
 cd wp-content/plugins/
-git clone https://github.com/Automattic/wordpress-mcp.git woo-mcp
-cd woo-mcp
+git clone https://github.com/Automattic/wordpress-mcp.git mcp-for-woocommerce
+cd mcp-for-woocommerce
 composer install
 npm install && npm run build
 ```
@@ -86,7 +86,7 @@ Result: an AI assistant connected to your catalog that can answer questions with
 
 ## Documentation Site
 
-- Browse the documentation site (after GitHub Pages is enabled): `https://iosdevsk.github.io/woo-mcp/`
+- Browse the documentation site (after GitHub Pages is enabled): `https://iosdevsk.github.io/mcp-for-woocommerce/`
 - Quick links:
   - What is WooCommerce MCP Server? `docs/woocommerce-mcp-server/what-is.md`
   - Install: `docs/woocommerce-mcp-server/install.md`
@@ -115,7 +115,7 @@ Note: The settings page is a React UI (assets in `build/`).
 - Claude Code (direct HTTP + JWT)
 ```
 claude mcp add --transport http \
-  woo-mcp https://your-site.com/wp-json/wp/v2/wpmcp/streamable \
+  mcp-for-woocommerce https://your-site.com/wp-json/wp/v2/wpmcp/streamable \
   --header "Authorization: Bearer YOUR_JWT"
 ```
 
@@ -123,7 +123,7 @@ claude mcp add --transport http \
 ```
 {
   "mcpServers": {
-    "woo-mcp": {
+    "mcp-for-woocommerce": {
       "command": "npx",
       "args": ["-y", "@automattic/mcp-wordpress-remote@latest"],
       "env": {
@@ -139,7 +139,7 @@ claude mcp add --transport http \
 ```
 {
   "servers": {
-    "woo-mcp": {
+    "mcp-for-woocommerce": {
       "type": "http",
       "url": "https://your-site.com/wp-json/wp/v2/wpmcp/streamable",
       "headers": { "Authorization": "Bearer YOUR_JWT" }
@@ -159,7 +159,7 @@ npx @modelcontextprotocol/inspector \
 ### Automatic local proxy generation (when JWT is disabled)
 
 - When you toggle “Require JWT Authentication” OFF in Settings > MCP for WooCommerce, the plugin automatically generates a Claude Desktop-friendly MCP proxy script at:
-  - `wp-content/plugins/woo-mcp/mcp-proxy.js` (executable, Node.js)
+  - `wp-content/plugins/mcp-for-woocommerce/mcp-proxy.js` (executable, Node.js)
 - The UI also surfaces ready-to-copy Claude Desktop config JSON. Additionally, a PHP proxy file ships with the plugin (`mcp-proxy.php`) if you prefer PHP:
 ```
 // Node (uses generated mcp-proxy.js)
@@ -167,7 +167,7 @@ npx @modelcontextprotocol/inspector \
   "mcpServers": {
     "woocommerce": {
       "command": "node",
-      "args": ["/wp-content/plugins/woo-mcp/mcp-proxy.js"]
+      "args": ["/wp-content/plugins/mcp-for-woocommerce/mcp-proxy.js"]
     }
   }
 }
@@ -177,7 +177,7 @@ npx @modelcontextprotocol/inspector \
   "mcpServers": {
     "woocommerce": {
       "command": "php",
-      "args": ["/wp-content/plugins/woo-mcp/mcp-proxy.php"]
+      "args": ["/wp-content/plugins/mcp-for-woocommerce/mcp-proxy.php"]
     }
   }
 }

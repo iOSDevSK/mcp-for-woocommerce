@@ -2,7 +2,7 @@
 
 ## Overview
 
-Enhanced comprehensive logging system for tracking MCP server connection attempts, both successful and failed, with detailed request/response information specifically for debugging Claude.ai web app connections to woo-mcp at https://woo.webtalkbot.com.
+Enhanced comprehensive logging system for tracking MCP server connection attempts, both successful and failed, with detailed request/response information specifically for debugging Claude.ai web app connections to mcp-for-woocommerce at https://woo.webtalkbot.com.
 
 ## Features Added
 

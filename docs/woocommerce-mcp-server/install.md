@@ -39,7 +39,7 @@ npm install && npm run build
 Claude Code (HTTP example):
 ```
 claude mcp add --transport http \
-  woo-mcp https://your-site.com/wp-json/wp/v2/wpmcp/streamable \
+  mcp-for-woocommerce https://your-site.com/wp-json/wp/v2/wpmcp/streamable \
   --header "Authorization: Bearer YOUR_JWT"
 ```
 
@@ -47,7 +47,7 @@ VS Code MCP Extension (HTTP example):
 ```
 {
   "servers": {
-    "woo-mcp": {
+    "mcp-for-woocommerce": {
       "type": "http",
       "url": "https://your-site.com/wp-json/wp/v2/wpmcp/streamable",
       "headers": { "Authorization": "Bearer YOUR_JWT" }
@@ -60,7 +60,7 @@ Claude Desktop (STDIO via proxy):
 ```
 {
   "mcpServers": {
-    "woo-mcp": {
+    "mcp-for-woocommerce": {
       "command": "npx",
       "args": ["-y", "@automattic/mcp-wordpress-remote@latest"],
       "env": {
@@ -79,6 +79,6 @@ Claude Desktop (STDIO via proxy):
   "headline":"How to install WooCommerce MCP Server",
   "about":"Install and configure MCP for WooCommerce with HTTP streamable and STDIO endpoints",
   "dateModified":"2025-08-15",
-  "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/woo-mcp/woocommerce-mcp-server/install"}
+  "mainEntityOfPage":{"@type":"WebPage","@id":"https://iosdevsk.github.io/mcp-for-woocommerce/woocommerce-mcp-server/install"}
 }
 </script>
