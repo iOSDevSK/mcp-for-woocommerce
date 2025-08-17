@@ -75,7 +75,7 @@ class McpProxyGenerator {
      * @return string
      */
     public static function get_proxy_file_path(): string {
-        return WP_CONTENT_DIR . '/plugins/woo-mcp/mcp-proxy.js';
+        return WP_CONTENT_DIR . '/plugins/mcp-for-woocommerce/mcp-proxy.js';
     }
 
     /**
