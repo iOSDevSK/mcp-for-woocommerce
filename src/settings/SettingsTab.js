@@ -22,6 +22,28 @@ const SettingsTab = ( { settings, onToggleChange, isSaving, strings } ) => {
 				<h2>{ __( 'General Settings', 'wordpress-mcp' ) }</h2>
 			</CardHeader>
 			<CardBody>
+				{/* System Requirements Warnings */}
+				<div style={{ marginBottom: '24px' }}>
+					{/* WordPress REST API Warning */}
+					<div style={{ marginBottom: '16px', padding: '16px', backgroundColor: '#fff3cd', border: '1px solid #ffeaa7', borderRadius: '4px' }}>
+						<h4 style={{ margin: '0 0 8px 0', color: '#856404', fontSize: '14px', fontWeight: 'bold' }}>
+							{ __( '⚠️ WordPress REST API Required', 'wordpress-mcp' ) }
+						</h4>
+						<p style={{ margin: '0', fontSize: '14px', color: '#856404', lineHeight: '1.4' }}>
+							{ __( 'This plugin requires WordPress REST API to be enabled. It is enabled by default in WordPress, but if it has been explicitly disabled by your hosting provider or another plugin, this plugin will not work. Please contact your administrator to ensure the WordPress REST API is enabled.', 'wordpress-mcp' ) }
+						</p>
+					</div>
+
+					{/* Permalinks Warning */}
+					<div style={{ marginBottom: '16px', padding: '16px', backgroundColor: '#fff3cd', border: '1px solid #ffeaa7', borderRadius: '4px' }}>
+						<h4 style={{ margin: '0 0 8px 0', color: '#856404', fontSize: '14px', fontWeight: 'bold' }}>
+							{ __( '⚠️ Permalinks Configuration Required', 'wordpress-mcp' ) }
+						</h4>
+						<p style={{ margin: '0', fontSize: '14px', color: '#856404', lineHeight: '1.4' }}>
+							{ __( 'For proper product link generation, WordPress permalinks must be set to "Post name". You can change this in WordPress Admin → Settings → Permalinks and select "Post name" structure.', 'wordpress-mcp' ) }
+						</p>
+					</div>
+				</div>
 				<div className="setting-row">
 					<ToggleControl
 						label={
