@@ -279,6 +279,11 @@ export const SettingsApp = () => {
 		? window.wordpressMcpSettings.strings
 		: {};
 
+	// Get system status
+	const systemStatus = window.wordpressMcpSettings
+		? window.wordpressMcpSettings.systemStatus
+		: null;
+
 	return (
 		<div className="wordpress-mcp-settings">
 			{ notice && (
@@ -342,6 +347,7 @@ export const SettingsApp = () => {
 										onToggleChange={ handleToggleChange }
 										isSaving={ isSaving }
 										strings={ strings }
+										systemStatus={ systemStatus }
 									/>
 									<br />
 									<AuthenticationCard

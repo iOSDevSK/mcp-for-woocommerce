@@ -137,6 +137,10 @@ class Settings {
 				'jwtRequired'         => get_option( self::JWT_REQUIRED_OPTION, true ),
 				'pluginUrl'           => WORDPRESS_MCP_URL,
 				'claudeSetupInstructions' => McpProxyGenerator::should_generate_proxy() ? McpProxyGenerator::get_claude_setup_instructions() : null,
+				'systemStatus'        => array(
+					'restApiEnabled'   => $this->is_rest_api_enabled(),
+					'permalinksCorrect' => $this->are_permalinks_correct(),
+				),
 				'strings'             => array(
 					'enableMcp'                        => __( 'Enable MCP functionality', 'mcp-for-woocommerce' ),
 					'enableMcpDescription'             => __( 'Toggle to enable or disable the MCP plugin functionality.', 'mcp-for-woocommerce' ),
@@ -313,5 +317,36 @@ class Settings {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Check if WordPress REST API is enabled.
+	 *
+	 * @return bool True if REST API is enabled, false otherwise.
+	 */
+	private function is_rest_api_enabled(): bool {
+		// Try to make a simple REST API request
+		$response = wp_remote_get( rest_url( 'wp/v2/types' ), array( 
+			'timeout' => 5,
+			'sslverify' => false 
+		) );
+		
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+		
+		$response_code = wp_remote_retrieve_response_code( $response );
+		return ( $response_code === 200 );
+	}
+
+	/**
+	 * Check if permalinks are set correctly (Post name structure).
+	 *
+	 * @return bool True if permalinks are correct, false otherwise.
+	 */
+	private function are_permalinks_correct(): bool {
+		$permalink_structure = get_option( 'permalink_structure' );
+		// Check if permalink structure is set to "Post name" (/%postname%/)
+		return ( $permalink_structure === '/%postname%/' );
 	}
 }
