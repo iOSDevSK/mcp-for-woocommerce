@@ -5,7 +5,9 @@
 
 set -e
 
-echo "🚀 Starting WordPress.org release build..."
+# Extract version from main plugin file
+VERSION=$(grep "Version:" mcp-for-woocommerce.php | sed 's/.*Version:[[:space:]]*//' | tr -d ' ')
+echo "🚀 Starting WordPress.org release build for version ${VERSION}..."
 echo ""
 
 # Step 1: Install production dependencies
@@ -27,17 +29,17 @@ echo "✅ Distribution created"
 echo ""
 echo "🎉 WordPress.org release build complete!"
 echo ""
-echo "📦 Generated: mcp-for-woocommerce-1.1.5.zip"
-ls -lh mcp-for-woocommerce-1.1.5.zip
+echo "📦 Generated: mcp-for-woocommerce-${VERSION}.zip"
+ls -lh mcp-for-woocommerce-${VERSION}.zip
 echo ""
 echo "📋 Contents summary:"
-echo "  ✅ vendor/autoload.php: $(unzip -l mcp-for-woocommerce-1.1.5.zip | grep 'vendor/autoload.php' | awk '{print $1}') bytes"
-echo "  ✅ includes/Core/WpMcp.php: $(unzip -l mcp-for-woocommerce-1.1.5.zip | grep 'includes/Core/WpMcp.php' | awk '{print $1}') bytes"
-echo "  ✅ build/index.js: $(unzip -l mcp-for-woocommerce-1.1.5.zip | grep 'build/index.js' | awk '{print $1}') bytes"
-echo "  ✅ client-setup.md: $(unzip -l mcp-for-woocommerce-1.1.5.zip | grep 'client-setup.md' | awk '{print $1}') bytes"
+echo "  ✅ vendor/autoload.php: $(unzip -l mcp-for-woocommerce-${VERSION}.zip | grep 'vendor/autoload.php' | awk '{print $1}') bytes"
+echo "  ✅ includes/Core/WpMcp.php: $(unzip -l mcp-for-woocommerce-${VERSION}.zip | grep 'includes/Core/WpMcp.php' | awk '{print $1}') bytes"
+echo "  ✅ build/index.js: $(unzip -l mcp-for-woocommerce-${VERSION}.zip | grep 'build/index.js' | awk '{print $1}') bytes"
+echo "  ✅ client-setup.md: $(unzip -l mcp-for-woocommerce-${VERSION}.zip | grep 'client-setup.md' | awk '{print $1}') bytes"
 echo ""
 echo "🚀 Ready for WordPress.org submission!"
 echo ""
 echo "Next steps:"
-echo "1. Upload mcp-for-woocommerce-1.1.5.zip to WordPress.org"
-echo "2. Or test on server with: scp mcp-for-woocommerce-1.1.5.zip woo.webtalkbot.com:/tmp/"
+echo "1. Upload mcp-for-woocommerce-${VERSION}.zip to WordPress.org"
+echo "2. Or test on server with: scp mcp-for-woocommerce-${VERSION}.zip woo.webtalkbot.com:/tmp/"

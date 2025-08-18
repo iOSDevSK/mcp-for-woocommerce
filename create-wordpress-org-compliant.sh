@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # WordPress.org Compliant Distribution Build Script
-# Creates mcp-for-woocommerce-1.1.5.zip with proper directory structure
+# Creates mcp-for-woocommerce-{VERSION}.zip with proper directory structure
 
 set -e
 
 PLUGIN_SLUG="mcp-for-woocommerce"
-VERSION="1.1.5"
+# Extract version from main plugin file
+VERSION=$(grep "Version:" mcp-for-woocommerce.php | sed 's/.*Version:[[:space:]]*//' | tr -d ' ')
 BUILD_DIR="/tmp/${PLUGIN_SLUG}-${VERSION}"
 FINAL_ZIP="${PLUGIN_SLUG}-${VERSION}.zip"
 
