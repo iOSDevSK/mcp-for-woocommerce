@@ -1,5 +1,29 @@
 === MCP for WooCommerce Plugin Changelog ===
 
+= Version 1.1.6 - Release #000011 - August 18, 2025 @ CET =
+
+**SMART SYSTEM REQUIREMENTS MONITORING & USER EXPERIENCE IMPROVEMENTS**
+
+* #000021 - Add intelligent system requirements warnings in admin interface
+  Date: August 18, 2025
+  - ADDED: Smart WordPress REST API status detection with conditional warnings
+  - ADDED: Permalinks configuration validation (Post name structure required)
+  - ENHANCED: General Settings tab with contextual system health notifications
+  - IMPROVED: User experience with actionable configuration guidance
+
+* #000022 - Implement conditional warning system for optimal performance
+  Date: August 18, 2025
+  - ADDED: PHP-based system status detection methods (is_rest_api_enabled, are_permalinks_correct)
+  - ENHANCED: React components with intelligent warning display logic
+  - OPTIMIZED: Admin interface to show warnings only when configuration issues exist
+  - REFINED: Warning messages with specific problem identification and resolution steps
+
+* #000023 - Plugin directory path correction and documentation reorganization
+  Date: August 18, 2025
+  - FIXED: McpProxyGenerator plugin directory path resolution
+  - REORGANIZED: Documentation structure for better maintainability
+  - CLEANED: Repository structure and improved development guidelines
+
 = Version 1.1.5 - Release #000010 - August 13, 2025 @ CET =
 
 **JWT AUTHENTICATION SYSTEM ENHANCEMENTS & MAJOR FIXES**
