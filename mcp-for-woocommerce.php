@@ -7,7 +7,7 @@
  * Tested up to:      6.8
  * Requires PHP:      8.0
  * Author:            Filip Dvoran
- * Author URI:        https://github.com/iOSDevSK/mcp-for-woocommerce
+ * Author URI:        https://github.com/iOSDevSK
  * Plugin URI:        https://github.com/iOSDevSK/mcp-for-woocommerce
  * License:           GPL-2.0-or-later
  * License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
