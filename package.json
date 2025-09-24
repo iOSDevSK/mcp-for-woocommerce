@@ -36,6 +36,7 @@
         "includes",
         "vendor",
         "mcp-for-woocommerce.php",
+        "client-setup.md",
         "docs",
         "readme.txt",
         "uninstall.php",
