@@ -35,7 +35,7 @@
         "build",
         "includes",
         "vendor",
-        "woo-mcp.php",
+        "mcp-for-woocommerce.php",
         "docs",
         "readme.txt",
         "uninstall.php",
