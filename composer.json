@@ -1,10 +1,10 @@
 {
-    "name": "automattic/wordpress-mcp",
+    "name": "filipdvoran/mcp-for-woocommerce",
     "description": "Advanced AI integration plugin that connects WooCommerce & WordPress with Model Context Protocol (MCP). Provides comprehensive AI-accessible interfaces to WooCommerce products, orders, categories, shipping, payments, and WordPress posts/pages through standardized tools, resources, and prompts. Enables AI assistants to seamlessly interact with your e-commerce data and content.",
     "type": "wordpress-plugin",
-    "homepage": "https://github.com/Automattic/wordpress-mcp",
+    "homepage": "https://github.com/iOSDevSK/mcp-for-woocommerce",
     "license": "GPL-2.0-or-later",
-    "author": "Automattic AI  (https://automattic.ai)",
+    "author": "Filip Dvoran (https://github.com/iOSDevSK)",
     "require-dev": {
         "phpunit/phpunit": "^9.0",
         "yoast/phpunit-polyfills": "^1.0"

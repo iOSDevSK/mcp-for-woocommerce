@@ -4,6 +4,8 @@
 
 **Connect your WooCommerce store to AI assistants like Claude and VS Code.** This WordPress plugin enables AI clients to access your store's product catalog, categories, reviews, and content through a secure, read-only interface.
 
+> **Community Plugin Notice**: This is a community-developed plugin and is not affiliated with or endorsed by Automattic, the creators of WordPress and WooCommerce. While it builds upon the foundation of the official WordPress MCP implementation, this plugin is independently maintained.
+
 [MCP for WooCommerce](https://mcpforwoocommerce.com) transforms your WordPress site into an AI-accessible data source built on [Automattic's official WordPress MCP](https://github.com/Automattic/wordpress-mcp). It safely exposes public store information—products, categories, tags, reviews, shipping options, and WordPress content—while protecting customer data and private details.
 
 Perfect for building AI-powered shopping assistants or integrating with custom AI applications.
@@ -356,5 +358,5 @@ No. The plugin focuses on public store/catalog data and WordPress content. No PI
 <details>
 <summary><strong>Is this compatible with Automattic's WordPress MCP?</strong></summary>
 <br>
-Yes, MCP for WooCommerce is built on Automattic's official WordPress MCP and follows GPL-2.0-or-later.
+Yes, this community plugin builds upon and extends Automattic's official WordPress MCP implementation. However, this plugin is independently developed and maintained by the community - it is not affiliated with or endorsed by Automattic. It follows the same GPL-2.0-or-later license.
 </details>
