@@ -89,6 +89,17 @@ No, the plugin only activates when specifically called by an MCP client. It has 
 
 == Changelog ==
 
+= 1.1.7 =
+* Rebranded as community plugin independent from Automattic
+* Updated author information to Filip Dvoran only
+* Updated all repository links to community GitHub repo
+* Added community plugin disclaimers throughout documentation
+* Clarified plugin independence in all descriptions
+
+= 1.1.6 =
+* Enhanced build scripts with version auto-detection
+* Improved stable tag handling in readme
+
 = 1.1.5 =
 * Enhanced intelligent search capabilities
 * Improved JWT authentication handling
@@ -121,6 +132,9 @@ No, the plugin only activates when specifically called by an MCP client. It has 
 * Initial alpha release
 
 == Upgrade Notice ==
+
+= 1.1.7 =
+Community plugin release with rebranding and updated author information. All functionality remains the same.
 
 = 1.1.5 =
 Latest stable release with enhanced search capabilities and improved documentation. Recommended for all users.
