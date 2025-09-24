@@ -249,6 +249,6 @@ npx @modelcontextprotocol/inspector \
 
 For additional help:
 
--   Check the <a href="https://mcpforwoocommerce.com" target="_blank">MCP for WooCommerce website</a>
+-   Check the <a href="https://github.com/iOSDevSK/mcp-for-woocommerce" target="_blank">Github repository</a>
 -   Visit the <a href="https://github.com/Automattic/mcp-wordpress-remote" target="_blank">mcp-wordpress-remote repository</a>
 -   Report issues on <a href="https://github.com/iOSDevSK/mcp-for-woocommerce/issues" target="_blank">GitHub Issues</a>
