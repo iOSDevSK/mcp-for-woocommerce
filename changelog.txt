@@ -1,5 +1,18 @@
 === MCP for WooCommerce Plugin Changelog ===
 
+= Version 1.1.7 - Release #000012 - September 24, 2025 @ CET =
+
+**COMMUNITY PLUGIN REBRANDING & VERSION BUMP**
+
+* #000023 - Rebrand as community plugin independent from Automattic
+  Date: September 24, 2025
+  - UPDATED: Plugin description with community plugin disclaimer
+  - UPDATED: Author information to Filip Dvoran only
+  - UPDATED: All repository links to community GitHub repo
+  - ADDED: Community plugin disclaimers throughout documentation
+  - CLARIFIED: Plugin independence in README and plugin headers
+  - UPDATED: Composer and package.json with correct author and repository info
+
 = Version 1.1.6 - Release #000011 - August 18, 2025 @ CET =
 
 **SMART SYSTEM REQUIREMENTS MONITORING & USER EXPERIENCE IMPROVEMENTS**
