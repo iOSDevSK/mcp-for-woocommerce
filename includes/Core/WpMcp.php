@@ -400,7 +400,14 @@ class WpMcp {
 
 		// Add enabled state to each tool.
 		foreach ( $tools as &$tool ) {
-			$tool['enabled'] = ! isset( $tool_states[ $tool['name'] ] ) || $tool_states[ $tool['name'] ];
+			// Handle integer storage: if not set, default enabled (true)
+			// If set: 0, '0', '' = disabled, 1, '1' = enabled
+			if ( ! isset( $tool_states[ $tool['name'] ] ) ) {
+				$tool['enabled'] = true;
+			} else {
+				$state = $tool_states[ $tool['name'] ];
+				$tool['enabled'] = ! empty( $state ) && $state !== '0' && $state !== 0;
+			}
 		}
 
 		return $tools;
@@ -503,6 +510,12 @@ class WpMcp {
 	 */
 	public function is_tool_enabled( string $tool_name ): bool {
 		$tool_states = get_option( self::TOOL_STATES_OPTION, array() );
-		return ! isset( $tool_states[ $tool_name ] ) || $tool_states[ $tool_name ];
+		// Handle integer storage: if not set, default enabled (true)
+		// If set: 0, '0', '' = disabled, 1, '1' = enabled
+		if ( ! isset( $tool_states[ $tool_name ] ) ) {
+			return true;
+		}
+		$state = $tool_states[ $tool_name ];
+		return ! empty( $state ) && $state !== '0' && $state !== 0;
 	}
 }

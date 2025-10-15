@@ -191,9 +191,10 @@ class Settings {
 		update_option( self::OPTION_NAME, $settings );
 
 		// Handle JWT required setting separately
+		// Always store as integer (0 or 1) for consistency
 		$jwt_required = isset( $_POST['jwt_required'] ) ? filter_var( wp_unslash( $_POST['jwt_required'] ), FILTER_VALIDATE_BOOLEAN ) : true;
-		$old_jwt_required = get_option( self::JWT_REQUIRED_OPTION, true );
-		update_option( self::JWT_REQUIRED_OPTION, $jwt_required );
+		$old_jwt_required = (bool) get_option( self::JWT_REQUIRED_OPTION, true );
+		update_option( self::JWT_REQUIRED_OPTION, $jwt_required ? 1 : 0 );
 
 		// Handle MCP proxy file generation/removal
 		if ( $old_jwt_required !== $jwt_required ) {
@@ -218,10 +219,11 @@ class Settings {
 	public function sanitize_settings( array $input ): array {
 		$sanitized = array();
 
+		// Always store as integer (0 or 1) for consistency
 		if ( isset( $input['enabled'] ) ) {
-			$sanitized['enabled'] = (bool) $input['enabled'];
+			$sanitized['enabled'] = $input['enabled'] ? 1 : 0;
 		} else {
-			$sanitized['enabled'] = false;
+			$sanitized['enabled'] = 0;
 		}
 
 		// Hardcode the removed settings for MCP for WooCommerce functionality
@@ -308,7 +310,8 @@ class Settings {
 	 */
 	public function toggle_tool( string $tool_name, bool $enabled ): bool {
 		$tool_states               = get_option( self::TOOL_STATES_OPTION, array() );
-		$tool_states[ $tool_name ] = $enabled;
+		// Always store as integer (0 or 1) for consistency
+		$tool_states[ $tool_name ] = $enabled ? 1 : 0;
 		try {
 			update_option( self::TOOL_STATES_OPTION, $tool_states, 'no' );
 		} catch ( \Exception $e ) {

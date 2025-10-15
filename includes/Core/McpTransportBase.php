@@ -83,7 +83,12 @@ abstract class McpTransportBase {
 	 */
 	protected function is_mcp_enabled(): bool {
 		$options = get_option( 'mcpfowo_settings', array() );
-		return isset( $options['enabled'] ) && $options['enabled'];
+		// Handle integer storage: 0, '0', '' = disabled, 1, '1' = enabled
+		if ( ! isset( $options['enabled'] ) ) {
+			return false;
+		}
+		$enabled = $options['enabled'];
+		return ! empty( $enabled ) && $enabled !== '0' && $enabled !== 0;
 	}
 
 	/**
