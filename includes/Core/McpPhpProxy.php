@@ -61,7 +61,7 @@ class McpPhpProxy {
                 $response = $this->handleRequest($request);
                 if ($response !== null) {
                     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON-RPC protocol output to STDOUT
-                    echo json_encode($response) . "\n";
+                    echo wp_json_encode($response) . "\n";
                     flush();
                 }
                 
@@ -77,7 +77,7 @@ class McpPhpProxy {
                     ]
                 ];
                 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON-RPC protocol output to STDOUT
-                echo json_encode($error_response) . "\n";
+                echo wp_json_encode($error_response) . "\n";
                 flush();
             }
         }
@@ -182,10 +182,19 @@ class McpPhpProxy {
             ]
         ]);
         
-        $response = file_get_contents($this->wordpress_mcp_url, false, $context);
+        $response = wp_remote_get( $this->wordpress_mcp_url, [
+            'method' => 'POST',
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json, text/event-stream'
+            ],
+            'body' => json_encode( $request_body ),
+            'timeout' => 30
+        ] );
         
-        if ($response === false) {
+        if ( is_wp_error( $response ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( 'MCP Proxy Error: ' . $response->get_error_message() );
             }
             return [
                 'jsonrpc' => '2.0',
@@ -196,8 +205,9 @@ class McpPhpProxy {
                 ]
             ];
         }
-        
-        $data = json_decode($response, true);
+
+        $response_body = wp_remote_retrieve_body( $response );
+        $data = json_decode( $response_body, true );
         if (json_last_error() !== JSON_ERROR_NONE) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
             }

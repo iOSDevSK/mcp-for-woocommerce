@@ -6,6 +6,7 @@
  * Requires at least: 6.4
  * Tested up to:      6.8
  * Requires PHP:      8.0
+ * Requires Plugins:  woocommerce
  * Author:            Filip Dvoran
  * Author URI:        https://github.com/iOSDevSK
  * Plugin URI:        https://github.com/iOSDevSK/mcp-for-woocommerce
@@ -16,6 +17,10 @@
  *
  * @package WordPress MCP
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 declare(strict_types=1);
 
