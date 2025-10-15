@@ -1,10 +1,11 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Core;
+
+namespace McpForWoo\Core;
 
 use InvalidArgumentException;
-use Automattic\WordpressMcp\Utils\InputSchema;
+use McpForWoo\Utils\InputSchema;
 
 /**
  * Register an MCP tool.
@@ -23,11 +24,11 @@ class RegisterMcpTool {
 	 *
 	 * @param array $args The arguments to register the MCP tool.
 	 * @throws InvalidArgumentException When the arguments are invalid.
-	 * @throws \RuntimeException When the tool is registered outside of wordpress_mcp_init action.
+	 * @throws \RuntimeException When the tool is registered outside of mcpfowo_init action.
 	 */
 	public function __construct( array $args ) {
-		if ( ! doing_action( 'wordpress_mcp_init' ) ) {
-			throw new \RuntimeException( 'RegisterMcpTool can only be used within the wordpress_mcp_init action.' );
+		if ( ! doing_action( 'mcpfowo_init' ) ) {
+			throw new \RuntimeException( 'RegisterMcpTool can only be used within the mcpfowo_init action.' );
 		}
 
 		$this->args = $args;

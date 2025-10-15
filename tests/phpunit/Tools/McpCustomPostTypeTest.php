@@ -2,13 +2,13 @@
 /**
  * Test class for McpCustomPostTypesTools
  *
- * @package Automattic\WordpressMcp\Tests\Tools
+ * @package McpForWoo\Tests\Tools
  */
 
-namespace Automattic\WordpressMcp\Tests\Tools;
+namespace McpForWoo\Tests\Tools;
 
-use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Tools\McpCustomPostTypesTools;
+use McpForWoo\Core\WpMcp;
+use McpForWoo\Tools\McpCustomPostTypesTools;
 use WP_UnitTestCase;
 use WP_REST_Request;
 use WP_User;

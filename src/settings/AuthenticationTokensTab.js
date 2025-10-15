@@ -48,8 +48,8 @@ const AuthenticationTokensTab = () => {
 	const fetchTokens = async () => {
 		try {
 			// Try with fallback URL if wp-json doesn't work
-			const jwtApiUrl = window.wordpressMcpSettings?.jwtApiUrl || '/jwt-auth/v1';
-			const fallbackUrl = window.wordpressMcpSettings?.restFallbackUrl;
+			const jwtApiUrl = window.mcpfowoSettings?.jwtApiUrl || '/jwt-auth/v1';
+			const fallbackUrl = window.mcpfowoSettings?.restFallbackUrl;
 			
 			let response;
 			try {
@@ -97,7 +97,7 @@ const AuthenticationTokensTab = () => {
 		setError( null );
 
 		try {
-			const fallbackUrl = window.wordpressMcpSettings?.restFallbackUrl;
+			const fallbackUrl = window.mcpfowoSettings?.restFallbackUrl;
 			
 			let response;
 			try {
@@ -150,7 +150,7 @@ const AuthenticationTokensTab = () => {
 
 	const revokeToken = async ( jti ) => {
 		try {
-			const fallbackUrl = window.wordpressMcpSettings?.restFallbackUrl;
+			const fallbackUrl = window.mcpfowoSettings?.restFallbackUrl;
 			
 			try {
 				await apiFetch( {

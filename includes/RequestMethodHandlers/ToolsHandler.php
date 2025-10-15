@@ -5,11 +5,13 @@
  * @package WordPressMcp
  */
 
-namespace Automattic\WordpressMcp\RequestMethodHandlers;
 
-use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Core\McpErrorHandler;
-use Automattic\WordpressMcp\Utils\HandleToolsCall;
+
+namespace McpForWoo\RequestMethodHandlers;
+
+use McpForWoo\Core\WpMcp;
+use McpForWoo\Core\McpErrorHandler;
+use McpForWoo\Utils\HandleToolsCall;
 
 /**
  * Handles tools-related MCP methods.
@@ -158,8 +160,8 @@ class ToolsHandler {
 	 */
 	public function debug_tools_state(): array {
 		try {
-			$settings = function_exists('get_option') ? (array) get_option('wordpress_mcp_settings', array()) : array();
-			$jwt_required = function_exists('get_option') ? (bool) get_option('wordpress_mcp_jwt_required', true) : true;
+			$settings = function_exists('get_option') ? (array) get_option('mcpfowo_settings', array()) : array();
+			$jwt_required = function_exists('get_option') ? (bool) get_option('mcpfowo_jwt_required', true) : true;
 			$active_tools = $this->mcp->get_tools();
 			$all_tools = method_exists($this->mcp, 'get_all_tools') ? $this->mcp->get_all_tools() : $active_tools;
 

@@ -1,8 +1,9 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
 
-namespace Automattic\WordpressMcp\Core;
+
+namespace McpForWoo\Core;
 
 use InvalidArgumentException;
 
@@ -39,11 +40,11 @@ class RegisterMcpResource {
 	 *
 	 * @param array $args The arguments.
 	 * @throws InvalidArgumentException When validation fails.
-	 * @throws \RuntimeException When the resource is registered outside of wordpress_mcp_init action.
+	 * @throws \RuntimeException When the resource is registered outside of mcpfowo_init action.
 	 */
 	public function __construct( array $args, callable $resource_content_callback ) {
-		if ( ! doing_action( 'wordpress_mcp_init' ) ) {
-			throw new \RuntimeException( 'RegisterMcpResource can only be used within the wordpress_mcp_init action.' );
+		if ( ! doing_action( 'mcpfowo_init' ) ) {
+			throw new \RuntimeException( 'RegisterMcpResource can only be used within the mcpfowo_init action.' );
 		}
 
 		$this->args                      = $args;

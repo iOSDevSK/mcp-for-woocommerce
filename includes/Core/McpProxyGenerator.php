@@ -6,7 +6,7 @@
  *
  * @package WordPressMcp
  */
-namespace Automattic\WordpressMcp\Core;
+namespace McpForWoo\Core;
 
 use WP_Error;
 
@@ -18,7 +18,7 @@ class McpProxyGenerator {
      * @return bool
      */
     public static function should_generate_proxy(): bool {
-        $jwt_required = get_option('wordpress_mcp_jwt_required', true);
+        $jwt_required = get_option('mcpfowo_jwt_required', true);
         
         // Generate proxy when JWT is disabled (false, "0", 0, or empty string)
         return !$jwt_required || $jwt_required === '0' || $jwt_required === 0;
@@ -31,6 +31,13 @@ class McpProxyGenerator {
      */
     public static function generate_proxy_file() {
         $proxy_path = self::get_proxy_file_path();
+
+        // Ensure the directory exists
+        $proxy_dir = dirname($proxy_path);
+        if (!file_exists($proxy_dir)) {
+            wp_mkdir_p($proxy_dir);
+        }
+
         $proxy_content = self::generate_proxy_content();
 
         $result = file_put_contents($proxy_path, $proxy_content);
@@ -137,7 +144,7 @@ class McpProxyGenerator {
 'import { Server } from \'@modelcontextprotocol/sdk/server/index.js\';' . "\n" .
 'import { StdioServerTransport } from \'@modelcontextprotocol/sdk/server/stdio.js\';' . "\n" .
 'import { ListToolsRequestSchema, CallToolRequestSchema } from \'@modelcontextprotocol/sdk/types.js\';' . "\n" . "\n" .
-'const WORDPRESS_MCP_URL = \'' . $mcp_endpoint . '\';' . "\n" . "\n" .
+'const MCPFOWO_URL = \'' . $mcp_endpoint . '\';' . "\n" . "\n" .
 'class McpProxy {' . "\n" .
 '  constructor() {' . "\n" .
 '    this.server = new Server(' . "\n" .
@@ -196,7 +203,7 @@ class McpProxyGenerator {
 '      \'Content-Type\': \'application/json\',' . "\n" .
 '      \'Accept\': \'application/json, text/event-stream\'' . "\n" .
 '    };' . "\n" . "\n" .
-'    const response = await fetch(WORDPRESS_MCP_URL, {' . "\n" .
+'    const response = await fetch(MCPFOWO_URL, {' . "\n" .
 '      method: \'POST\',' . "\n" .
 '      headers: headers,' . "\n" .
 '      body: JSON.stringify(requestBody)' . "\n" .

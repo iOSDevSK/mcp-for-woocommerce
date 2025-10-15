@@ -1,8 +1,8 @@
 <?php
 
-namespace Automattic\WordpressMcp\Tests;
+namespace McpForWoo\Tests;
 
-use Automattic\WordpressMcp\Core\WpFeaturesAdapter;
+use McpForWoo\Core\WpFeaturesAdapter;
 use WP_UnitTestCase;
 use WP_User;
 use WP_REST_Server;
@@ -10,7 +10,7 @@ use WP_REST_Server;
 /**
  * Test class for WpFeaturesAdapter
  *
- * @package Automattic\WordpressMcp\Tests
+ * @package McpForWoo\Tests
  */
 class WpFeaturesApiAdapterTest extends WP_UnitTestCase {
 
@@ -102,7 +102,7 @@ class WpFeaturesApiAdapterTest extends WP_UnitTestCase {
 		);
 
 		// Initialize the adapter.
-		do_action( 'wordpress_mcp_init' );
+		do_action( 'mcpfowo_init' );
 
 		// Create a REST request to list tools.
 		$request = new \WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
@@ -148,7 +148,7 @@ class WpFeaturesApiAdapterTest extends WP_UnitTestCase {
 	 */
 	public function test_feature_callback_through_mcp_tool(): void {
 		// Initialize the adapter.
-		do_action( 'wordpress_mcp_init' );
+		do_action( 'mcpfowo_init' );
 
 		// Create a REST request to call the tool.
 		$request = new \WP_REST_Request( 'POST', '/wp/v2/wpmcp' );
@@ -185,7 +185,7 @@ class WpFeaturesApiAdapterTest extends WP_UnitTestCase {
 	 */
 	public function test_feature_permissions_enforced(): void {
 		// Initialize the adapter.
-		do_action( 'wordpress_mcp_init' );
+		do_action( 'mcpfowo_init' );
 
 		// Create a non-admin user.
 		$non_admin_user = $this->factory->user->create_and_get(

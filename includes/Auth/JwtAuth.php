@@ -7,7 +7,8 @@
  */
 
 declare(strict_types=1);
-namespace Automattic\WordpressMcp\Auth;
+
+namespace McpForWoo\Auth;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -27,7 +28,7 @@ class JwtAuth {
 	 *
 	 * @var string
 	 */
-	private const JWT_SECRET_KEY_OPTION = 'wpmcp_jwt_secret_key';
+	private const JWT_SECRET_KEY_OPTION = 'mcpfowo_jwt_secret_key';
 
 	/**
 	 * Default access token expiration time in seconds.
@@ -69,7 +70,7 @@ class JwtAuth {
 	 *
 	 * @var string
 	 */
-	private const TOKEN_REGISTRY_OPTION = 'jwt_token_registry';
+	private const TOKEN_REGISTRY_OPTION = 'mcpfowo_jwt_token_registry';
 
 	/**
 	 * MCP endpoint path pattern for authentication.
@@ -103,7 +104,7 @@ class JwtAuth {
 			// WordPress not fully loaded yet, default to require JWT
 			return true;
 		}
-		return (bool) get_option( 'wordpress_mcp_jwt_required', true );
+		return (bool) get_option( 'mcpfowo_jwt_required', true );
 	}
 
 	/**

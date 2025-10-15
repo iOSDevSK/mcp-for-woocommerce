@@ -5,7 +5,9 @@
  * @package WordPressMcp
  */
 
-namespace Automattic\WordpressMcp\Core;
+
+
+namespace McpForWoo\Core;
 
 use WP_Error;
 use WP_REST_Request;
@@ -88,7 +90,7 @@ class McpStreamableTransport extends McpTransportBase {
 			}
 			
 			// Check JWT required setting
-			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
 			
 			
 			if ( ! $jwt_required ) {
@@ -287,7 +289,7 @@ class McpStreamableTransport extends McpTransportBase {
 			}
 			
 			// Check if JWT is disabled - if so, use PHP proxy mode for external access
-			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+			$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
 			if ( ! $jwt_required ) {
 				$this->handle_streamable_proxy_mode( $request );
 				return;
@@ -897,7 +899,7 @@ class McpStreamableTransport extends McpTransportBase {
 			'info' => array(
 				'title' => 'WooCommerce MCP API',
 				'description' => 'Model Context Protocol (MCP) integration for WooCommerce stores',
-				'version' => WORDPRESS_MCP_VERSION,
+				'version' => MCPFOWO_VERSION,
 				'contact' => array(
 					'email' => get_option( 'admin_email', 'admin@' . wp_parse_url( $site_url, PHP_URL_HOST ) )
 				)

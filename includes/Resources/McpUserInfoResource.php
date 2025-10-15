@@ -1,10 +1,11 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Resources;
 
-use Automattic\WordpressMcp\Core\RegisterMcpResource;
-use Automattic\WordpressMcp\Utils\UsersInfo;
+namespace McpForWoo\Resources;
+
+use McpForWoo\Core\RegisterMcpResource;
+use McpForWoo\Utils\UsersInfo;
 
 /**
  * Class UserInfoResource
@@ -12,7 +13,7 @@ use Automattic\WordpressMcp\Utils\UsersInfo;
  * Resource for retrieving information about WordPress users.
  * Provides detailed information about registered users and their roles.
  *
- * @package Automattic\WordpressMcp\Resources
+ * @package McpForWoo\Resources
  */
 class McpUserInfoResource {
 
@@ -22,7 +23,7 @@ class McpUserInfoResource {
 	 * @return void
 	 */
 	public function __construct() {
-		add_action( 'wordpress_mcp_init', array( $this, 'register_resource' ) );
+		add_action( 'mcpfowo_init', array( $this, 'register_resource' ) );
 	}
 
 	/**

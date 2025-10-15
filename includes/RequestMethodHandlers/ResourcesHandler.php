@@ -5,10 +5,12 @@
  * @package WordPressMcp
  */
 
-namespace Automattic\WordpressMcp\RequestMethodHandlers;
 
-use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Core\McpErrorHandler;
+
+namespace McpForWoo\RequestMethodHandlers;
+
+use McpForWoo\Core\WpMcp;
+use McpForWoo\Core\McpErrorHandler;
 
 /**
  * Handles resources-related MCP methods.
@@ -37,7 +39,7 @@ class ResourcesHandler {
 	 */
 	private function check_permission(): ?array {
 		// Check JWT required setting
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
 		
 		// Debug logging
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {

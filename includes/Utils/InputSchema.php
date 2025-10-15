@@ -1,6 +1,8 @@
 <?php
 
-namespace Automattic\WordpressMcp\Utils;
+
+
+namespace McpForWoo\Utils;
 
 /**
  * Clean the input schema.

@@ -68,8 +68,8 @@ const ToolsTab = () => {
 
 			// Create form data for AJAX request
 			const formData = new FormData();
-			formData.append( 'action', 'wordpress_mcp_toggle_tool' );
-			formData.append( 'nonce', window.wordpressMcpSettings.nonce );
+			formData.append( 'action', 'mcpfowo_toggle_tool' );
+			formData.append( 'nonce', window.mcpfowoSettings.nonce );
 			formData.append( 'tool', toolName );
 			formData.append( 'tool_enabled', newState );
 
@@ -85,7 +85,7 @@ const ToolsTab = () => {
 			if ( ! data.success ) {
 				throw new Error(
 					data.data.message ||
-						window.wordpressMcpSettings.strings.settingsError
+						window.mcpfowoSettings.strings.settingsError
 				);
 			}
 
@@ -101,7 +101,7 @@ const ToolsTab = () => {
 				)
 			);
 			setError(
-				err.message || window.wordpressMcpSettings.strings.settingsError
+				err.message || window.mcpfowoSettings.strings.settingsError
 			);
 			console.error( 'Error saving tool state:', err );
 		} finally {

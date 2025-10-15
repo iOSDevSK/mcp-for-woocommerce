@@ -1,10 +1,11 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Resources;
 
-use Automattic\WordpressMcp\Core\RegisterMcpResource;
-use Automattic\WordpressMcp\Utils\PluginsInfo;
+namespace McpForWoo\Resources;
+
+use McpForWoo\Core\RegisterMcpResource;
+use McpForWoo\Utils\PluginsInfo;
 
 /**
  * Class PluginInfoResource
@@ -12,7 +13,7 @@ use Automattic\WordpressMcp\Utils\PluginsInfo;
  * Resource for retrieving information about active WordPress plugins.
  * Provides detailed information about each active plugin.
  *
- * @package Automattic\WordpressMcp\Resources
+ * @package McpForWoo\Resources
  */
 class McpPluginInfoResource {
 
@@ -30,7 +31,7 @@ class McpPluginInfoResource {
 	 */
 	public function __construct() {
 		$this->plugins_info = new PluginsInfo();
-		add_action( 'wordpress_mcp_init', array( $this, 'register_resource' ) );
+		add_action( 'mcpfowo_init', array( $this, 'register_resource' ) );
 	}
 
 	/**

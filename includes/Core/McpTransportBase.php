@@ -1,14 +1,15 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Core;
+
+namespace McpForWoo\Core;
 
 use WP_Error;
-use Automattic\WordpressMcp\RequestMethodHandlers\InitializeHandler;
-use Automattic\WordpressMcp\RequestMethodHandlers\ToolsHandler;
-use Automattic\WordpressMcp\RequestMethodHandlers\ResourcesHandler;
-use Automattic\WordpressMcp\RequestMethodHandlers\PromptsHandler;
-use Automattic\WordpressMcp\RequestMethodHandlers\SystemHandler;
+use McpForWoo\RequestMethodHandlers\InitializeHandler;
+use McpForWoo\RequestMethodHandlers\ToolsHandler;
+use McpForWoo\RequestMethodHandlers\ResourcesHandler;
+use McpForWoo\RequestMethodHandlers\PromptsHandler;
+use McpForWoo\RequestMethodHandlers\SystemHandler;
 
 /**
  * Abstract base class for MCP transport protocols
@@ -81,7 +82,7 @@ abstract class McpTransportBase {
 	 * @return bool
 	 */
 	protected function is_mcp_enabled(): bool {
-		$options = get_option( 'wordpress_mcp_settings', array() );
+		$options = get_option( 'mcpfowo_settings', array() );
 		return isset( $options['enabled'] ) && $options['enabled'];
 	}
 

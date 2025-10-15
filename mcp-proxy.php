@@ -19,19 +19,19 @@
 declare(strict_types=1);
 
 // WordPress MCP endpoint URL
-const WORDPRESS_MCP_URL = 'https://woo.webtalkbot.com/wp-json/wp/v2/wpmcp/streamable';
+const MCPFOWO_URL = 'https://woo.webtalkbot.com/wp-json/wp/v2/wpmcp/streamable';
 
 /**
  * Simple PHP MCP Proxy - standalone implementation
  */
 class McpPhpProxyStandalone {
     
-    private string $wordpress_mcp_url;
+    private string $mcpfowo_url;
     private array $server_info;
     private int $request_id = 0;
     
-    public function __construct(string $wordpress_mcp_url) {
-        $this->wordpress_mcp_url = $wordpress_mcp_url;
+    public function __construct(string $mcpfowo_url) {
+        $this->mcpfowo_url = $mcpfowo_url;
         $this->server_info = [
             'name' => 'woocommerce-mcp-php-proxy',
             'version' => '1.0.0'
@@ -177,7 +177,7 @@ class McpPhpProxyStandalone {
             ]
         ]);
         
-        $response = file_get_contents($this->wordpress_mcp_url, false, $context);
+        $response = file_get_contents($this->mcpfowo_url, false, $context);
         $duration = round((microtime(true) - $start_time) * 1000, 2);
         
         if ($response === false) {
@@ -246,7 +246,7 @@ class McpPhpProxyStandalone {
             'timestamp' => gmdate('Y-m-d H:i:s'),
             'event' => 'proxy_connection_attempt',
             'method' => $method,
-            'endpoint' => $this->wordpress_mcp_url,
+            'endpoint' => $this->mcpfowo_url,
             'request_body' => $request_body,
             'pid' => getmypid()
         ];
@@ -261,7 +261,7 @@ class McpPhpProxyStandalone {
             'timestamp' => gmdate('Y-m-d H:i:s'),
             'event' => 'proxy_connection_failure',
             'method' => $method,
-            'endpoint' => $this->wordpress_mcp_url,
+            'endpoint' => $this->mcpfowo_url,
             'error' => $error,
             'duration_ms' => $duration,
             'pid' => getmypid()
@@ -277,7 +277,7 @@ class McpPhpProxyStandalone {
             'timestamp' => gmdate('Y-m-d H:i:s'),
             'event' => 'proxy_connection_success',
             'method' => $method,
-            'endpoint' => $this->wordpress_mcp_url,
+            'endpoint' => $this->mcpfowo_url,
             'success' => isset($response['result']),
             'has_error' => isset($response['error']),
             'error_code' => isset($response['error']['code']) ? $response['error']['code'] : null,
@@ -289,5 +289,5 @@ class McpPhpProxyStandalone {
 }
 
 // Run the proxy server
-$proxy = new McpPhpProxyStandalone(WORDPRESS_MCP_URL);
+$proxy = new McpPhpProxyStandalone(MCPFOWO_URL);
 $proxy->run();

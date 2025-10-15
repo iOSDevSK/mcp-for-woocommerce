@@ -1,16 +1,17 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Core;
 
-use Automattic\WordpressMcp\Utils\InputSchema;
+namespace McpForWoo\Core;
+
+use McpForWoo\Utils\InputSchema;
 use stdClass;
 
 /**
  * Class WpFeaturesAdapter
  * Exposes WordPress features as MCP tools.
  *
- * @package Automattic\WordpressMcp
+ * @package McpForWoo
  */
 class WpFeaturesAdapter {
 
@@ -18,7 +19,7 @@ class WpFeaturesAdapter {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'wordpress_mcp_init', array( $this, 'init' ) );
+		add_action( 'mcpfowo_init', array( $this, 'init' ) );
 	}
 
 	/**

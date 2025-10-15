@@ -1,10 +1,11 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Utils;
 
-use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Core\McpErrorHandler;
+namespace McpForWoo\Utils;
+
+use McpForWoo\Core\WpMcp;
+use McpForWoo\Core\McpErrorHandler;
 use Exception;
 use WP_REST_Request;
 

@@ -31,7 +31,7 @@ require_once "{$_tests_dir}/includes/functions.php";
 function _manually_load_plugin() {
 	// enable MCP in settings.
 	update_option(
-		'wordpress_mcp_settings',
+		'mcpfowo_settings',
 		array(
 			'enabled'                  => true,
 			'enable_create_tools'      => true,

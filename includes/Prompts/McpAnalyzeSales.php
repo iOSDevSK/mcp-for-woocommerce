@@ -1,9 +1,10 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Prompts;
 
-use Automattic\WordpressMcp\Core\RegisterMcpPrompt;
+namespace McpForWoo\Prompts;
+
+use McpForWoo\Core\RegisterMcpPrompt;
 
 /**
  * Class McpAnalyzeSales
@@ -11,7 +12,7 @@ use Automattic\WordpressMcp\Core\RegisterMcpPrompt;
  * Prompt for analyzing WooCommerce sales data.
  * Provides insights on sales performance within a specified time period.
  *
- * @package Automattic\WordpressMcp\Prompts
+ * @package McpForWoo\Prompts
  */
 class McpAnalyzeSales {
 
@@ -21,7 +22,7 @@ class McpAnalyzeSales {
 	 * @return void
 	 */
 	public function __construct() {
-		add_action( 'wordpress_mcp_init', array( $this, 'register_prompt' ) );
+		add_action( 'mcpfowo_init', array( $this, 'register_prompt' ) );
 	}
 
 	/**

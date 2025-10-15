@@ -1,10 +1,11 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Resources;
 
-use Automattic\WordpressMcp\Core\RegisterMcpResource;
-use Automattic\WordpressMcp\Utils\ActiveThemeInfo;
+namespace McpForWoo\Resources;
+
+use McpForWoo\Core\RegisterMcpResource;
+use McpForWoo\Utils\ActiveThemeInfo;
 
 /**
  * Class ThemeInfoResource
@@ -12,7 +13,7 @@ use Automattic\WordpressMcp\Utils\ActiveThemeInfo;
  * Resource for retrieving information about the active WordPress theme.
  * Provides detailed information about the active theme and its parent theme if applicable.
  *
- * @package Automattic\WordpressMcp\Resources
+ * @package McpForWoo\Resources
  */
 class McpThemeInfoResource {
 
@@ -22,7 +23,7 @@ class McpThemeInfoResource {
 	 * @return void
 	 */
 	public function __construct() {
-		add_action( 'wordpress_mcp_init', array( $this, 'register_resource' ) );
+		add_action( 'mcpfowo_init', array( $this, 'register_resource' ) );
 	}
 
 	/**

@@ -5,9 +5,11 @@
  * @package WordPressMcp
  */
 
-namespace Automattic\WordpressMcp\RequestMethodHandlers;
 
-use Automattic\WordpressMcp\Core\McpErrorHandler;
+
+namespace McpForWoo\RequestMethodHandlers;
+
+use McpForWoo\Core\McpErrorHandler;
 
 /**
  * Handles system-related MCP methods.

@@ -1,7 +1,8 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Utils;
+
+namespace McpForWoo\Utils;
 
 /**
  * Class UsersInfo
@@ -9,7 +10,7 @@ namespace Automattic\WordpressMcp\Utils;
  * Utility class for retrieving information about WordPress users.
  * Provides detailed information about registered users and their roles.
  *
- * @package Automattic\WordpressMcp\Utils
+ * @package McpForWoo\Utils
  */
 class UsersInfo {
 

@@ -2,13 +2,13 @@
 /**
  * Test class for McpWooAttributes
  *
- * @package Automattic\WordpressMcp\Tests\Tools
+ * @package McpForWoo\Tests\Tools
  */
 
-namespace Automattic\WordpressMcp\Tests\Tools;
+namespace McpForWoo\Tests\Tools;
 
-use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Tools\McpWooAttributes;
+use McpForWoo\Core\WpMcp;
+use McpForWoo\Tools\McpWooAttributes;
 use WP_UnitTestCase;
 use WP_REST_Request;
 use WP_User;
@@ -60,7 +60,7 @@ final class McpWooAttributesTest extends WP_UnitTestCase {
 
 		// Initialize the REST API and MCP.
 		do_action( 'rest_api_init' );
-		do_action( 'wordpress_mcp_init' );
+		do_action( 'mcpfowo_init' );
 	}
 
 	/**

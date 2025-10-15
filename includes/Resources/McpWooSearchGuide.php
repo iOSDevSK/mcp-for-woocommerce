@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Resources;
 
-use Automattic\WordpressMcp\Core\RegisterMcpResource;
+namespace McpForWoo\Resources;
+
+use McpForWoo\Core\RegisterMcpResource;
 
 /**
 * Class McpWooSearchGuide
@@ -13,7 +14,7 @@ use Automattic\WordpressMcp\Core\RegisterMcpResource;
 class McpWooSearchGuide {
 
   public function __construct() {
-      add_action('wordpress_mcp_init', [$this, 'register_resource']);
+      add_action('mcpfowo_init', [$this, 'register_resource']);
   }
 
   public function register_resource(): void {

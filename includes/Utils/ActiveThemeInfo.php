@@ -1,14 +1,15 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Utils;
+
+namespace McpForWoo\Utils;
 
 /**
  * Class ActiveThemeInfo
  *
  * Utility class for retrieving information about WordPress themes.
  *
- * @package Automattic\WordpressMcp\Utils
+ * @package McpForWoo\Utils
  */
 class ActiveThemeInfo {
 

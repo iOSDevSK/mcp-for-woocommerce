@@ -19,7 +19,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 function mcp_for_woocommerce_cleanup_options() {
     // Remove plugin options
     $options_to_delete = [
-        'wordpress_mcp_settings',
+        'mcpfowo_settings',
         'mcp_for_woocommerce_jwt_secret',
         'mcp_for_woocommerce_jwt_tokens',
         'mcp_for_woocommerce_auth_settings',

@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Tools;
 
-use Automattic\WordpressMcp\Core\WpMcp;
+namespace McpForWoo\Tools;
+
+use McpForWoo\Core\WpMcp;
 use WP_Query;
 use WP_Post;
 
@@ -16,7 +17,7 @@ class McpWordPressPages {
      * Constructor.
      */
     public function __construct() {
-        add_action('wordpress_mcp_init', array($this, 'register_tools'));
+        add_action('mcpfowo_init', array($this, 'register_tools'));
     }
 
     /**

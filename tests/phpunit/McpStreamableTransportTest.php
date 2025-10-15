@@ -6,9 +6,9 @@
  * @subpackage Tests
  */
 
-namespace Automattic\WordpressMcp\Tests;
+namespace McpForWoo\Tests;
 
-use Automattic\WordpressMcp\Core\McpStreamableTransport;
+use McpForWoo\Core\McpStreamableTransport;
 use WP_REST_Request;
 
 /**
@@ -500,7 +500,7 @@ class McpStreamableTransportTest extends McpTransportTestBase {
 		$this->assertFalse( $result, 'No authentication should fail permission check' );
 
 		// Test with MCP disabled
-		update_option( 'wordpress_mcp_settings', array( 'enabled' => false ) );
+		update_option( 'mcpfowo_settings', array( 'enabled' => false ) );
 		$this->set_jwt_auth( $this->admin_jwt_token );
 		$result = $this->streamable_transport->check_permission();
 		$this->assertInstanceOf( 'WP_Error', $result, 'Disabled MCP should return WP_Error' );

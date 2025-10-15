@@ -4,13 +4,15 @@
  *
  * Registers generic MCP tools for CRUD actions on any WordPress REST API endpoint.
  *
- * @package Automattic\WordpressMcp\Tools
+ * @package McpForWoo\Tools
  */
 declare( strict_types=1 );
 
-namespace Automattic\WordpressMcp\Tools;
 
-use Automattic\WordpressMcp\Core\RegisterMcpTool;
+
+namespace McpForWoo\Tools;
+
+use McpForWoo\Core\RegisterMcpTool;
 use WP_REST_Request;
 
 /**
@@ -18,14 +20,14 @@ use WP_REST_Request;
  *
  * Registers generic MCP tools for CRUD actions on any WordPress REST API endpoint.
  *
- * @package Automattic\WordpressMcp\Tools
+ * @package McpForWoo\Tools
  */
 class McpRestApiCrud {
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'wordpress_mcp_init', array( $this, 'register_tools' ) );
+		add_action( 'mcpfowo_init', array( $this, 'register_tools' ) );
 	}
 
 	/**
@@ -35,7 +37,7 @@ class McpRestApiCrud {
 	 */
 	public function register_tools(): void {
 		// Check if REST API CRUD tools are enabled in settings.
-		$settings = get_option( 'wordpress_mcp_settings', array() );
+		$settings = get_option( 'mcpfowo_settings', array() );
 		if ( empty( $settings['enable_rest_api_crud_tools'] ) ) {
 			return;
 		}

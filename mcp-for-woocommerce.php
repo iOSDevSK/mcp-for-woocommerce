@@ -2,7 +2,7 @@
 /**
  * Plugin name:       MCP for WooCommerce
  * Description:       Community-developed AI integration plugin that connects WooCommerce & WordPress with Model Context Protocol (MCP). Not affiliated with Automattic. Provides comprehensive AI-accessible interfaces to WooCommerce products, orders, categories, shipping, payments, and WordPress posts/pages through standardized tools, resources, and prompts. Enables AI assistants to seamlessly interact with your e-commerce data and content. Acts as a WooCommerce MCP Server for MCP clients; pair with Webtalkbot to add a WooCommerce AI Chatbot/Agent to your site.
- * Version:           1.1.7
+ * Version:           1.1.8
  * Requires at least: 6.4
  * Tested up to:      6.8
  * Requires PHP:      8.0
@@ -22,30 +22,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-declare(strict_types=1);
+use McpForWoo\Core\McpStreamableTransport;
+use McpForWoo\Core\WpMcp;
+use McpForWoo\Core\McpStdioTransport;
+use McpForWoo\Admin\Settings;
+use McpForWoo\Auth\JwtAuth;
+use McpForWoo\CLI\ValidateToolsCommand;
 
-use Automattic\WordpressMcp\Core\McpStreamableTransport;
-use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Core\McpStdioTransport;
-use Automattic\WordpressMcp\Admin\Settings;
-use Automattic\WordpressMcp\Auth\JwtAuth;
-use Automattic\WordpressMcp\CLI\ValidateToolsCommand;
-
-define( 'WORDPRESS_MCP_VERSION', '1.1.5' );
-define( 'WORDPRESS_MCP_PATH', plugin_dir_path( __FILE__ ) );
-define( 'WORDPRESS_MCP_URL', plugin_dir_url( __FILE__ ) );
+define( 'MCPFOWO_VERSION', '1.1.8' );
+define( 'MCPFOWO_PATH', plugin_dir_path( __FILE__ ) );
+define( 'MCPFOWO_URL', plugin_dir_url( __FILE__ ) );
+define( 'MCPFOWO_PLUGIN_FILE', __FILE__ );
 
 // Check if Composer autoloader exists.
-if ( ! file_exists( WORDPRESS_MCP_PATH . 'vendor/autoload.php' ) ) {
+if ( ! file_exists( MCPFOWO_PATH . 'vendor/autoload.php' ) ) {
 	wp_die(
 		sprintf(
 			'Please run <code>composer install</code> in the plugin directory: <code>%s</code>',
-			esc_html( WORDPRESS_MCP_PATH )
+			esc_html( MCPFOWO_PATH )
 		)
 	);
 }
 
-require_once WORDPRESS_MCP_PATH . 'vendor/autoload.php';
+require_once MCPFOWO_PATH . 'vendor/autoload.php';
 
 /**
  * Get the WordPress MCP instance.
@@ -59,7 +58,7 @@ function WPMCP() { // phpcs:ignore
 /**
  * Initialize the plugin.
  */
-function init_wordpress_mcp() {
+function init_mcpfowo() {
 	$mcp = WPMCP();
 
 	// Initialize the STDIO transport.
@@ -80,7 +79,7 @@ function init_wordpress_mcp() {
 /**
  * Register WP-CLI commands
  */
-function register_wordpress_mcp_cli_commands() {
+function register_mcpfowo_cli_commands() {
 	if ( ! class_exists( 'WP_CLI' ) ) {
 		return;
 	}
@@ -89,7 +88,7 @@ function register_wordpress_mcp_cli_commands() {
 }
 
 // Initialize the plugin on plugins_loaded to ensure all dependencies are available.
-add_action( 'plugins_loaded', 'init_wordpress_mcp' );
+add_action( 'plugins_loaded', 'init_mcpfowo' );
 
 // Register CLI commands
-add_action( 'cli_init', 'register_wordpress_mcp_cli_commands' );
+add_action( 'cli_init', 'register_mcpfowo_cli_commands' );

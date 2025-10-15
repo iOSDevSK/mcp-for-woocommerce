@@ -5,7 +5,9 @@
  * @package WordPressMcp
  */
 
-namespace Automattic\WordpressMcp\Core;
+
+
+namespace McpForWoo\Core;
 
 /**
  * Handles MCP error responses according to JSON-RPC 2.0 specification.

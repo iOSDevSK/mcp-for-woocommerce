@@ -5,9 +5,11 @@
  * @package WordPressMcp
  */
 
-namespace Automattic\WordpressMcp\RequestMethodHandlers;
 
-use Automattic\WordpressMcp\Core\WpMcp;
+
+namespace McpForWoo\RequestMethodHandlers;
+
+use McpForWoo\Core\WpMcp;
 use stdClass;
 use Exception;
 
@@ -48,7 +50,7 @@ class InitializeHandler {
 
 		$server_info = array(
 			'name'     => 'WordPress MCP Server',
-			'version'  => WORDPRESS_MCP_VERSION,
+			'version'  => MCPFOWO_VERSION,
 			'siteInfo' => $site_info,
 		);
 

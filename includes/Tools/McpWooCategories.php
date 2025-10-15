@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Tools;
 
-use Automattic\WordpressMcp\Core\RegisterMcpTool;
+namespace McpForWoo\Tools;
+
+use McpForWoo\Core\RegisterMcpTool;
 
 /**
  * Class McpWooCategories
@@ -13,7 +14,7 @@ use Automattic\WordpressMcp\Core\RegisterMcpTool;
 class McpWooCategories {
 
     public function __construct() {
-        add_action('wordpress_mcp_init', [$this, 'register_tools']);
+        add_action('mcpfowo_init', [$this, 'register_tools']);
     }
 
     public function register_tools(): void {

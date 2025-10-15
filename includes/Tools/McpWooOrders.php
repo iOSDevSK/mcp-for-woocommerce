@@ -1,9 +1,11 @@
-<?php //phpcs:ignore
-declare( strict_types=1 );
+<?php
 
-namespace Automattic\WordpressMcp\Tools;
+declare(strict_types=1);
 
-use Automattic\WordpressMcp\Core\RegisterMcpTool;
+
+namespace McpForWoo\Tools;
+
+use McpForWoo\Core\RegisterMcpTool;
 
 /**
  * Class McpWooOrders
@@ -17,7 +19,7 @@ class McpWooOrders {
 	 * Constructor for McpWooOrders.
 	 */
 	public function __construct() {
-		add_action( 'wordpress_mcp_init', array( $this, 'register_tools' ) );
+		add_action( 'mcpfowo_init', array( $this, 'register_tools' ) );
 	}
 
 	/**

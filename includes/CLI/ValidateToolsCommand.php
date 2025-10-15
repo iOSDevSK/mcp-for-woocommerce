@@ -2,16 +2,18 @@
 /**
  * WP-CLI command for validating MCP tools
  *
- * @package WordPressMCP
+ * @package McpForWoo
  * @subpackage CLI
  */
 
-namespace Automattic\WordpressMcp\CLI;
+
+
+namespace McpForWoo\CLI;
 
 use WP_CLI;
-use Automattic\WordpressMcp\Utils\ToolValidator;
-use Automattic\WordpressMcp\Utils\SchemaValidator;
-use Automattic\WordpressMcp\Core\RegisterMcpTool;
+use McpForWoo\Utils\ToolValidator;
+use McpForWoo\Utils\SchemaValidator;
+use McpForWoo\Core\RegisterMcpTool;
 
 /**
  * Validates MCP tools for compliance and functionality.
@@ -118,7 +120,7 @@ class ValidateToolsCommand {
 
 		if ( empty( $wp_mcp_tools ) ) {
 			// Try to get tools from RegisterMcpTool if available
-			if ( class_exists( 'WordPressMCP\Core\RegisterMcpTool' ) ) {
+			if ( class_exists( 'McpForWoo\Core\RegisterMcpTool' ) ) {
 				$register_tool = new RegisterMcpTool();
 				// This would need a method to retrieve registered tools
 				// For now, return empty array

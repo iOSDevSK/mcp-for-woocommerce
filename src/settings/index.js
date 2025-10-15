@@ -83,10 +83,10 @@ export const SettingsApp = () => {
 	// Load settings
 	useEffect( () => {
 		if (
-			window.wordpressMcpSettings &&
-			window.wordpressMcpSettings.settings
+			window.mcpfowoSettings &&
+			window.mcpfowoSettings.settings
 		) {
-			const loaded = window.wordpressMcpSettings.settings;
+			const loaded = window.mcpfowoSettings.settings;
 			setSettings( ( prev ) => ( {
 				...prev,
 				enabled: loaded.enabled || false,
@@ -95,10 +95,10 @@ export const SettingsApp = () => {
 
 		// Load JWT required setting
 		if (
-			window.wordpressMcpSettings &&
-			typeof window.wordpressMcpSettings.jwtRequired !== 'undefined'
+			window.mcpfowoSettings &&
+			typeof window.mcpfowoSettings.jwtRequired !== 'undefined'
 		) {
-			setJwtRequired( window.wordpressMcpSettings.jwtRequired );
+			setJwtRequired( window.mcpfowoSettings.jwtRequired );
 		}
 	}, [] );
 
@@ -182,8 +182,8 @@ export const SettingsApp = () => {
 
 		// Create form data for AJAX request
 		const formData = new FormData();
-		formData.append( 'action', 'wordpress_mcp_save_settings' );
-		formData.append( 'nonce', window.wordpressMcpSettings.nonce );
+		formData.append( 'action', 'mcpfowo_save_settings' );
+		formData.append( 'nonce', window.mcpfowoSettings.nonce );
 		formData.append( 'settings', JSON.stringify( settings ) );
 		formData.append( 'jwt_required', jwtValue );
 
@@ -201,14 +201,14 @@ export const SettingsApp = () => {
 						status: 'success',
 						message:
 							data.data.message ||
-							window.wordpressMcpSettings.strings.settingsSaved,
+							window.mcpfowoSettings.strings.settingsSaved,
 					} );
 				} else {
 					setNotice( {
 						status: 'error',
 						message:
 							data.data.message ||
-							window.wordpressMcpSettings.strings.settingsError,
+							window.mcpfowoSettings.strings.settingsError,
 					} );
 				}
 			} )
@@ -216,7 +216,7 @@ export const SettingsApp = () => {
 				setIsSaving( false );
 				setNotice( {
 					status: 'error',
-					message: window.wordpressMcpSettings.strings.settingsError,
+					message: window.mcpfowoSettings.strings.settingsError,
 				} );
 				console.error( 'Error saving JWT setting:', error );
 			} );
@@ -229,8 +229,8 @@ export const SettingsApp = () => {
 
 		// Create form data for AJAX request
 		const formData = new FormData();
-		formData.append( 'action', 'wordpress_mcp_save_settings' );
-		formData.append( 'nonce', window.wordpressMcpSettings.nonce );
+		formData.append( 'action', 'mcpfowo_save_settings' );
+		formData.append( 'nonce', window.mcpfowoSettings.nonce );
 		formData.append( 'settings', JSON.stringify( settingsData ) );
 		formData.append( 'jwt_required', jwtRequired );
 
@@ -248,14 +248,14 @@ export const SettingsApp = () => {
 						status: 'success',
 						message:
 							data.data.message ||
-							window.wordpressMcpSettings.strings.settingsSaved,
+							window.mcpfowoSettings.strings.settingsSaved,
 					} );
 				} else {
 					setNotice( {
 						status: 'error',
 						message:
 							data.data.message ||
-							window.wordpressMcpSettings.strings.settingsError,
+							window.mcpfowoSettings.strings.settingsError,
 					} );
 				}
 			} )
@@ -263,7 +263,7 @@ export const SettingsApp = () => {
 				setIsSaving( false );
 				setNotice( {
 					status: 'error',
-					message: window.wordpressMcpSettings.strings.settingsError,
+					message: window.mcpfowoSettings.strings.settingsError,
 				} );
 				console.error( 'Error saving settings:', error );
 			} );
@@ -275,13 +275,13 @@ export const SettingsApp = () => {
 	};
 
 	// Get localized strings
-	const strings = window.wordpressMcpSettings
-		? window.wordpressMcpSettings.strings
+	const strings = window.mcpfowoSettings
+		? window.mcpfowoSettings.strings
 		: {};
 
 	// Get system status
-	const systemStatus = window.wordpressMcpSettings
-		? window.wordpressMcpSettings.systemStatus
+	const systemStatus = window.mcpfowoSettings
+		? window.mcpfowoSettings.systemStatus
 		: null;
 
 	return (

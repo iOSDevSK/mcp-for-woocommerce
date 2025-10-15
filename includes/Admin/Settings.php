@@ -1,10 +1,11 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Admin;
 
-use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Core\McpProxyGenerator;
+namespace McpForWoo\Admin;
+
+use McpForWoo\Core\WpMcp;
+use McpForWoo\Core\McpProxyGenerator;
 
 /**
  * Class Settings
@@ -14,17 +15,17 @@ class Settings {
 	/**
 	 * The option name in the WordPress options table.
 	 */
-	const OPTION_NAME = 'wordpress_mcp_settings';
+	const OPTION_NAME = 'mcpfowo_settings';
 
 	/**
 	 * The tool states option name.
 	 */
-	const TOOL_STATES_OPTION = 'wordpress_mcp_tool_states';
+	const TOOL_STATES_OPTION = 'mcpfowo_tool_states';
 
 	/**
 	 * The JWT required option name.
 	 */
-	const JWT_REQUIRED_OPTION = 'wordpress_mcp_jwt_required';
+	const JWT_REQUIRED_OPTION = 'mcpfowo_jwt_required';
 
 	/**
 	 * Initialize the settings page.
@@ -33,9 +34,9 @@ class Settings {
 		add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_action( 'wp_ajax_wordpress_mcp_save_settings', array( $this, 'ajax_save_settings' ) );
-		add_action( 'wp_ajax_wordpress_mcp_toggle_tool', array( $this, 'ajax_toggle_tool' ) );
-		add_filter( 'plugin_action_links_' . plugin_basename( WORDPRESS_MCP_PATH . 'mcp-for-woocommerce.php' ), array( $this, 'plugin_action_links' ) );
+		add_action( 'wp_ajax_mcpfowo_save_settings', array( $this, 'ajax_save_settings' ) );
+		add_action( 'wp_ajax_mcpfowo_toggle_tool', array( $this, 'ajax_toggle_tool' ) );
+		add_filter( 'plugin_action_links_' . plugin_basename( MCPFOWO_PATH . 'mcp-for-woocommerce.php' ), array( $this, 'plugin_action_links' ) );
 		
 		// Initialize JWT required option with default value if not exists
 		add_action( 'init', array( $this, 'init_jwt_option' ) );
@@ -55,7 +56,7 @@ class Settings {
 	 */
 	public function add_settings_page(): void {
 		// Get plugin version from main plugin file header
-		$plugin_data = get_file_data( WORDPRESS_MCP_PATH . 'mcp-for-woocommerce.php', array( 'Version' => 'Version' ) );
+		$plugin_data = get_file_data( MCPFOWO_PATH . 'mcp-for-woocommerce.php', array( 'Version' => 'Version' ) );
 		$version = ! empty( $plugin_data['Version'] ) ? $plugin_data['Version'] : '';
 		
 		// Create page title with version
@@ -65,7 +66,7 @@ class Settings {
 			$page_title,
 			__( 'MCP for WooCommerce', 'mcp-for-woocommerce' ),
 			'manage_options',
-			'wordpress-mcp-settings',
+			'mcpfowo-settings',
 			array( $this, 'render_settings_page' )
 		);
 	}
@@ -75,7 +76,7 @@ class Settings {
 	 */
 	public function register_settings(): void {
 		register_setting(
-			'wordpress_mcp_settings',
+			'mcpfowo_settings',
 			self::OPTION_NAME,
 			array(
 				'type'              => 'array',
@@ -92,16 +93,16 @@ class Settings {
 	 * @param string $hook The current admin page.
 	 */
 	public function enqueue_scripts( string $hook ): void {
-		if ( 'settings_page_wordpress-mcp-settings' !== $hook ) {
+		if ( 'settings_page_mcpfowo-settings' !== $hook ) {
 			return;
 		}
 
-		$asset_file = include WORDPRESS_MCP_PATH . 'build/index.asset.php';
+		$asset_file = include MCPFOWO_PATH . 'build/index.asset.php';
 
 		// Enqueue our React app.
 		wp_enqueue_script(
-			'wordpress-mcp-settings',
-			WORDPRESS_MCP_URL . 'build/index.js',
+			'mcpfowo-settings',
+			MCPFOWO_URL . 'build/index.js',
 			$asset_file['dependencies'],
 			$asset_file['version'],
 			true
@@ -117,25 +118,25 @@ class Settings {
 
 		// Enqueue the WordPress MCP settings CSS.
 		wp_enqueue_style(
-			'wp-mcp-settings',
-			WORDPRESS_MCP_URL . 'build/style-index.css',
+			'mcpfowo-settings',
+			MCPFOWO_URL . 'build/style-index.css',
 			array(),
 			$asset_file['version'],
 		);
 
 		// Localize the script with data needed by the React app.
 		wp_localize_script(
-			'wordpress-mcp-settings',
-			'wordpressMcpSettings',
+			'mcpfowo-settings',
+			'mcpfowoSettings',
 			array(
-				'apiUrl'              => rest_url( 'wordpress-mcp/v1/settings' ),
+				'apiUrl'              => rest_url( 'mcpfowo/v1/settings' ),
 				'jwtApiUrl'           => rest_url( 'jwt-auth/v1' ),
 				'restFallbackUrl'     => home_url( '/index.php?rest_route=' ),
-				'nonce'               => wp_create_nonce( 'wordpress_mcp_settings' ),
+				'nonce'               => wp_create_nonce( 'mcpfowo_settings' ),
 				'settings'            => get_option( self::OPTION_NAME, array() ),
 				'toolStates'          => get_option( self::TOOL_STATES_OPTION, array() ),
 				'jwtRequired'         => get_option( self::JWT_REQUIRED_OPTION, true ),
-				'pluginUrl'           => WORDPRESS_MCP_URL,
+				'pluginUrl'           => MCPFOWO_URL,
 				'claudeSetupInstructions' => McpProxyGenerator::should_generate_proxy() ? McpProxyGenerator::get_claude_setup_instructions() : null,
 				'systemStatus'        => array(
 					'restApiEnabled'   => $this->is_rest_api_enabled(),
@@ -180,7 +181,7 @@ class Settings {
 		}
 
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if ( ! wp_verify_nonce( $nonce, 'wordpress_mcp_settings' ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'mcpfowo_settings' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid nonce. Please refresh the page and try again.', 'mcp-for-woocommerce' ) ) );
 		}
 
@@ -243,7 +244,7 @@ class Settings {
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<div id="wordpress-mcp-settings-app"></div>
+			<div id="mcpfowo-settings-app"></div>
 		</div>
 		<?php
 	}
@@ -255,7 +256,7 @@ class Settings {
 	 * @return array
 	 */
 	public function plugin_action_links( array $actions ): array {
-		$settings_link = '<a href="' . admin_url( 'options-general.php?page=wordpress-mcp-settings' ) . '">' . __( 'Settings', 'mcp-for-woocommerce' ) . '</a>';
+		$settings_link = '<a href="' . admin_url( 'options-general.php?page=mcpfowo-settings' ) . '">' . __( 'Settings', 'mcp-for-woocommerce' ) . '</a>';
 		array_unshift( $actions, $settings_link );
 		return $actions;
 	}
@@ -269,7 +270,7 @@ class Settings {
 		}
 
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if ( ! wp_verify_nonce( $nonce, 'wordpress_mcp_settings' ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'mcpfowo_settings' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid nonce. Please refresh the page and try again.', 'mcp-for-woocommerce' ) ) );
 		}
 

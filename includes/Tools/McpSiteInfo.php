@@ -1,18 +1,20 @@
-<?php //phpcs:ignore
-declare( strict_types=1 );
+<?php
 
-namespace Automattic\WordpressMcp\Tools;
+declare(strict_types=1);
 
-use Automattic\WordpressMcp\Core\RegisterMcpTool;
-use Automattic\WordpressMcp\Utils\ActiveThemeInfo;
-use Automattic\WordpressMcp\Utils\PluginsInfo;
-use Automattic\WordpressMcp\Utils\UsersInfo;
+
+namespace McpForWoo\Tools;
+
+use McpForWoo\Core\RegisterMcpTool;
+use McpForWoo\Utils\ActiveThemeInfo;
+use McpForWoo\Utils\PluginsInfo;
+use McpForWoo\Utils\UsersInfo;
 use stdClass;
 
 /**
  * Class McpGetSiteInfo
  *
- * @package Automattic\WordpressMcp\Tools
+ * @package McpForWoo\Tools
  */
 class McpSiteInfo {
 
@@ -20,7 +22,7 @@ class McpSiteInfo {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'wordpress_mcp_init', array( $this, 'register_tools' ) );
+		add_action( 'mcpfowo_init', array( $this, 'register_tools' ) );
 	}
 
 	/**

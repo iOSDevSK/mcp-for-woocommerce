@@ -1,28 +1,28 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Core;
+namespace McpForWoo\Core;
 
-use Automattic\WordpressMcp\Tools\McpWordPressPosts;
-use Automattic\WordpressMcp\Tools\McpWordPressPages;
+use McpForWoo\Tools\McpWordPressPosts;
+use McpForWoo\Tools\McpWordPressPages;
 
-use Automattic\WordpressMcp\Tools\McpRestApiCrud;
-use Automattic\WordpressMcp\Tools\McpWooProducts;
-// use Automattic\WordpressMcp\Prompts\McpAnalyzeSales; // Disabled - not used in MCP for WooCommerce
-use Automattic\WordpressMcp\Resources\McpWooSearchGuide;
+use McpForWoo\Tools\McpRestApiCrud;
+use McpForWoo\Tools\McpWooProducts;
+// use McpForWoo\Prompts\McpAnalyzeSales; // Disabled - not used in MCP for WooCommerce
+use McpForWoo\Resources\McpWooSearchGuide;
 
 use InvalidArgumentException;
 
-use Automattic\WordpressMcp\Tools\McpWooCategories;
-use Automattic\WordpressMcp\Tools\McpWooTags;
-use Automattic\WordpressMcp\Tools\McpWooIntentAnalyzer;
-use Automattic\WordpressMcp\Tools\McpWooReviews;
-use Automattic\WordpressMcp\Tools\McpWooAttributes;
-use Automattic\WordpressMcp\Tools\McpWooShipping;
-use Automattic\WordpressMcp\Tools\McpWooTaxes;
-use Automattic\WordpressMcp\Tools\McpWooPaymentGateways;
-use Automattic\WordpressMcp\Tools\McpWooSystemStatus;
-use Automattic\WordpressMcp\Tools\McpWooIntelligentSearch;
+use McpForWoo\Tools\McpWooCategories;
+use McpForWoo\Tools\McpWooTags;
+use McpForWoo\Tools\McpWooIntentAnalyzer;
+use McpForWoo\Tools\McpWooReviews;
+use McpForWoo\Tools\McpWooAttributes;
+use McpForWoo\Tools\McpWooShipping;
+use McpForWoo\Tools\McpWooTaxes;
+use McpForWoo\Tools\McpWooPaymentGateways;
+use McpForWoo\Tools\McpWooSystemStatus;
+use McpForWoo\Tools\McpWooIntelligentSearch;
 
 /**
  * WordPress MCP - WooCommerce Only
@@ -120,7 +120,7 @@ class WpMcp {
 	 *
 	 * @var string
 	 */
-	private const TOOL_STATES_OPTION = 'wordpress_mcp_tool_states';
+	private const TOOL_STATES_OPTION = 'mcpfowo_tool_states';
 
 	/**
 	 * Constructor.
@@ -129,7 +129,7 @@ class WpMcp {
 
 		// Only initialize if not already initialized.
 		if ( ! self::$initialized ) {
-			$this->mcp_settings = get_option( 'wordpress_mcp_settings', array() );
+			$this->mcp_settings = get_option( 'mcpfowo_settings', array() );
 
 			// Only initialize components if MCP is enabled.
 			if ( $this->is_mcp_enabled() ) {
@@ -139,7 +139,7 @@ class WpMcp {
 				$this->init_features_as_tools();
 				// Register the MCP assets earlier in the rest_api_init hook to prevent timeouts with Claude.ai web app.
 				// Reduced priority from 20000 to 10 for faster initialization
-				add_action( 'rest_api_init', array( $this, 'wordpress_mcp_init' ), 10 );
+				add_action( 'rest_api_init', array( $this, 'mcpfowo_init_action' ), 10 );
 
 				self::$initialized = true;
 			}
@@ -149,13 +149,13 @@ class WpMcp {
 	/**
 	 * Initialize the plugin.
 	 */
-	public function wordpress_mcp_init(): void {
-		// Only trigger the wordpress_mcp_init action if MCP is enabled and hasn't been triggered before.
+	public function mcpfowo_init_action(): void {
+		// Only trigger the mcpfowo_init action if MCP is enabled and hasn't been triggered before.
 		if ( $this->is_mcp_enabled() && ! $this->has_triggered_init ) {
 			// Log that the MCP init hook is firing to help diagnose registration timing
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			}
-			do_action( 'wordpress_mcp_init', $this );
+			do_action( 'mcpfowo_init', $this );
 			$this->has_triggered_init = true;
 		}
 	}

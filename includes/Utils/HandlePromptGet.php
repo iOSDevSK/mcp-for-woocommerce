@@ -1,7 +1,8 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Utils;
+
+namespace McpForWoo\Utils;
 
 /**
  * Handle prompt get.

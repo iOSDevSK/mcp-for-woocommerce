@@ -2,13 +2,13 @@
 /**
  * Test class for McpMediaTools
  *
- * @package Automattic\WordpressMcp\Tests\Tools
+ * @package McpForWoo\Tests\Tools
  */
 
-namespace Automattic\WordpressMcp\Tests\Tools;
+namespace McpForWoo\Tests\Tools;
 
-use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Tools\McpMediaTools;
+use McpForWoo\Core\WpMcp;
+use McpForWoo\Tools\McpMediaTools;
 use WP_UnitTestCase;
 use WP_REST_Request;
 use WP_User;
@@ -40,7 +40,7 @@ final class McpMediaToolsTest extends WP_UnitTestCase {
 
 		// Enable MCP in settings
 		update_option(
-			'wordpress_mcp_settings',
+			'mcpfowo_settings',
 			array(
 				'enabled' => true,
 			)

@@ -1,9 +1,10 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Resources;
 
-use Automattic\WordpressMcp\Core\RegisterMcpResource;
+namespace McpForWoo\Resources;
+
+use McpForWoo\Core\RegisterMcpResource;
 
 /**
  * Class SiteSettingsResource
@@ -11,7 +12,7 @@ use Automattic\WordpressMcp\Core\RegisterMcpResource;
  * Resource for retrieving information about WordPress site settings.
  * Provides detailed information about general settings, reading settings, discussion settings, etc.
  *
- * @package Automattic\WordpressMcp\Resources
+ * @package McpForWoo\Resources
  */
 class McpSiteSettingsResource {
 
@@ -21,7 +22,7 @@ class McpSiteSettingsResource {
 	 * @return void
 	 */
 	public function __construct() {
-		add_action( 'wordpress_mcp_init', array( $this, 'register_resource' ) );
+		add_action( 'mcpfowo_init', array( $this, 'register_resource' ) );
 	}
 
 	/**

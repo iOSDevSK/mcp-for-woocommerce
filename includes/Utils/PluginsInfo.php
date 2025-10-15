@@ -1,7 +1,8 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Utils;
+
+namespace McpForWoo\Utils;
 
 /**
  * Class PluginsInfo
@@ -9,7 +10,7 @@ namespace Automattic\WordpressMcp\Utils;
  * Utility class for retrieving and managing WordPress plugin information.
  * Provides detailed information about all plugins including active and inactive ones.
  *
- * @package Automattic\WordpressMcp\Utils
+ * @package McpForWoo\Utils
  */
 class PluginsInfo {
 

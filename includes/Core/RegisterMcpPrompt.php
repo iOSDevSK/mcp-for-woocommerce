@@ -1,7 +1,8 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Core;
+
+namespace McpForWoo\Core;
 
 use InvalidArgumentException;
 
@@ -30,11 +31,11 @@ class RegisterMcpPrompt {
 	 * @param array $prompt The prompt instance.
 	 * @param array $messages The messages instance.
 	 * @throws InvalidArgumentException When the prompt is invalid.
-	 * @throws \RuntimeException When the prompt is registered outside of wordpress_mcp_init action.
+	 * @throws \RuntimeException When the prompt is registered outside of mcpfowo_init action.
 	 */
 	public function __construct( array $prompt, array $messages ) {
-		if ( ! doing_action( 'wordpress_mcp_init' ) ) {
-			throw new \RuntimeException( 'RegisterMcpPrompt can only be used within the wordpress_mcp_init action.' );
+		if ( ! doing_action( 'mcpfowo_init' ) ) {
+			throw new \RuntimeException( 'RegisterMcpPrompt can only be used within the mcpfowo_init action.' );
 		}
 
 		$this->prompt   = $prompt;

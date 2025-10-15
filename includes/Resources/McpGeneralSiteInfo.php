@@ -1,9 +1,10 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Resources;
 
-use Automattic\WordpressMcp\Core\RegisterMcpResource;
+namespace McpForWoo\Resources;
+
+use McpForWoo\Core\RegisterMcpResource;
 
 /**
  * Class GeneralSiteInfo
@@ -11,7 +12,7 @@ use Automattic\WordpressMcp\Core\RegisterMcpResource;
  * Resource for retrieving WordPress site information.
  * Provides access to site details, plugins, themes, and user information.
  *
- * @package Automattic\WordpressMcp\Resources
+ * @package McpForWoo\Resources
  */
 class McpGeneralSiteInfo {
 
@@ -21,7 +22,7 @@ class McpGeneralSiteInfo {
 	 * @return void
 	 */
 	public function __construct() {
-		add_action( 'wordpress_mcp_init', array( $this, 'register_resource' ) );
+		add_action( 'mcpfowo_init', array( $this, 'register_resource' ) );
 	}
 
 	/**

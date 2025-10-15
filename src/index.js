@@ -12,7 +12,7 @@ import { SettingsApp } from './settings/index.js';
 
 // Initialize the app when the DOM is ready
 document.addEventListener( 'DOMContentLoaded', function () {
-	const container = document.getElementById( 'wordpress-mcp-settings-app' );
+	const container = document.getElementById( 'mcpfowo-settings-app' );
 	if ( container ) {
 		const root = createRoot( container );
 		root.render( <SettingsApp /> );

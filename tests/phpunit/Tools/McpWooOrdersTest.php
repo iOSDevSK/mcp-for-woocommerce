@@ -2,13 +2,13 @@
 /**
  * Test class for McpWooOrders
  *
- * @package Automattic\WordpressMcp\Tests\Tools
+ * @package McpForWoo\Tests\Tools
  */
 
-namespace Automattic\WordpressMcp\Tests\Tools;
+namespace McpForWoo\Tests\Tools;
 
-use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Tools\McpWooOrders;
+use McpForWoo\Core\WpMcp;
+use McpForWoo\Tools\McpWooOrders;
 use WC_Coupon;
 use WP_UnitTestCase;
 use WP_REST_Request;

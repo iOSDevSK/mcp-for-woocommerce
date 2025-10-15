@@ -1,9 +1,11 @@
 <?php
-declare( strict_types=1 );
 
-namespace Automattic\WordpressMcp\Tools;
+declare(strict_types=1);
 
-use Automattic\WordpressMcp\Core\RegisterMcpTool;
+
+namespace McpForWoo\Tools;
+
+use McpForWoo\Core\RegisterMcpTool;
 use WP_Error;
 use Exception;
 
@@ -16,7 +18,7 @@ use Exception;
 class McpWooIntelligentSearch {
 
     public function __construct() {
-        add_action( 'wordpress_mcp_init', array( $this, 'register_tools' ) );
+        add_action( 'mcpfowo_init', array( $this, 'register_tools' ) );
     }
 
     public function register_tools(): void {

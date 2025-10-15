@@ -2,11 +2,13 @@
 /**
  * Enhanced Schema Validator
  *
- * @package WordPressMCP
+ * @package McpForWoo
  * @subpackage Utils
  */
 
-namespace WordPressMCP\Utils;
+
+
+namespace McpForWoo\Utils;
 
 use InvalidArgumentException;
 use WP_Error;

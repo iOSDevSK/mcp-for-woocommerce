@@ -1,7 +1,8 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Core;
+
+namespace McpForWoo\Core;
 
 use WP_REST_Server;
 use WP_REST_Request;
@@ -63,7 +64,7 @@ class McpStdioTransport extends McpTransportBase {
 		}
 		
 		// Check JWT required setting
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
 		
 		if ( ! $jwt_required ) {
 			// JWT is disabled, allow access without authentication (readonly mode)

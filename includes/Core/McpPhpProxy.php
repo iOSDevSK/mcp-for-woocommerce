@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Core;
+
+namespace McpForWoo\Core;
 
 /**
  * PHP MCP Proxy Server
@@ -10,12 +11,12 @@ namespace Automattic\WordpressMcp\Core;
  */
 class McpPhpProxy {
     
-    private string $wordpress_mcp_url;
+    private string $mcpfowo_url;
     private array $server_info;
     private int $request_id = 0;
     
-    public function __construct(string $wordpress_mcp_url) {
-        $this->wordpress_mcp_url = $wordpress_mcp_url;
+    public function __construct(string $mcpfowo_url) {
+        $this->mcpfowo_url = $mcpfowo_url;
         $this->server_info = [
             'name' => 'woocommerce-mcp-php-proxy',
             'version' => '1.0.0'
@@ -182,7 +183,7 @@ class McpPhpProxy {
             ]
         ]);
         
-        $response = wp_remote_get( $this->wordpress_mcp_url, [
+        $response = wp_remote_get( $this->mcpfowo_url, [
             'method' => 'POST',
             'headers' => [
                 'Content-Type' => 'application/json',

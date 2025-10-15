@@ -6,9 +6,9 @@
  * @subpackage Tests
  */
 
-namespace Automattic\WordpressMcp\Tests;
+namespace McpForWoo\Tests;
 
-use Automattic\WordpressMcp\Auth\JwtAuth;
+use McpForWoo\Auth\JwtAuth;
 use WP_UnitTestCase;
 use WP_REST_Request;
 use WP_User;

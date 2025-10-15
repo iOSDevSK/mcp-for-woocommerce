@@ -6,9 +6,9 @@
  * @subpackage Tests
  */
 
-namespace Automattic\WordpressMcp\Tests;
+namespace McpForWoo\Tests;
 
-use Automattic\WordpressMcp\Core\McpStdioTransport;
+use McpForWoo\Core\McpStdioTransport;
 use WP_REST_Request;
 use WP_Error;
 
@@ -402,7 +402,7 @@ class McpStdioTransportTest extends McpTransportTestBase {
 		$this->assertFalse( $result, 'No authentication should fail permission check' );
 
 		// Test with MCP disabled
-		update_option( 'wordpress_mcp_settings', array( 'enabled' => false ) );
+		update_option( 'mcpfowo_settings', array( 'enabled' => false ) );
 		$this->set_jwt_auth( $this->admin_jwt_token );
 		$result = $this->stdio_transport->check_permission();
 		$this->assertInstanceOf( 'WP_Error', $result, 'Disabled MCP should return WP_Error' );

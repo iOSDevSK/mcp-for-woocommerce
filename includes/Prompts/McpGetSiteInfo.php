@@ -1,9 +1,10 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Prompts;
 
-use Automattic\WordpressMcp\Core\RegisterMcpPrompt;
+namespace McpForWoo\Prompts;
+
+use McpForWoo\Core\RegisterMcpPrompt;
 
 /**
  * Class McpGetSiteInfo
@@ -11,7 +12,7 @@ use Automattic\WordpressMcp\Core\RegisterMcpPrompt;
  * Prompt for retrieving WordPress site information.
  * Provides access to site details, plugins, themes, and user information.
  *
- * @package Automattic\WordpressMcp\Prompts
+ * @package McpForWoo\Prompts
  */
 class McpGetSiteInfo {
 
@@ -21,7 +22,7 @@ class McpGetSiteInfo {
 	 * @return void
 	 */
 	public function __construct() {
-		add_action( 'wordpress_mcp_init', array( $this, 'register_prompt' ) );
+		add_action( 'mcpfowo_init', array( $this, 'register_prompt' ) );
 	}
 
 	/**

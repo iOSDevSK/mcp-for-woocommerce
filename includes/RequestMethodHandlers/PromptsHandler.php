@@ -5,11 +5,13 @@
  * @package WordPressMcp
  */
 
-namespace Automattic\WordpressMcp\RequestMethodHandlers;
 
-use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Core\McpErrorHandler;
-use Automattic\WordpressMcp\Utils\HandlePromptGet;
+
+namespace McpForWoo\RequestMethodHandlers;
+
+use McpForWoo\Core\WpMcp;
+use McpForWoo\Core\McpErrorHandler;
+use McpForWoo\Utils\HandlePromptGet;
 
 /**
  * Handles prompts-related MCP methods.
@@ -42,7 +44,7 @@ class PromptsHandler {
 		}
 		
 		// Check JWT required setting
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
 		
 		// Debug logging
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {

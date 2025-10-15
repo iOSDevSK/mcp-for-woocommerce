@@ -6,12 +6,12 @@
  * @subpackage Tests
  */
 
-namespace Automattic\WordpressMcp\Tests;
+namespace McpForWoo\Tests;
 
-use Automattic\WordpressMcp\Core\McpStdioTransport;
-use Automattic\WordpressMcp\Core\McpStreamableTransport;
-use Automattic\WordpressMcp\Core\WpMcp;
-use Automattic\WordpressMcp\Auth\JwtAuth;
+use McpForWoo\Core\McpStdioTransport;
+use McpForWoo\Core\McpStreamableTransport;
+use McpForWoo\Core\WpMcp;
+use McpForWoo\Auth\JwtAuth;
 use WP_UnitTestCase;
 use WP_REST_Request;
 use WP_User;
@@ -85,7 +85,7 @@ class McpTransportIntegrationTest extends WP_UnitTestCase {
 		parent::setUp();
 
 		// Enable MCP functionality
-		update_option( 'wordpress_mcp_settings', array( 'enabled' => true ) );
+		update_option( 'mcpfowo_settings', array( 'enabled' => true ) );
 
 		// Create test users
 		$this->admin_user = $this->factory->user->create_and_get(
@@ -114,7 +114,7 @@ class McpTransportIntegrationTest extends WP_UnitTestCase {
 		do_action( 'rest_api_init' );
 
 		// Explicitly trigger MCP initialization (which happens at high priority during rest_api_init)
-		$this->wp_mcp->wordpress_mcp_init();
+		$this->wp_mcp->mcpfowo_init();
 
 		// Generate JWT tokens
 		$this->admin_jwt_token = $this->generate_jwt_token_for_user( $this->admin_user->ID );
@@ -129,7 +129,7 @@ class McpTransportIntegrationTest extends WP_UnitTestCase {
 	 */
 	public function tearDown(): void {
 		// Clean up options
-		delete_option( 'wordpress_mcp_settings' );
+		delete_option( 'mcpfowo_settings' );
 		delete_option( 'jwt_token_registry' );
 		delete_option( 'wpmcp_jwt_secret_key' );
 
@@ -497,7 +497,7 @@ class McpTransportIntegrationTest extends WP_UnitTestCase {
 	 */
 	public function test_mcp_disabled_behavior_consistent(): void {
 		// Disable MCP
-		update_option( 'wordpress_mcp_settings', array( 'enabled' => false ) );
+		update_option( 'mcpfowo_settings', array( 'enabled' => false ) );
 
 		// Test STDIO
 		$this->set_jwt_auth( $this->admin_jwt_token, '/wp/v2/wpmcp' );

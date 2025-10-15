@@ -1,9 +1,10 @@
-<?php //phpcs:ignore
-declare( strict_types=1 );
+<?php
+declare(strict_types=1);
 
-namespace Automattic\WordpressMcp\Tools;
 
-use Automattic\WordpressMcp\Core\RegisterMcpTool;
+namespace McpForWoo\Tools;
+
+use McpForWoo\Core\RegisterMcpTool;
 
 /**
  * Class McpWooProducts
@@ -17,7 +18,7 @@ class McpWooProducts {
 	 * Constructor for McpWooProducts.
 	 */
 	public function __construct() {
-		add_action( 'wordpress_mcp_init', array( $this, 'register_tools' ) );
+		add_action( 'mcpfowo_init', array( $this, 'register_tools' ) );
 	}
 
 	/**
@@ -171,7 +172,7 @@ class McpWooProducts {
 	 */
 	public function search_products( array $params ): array {
 		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
 		
 		if ( ! $jwt_required ) {
 			// JWT disabled - allow public read access to products
@@ -239,7 +240,7 @@ class McpWooProducts {
 	 */
 	public function get_product( array $params ): array {
 		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
 		
 		if ( ! $jwt_required ) {
 			// JWT disabled - allow public read access to products
@@ -283,7 +284,7 @@ class McpWooProducts {
 	 */
 	public function get_product_variations( array $params ): array {
 		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
 		
 		if ( ! $jwt_required ) {
 			// JWT disabled - allow public read access to product variations
@@ -336,7 +337,7 @@ class McpWooProducts {
 	 */
 	public function get_product_variation( array $params ): array {
 		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'wordpress_mcp_jwt_required', true ) : true;
+		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
 		
 		if ( ! $jwt_required ) {
 			// JWT disabled - allow public read access to product variations
