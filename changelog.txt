@@ -1,5 +1,32 @@
 === MCP for WooCommerce Plugin Changelog ===
 
+= Version 1.1.8 - Release #000013 - October 15, 2025 @ CET =
+
+**WORDPRESS.ORG COMPLIANCE & BOOLEAN STORAGE FIXES**
+
+* #000025 - Apply WordPress.org review requirements
+  Date: October 15, 2025
+  - FIXED: Text domain changed from 'wordpress-mcp' to 'mcp-for-woocommerce' in all JS files
+  - FIXED: CSS class prefixes changed from 'wordpress-mcp-' to 'mcpfowo-' for uniqueness
+  - ADDED: .wordpress-org folder exclusion to release ZIP script
+  - VERIFIED: Requires Plugins header (woocommerce) already present
+  - VERIFIED: composer.json included in ZIP package
+  - VERIFIED: Using WordPress functions (plugin_dir_path, plugin_dir_url, wp_upload_dir)
+  - VERIFIED: Using wp_remote_get() instead of file_get_contents() for remote requests
+  - VERIFIED: Using wp_json_encode() instead of json_encode() for output escaping
+  - VERIFIED: ABSPATH check present in main plugin file
+  - VERIFIED: MCPFOWO_* constants used throughout for uniqueness
+
+* #000024 - Improve boolean settings storage consistency
+  Date: October 15, 2025
+  - FIXED: Store all boolean settings as integers (0 or 1) instead of mixed types
+  - ADDED: Robust boolean conversion when reading settings to handle '', '0', 0, '1', 1
+  - FIXED: Enable MCP functionality setting storage (Settings.php)
+  - FIXED: JWT required setting storage (Settings.php, JwtAuth.php)
+  - FIXED: Individual tools toggle states storage (WpMcp.php)
+  - RESOLVED: WordPress cache inconsistencies with boolean values
+  - IMPROVED: Settings reliability across plugin activation/deactivation cycles
+
 = Version 1.1.7 - Release #000012 - September 24, 2025 @ CET =
 
 **COMMUNITY PLUGIN REBRANDING & VERSION BUMP**
