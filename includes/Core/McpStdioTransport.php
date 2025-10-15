@@ -1,4 +1,4 @@
-<?php //phpcs:ignore
+<?php
 declare(strict_types=1);
 
 namespace Automattic\WordpressMcp\Core;
