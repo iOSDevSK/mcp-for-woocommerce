@@ -1,4 +1,4 @@
-<?php //phpcs:ignore
+<?php
 /**
  * MCP Error Handler for standardized JSON-RPC error handling.
  *

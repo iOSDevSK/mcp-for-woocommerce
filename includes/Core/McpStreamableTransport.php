@@ -1,4 +1,4 @@
-<?php //phpcs:ignore
+<?php
 /**
  * The WordPress MCP Streamable HTTP Transport class.
  *

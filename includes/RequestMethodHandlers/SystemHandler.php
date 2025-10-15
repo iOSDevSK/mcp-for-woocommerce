@@ -1,4 +1,4 @@
-<?php //phpcs:ignore
+<?php
 /**
  * System method handlers for MCP requests.
  *
