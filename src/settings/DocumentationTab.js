@@ -67,7 +67,7 @@ const DocumentationTab = () => {
 		if ( content ) {
 			// Wait for DOM to update
 			setTimeout( () => {
-				const preElements = document.querySelectorAll( '.wordpress-mcp-documentation pre' );
+				const preElements = document.querySelectorAll( '.mcpfowo-documentation pre' );
 				preElements.forEach( ( pre ) => {
 					// Skip if copy button already exists
 					if ( pre.querySelector( '.copy-button' ) ) {
@@ -138,7 +138,7 @@ const DocumentationTab = () => {
 			document.execCommand( 'copy' );
 			setCopySuccess( true );
 		} catch ( err ) {
-			setError( __( 'Failed to copy to clipboard', 'wordpress-mcp' ) );
+			setError( __( 'Failed to copy to clipboard', 'mcp-for-woocommerce' ) );
 		}
 
 		// Clean up
@@ -154,7 +154,7 @@ const DocumentationTab = () => {
 						<p>
 							{ __(
 								'Loading documentation...',
-								'wordpress-mcp'
+								'mcp-for-woocommerce'
 							) }
 						</p>
 					</div>
@@ -167,21 +167,21 @@ const DocumentationTab = () => {
 		return (
 			<Card>
 				<CardHeader>
-					<h2>{ __( 'Documentation', 'wordpress-mcp' ) }</h2>
+					<h2>{ __( 'Documentation', 'mcp-for-woocommerce' ) }</h2>
 				</CardHeader>
 				<CardBody>
 					<div className="documentation-error">
 						<p>
 							{ __(
 								'Error loading documentation:',
-								'wordpress-mcp'
+								'mcp-for-woocommerce'
 							) }{ ' ' }
 							{ error }
 						</p>
 						<p>
 							{ __(
 								'Please check that the documentation file exists and is accessible.',
-								'wordpress-mcp'
+								'mcp-for-woocommerce'
 							) }
 						</p>
 					</div>
@@ -193,23 +193,23 @@ const DocumentationTab = () => {
 	return (
 		<Card>
 			<CardHeader>
-				<h2>{ __( 'Documentation', 'wordpress-mcp' ) }</h2>
+				<h2>{ __( 'Documentation', 'mcp-for-woocommerce' ) }</h2>
 			</CardHeader>
 			<CardBody>
 				{ copySuccess && (
 					<div className="notice notice-success inline" style={{ marginTop: '10px', marginBottom: '20px' }}>
-						<p>{ __( 'Configuration copied to clipboard!', 'wordpress-mcp' ) }</p>
+						<p>{ __( 'Configuration copied to clipboard!', 'mcp-for-woocommerce' ) }</p>
 					</div>
 				) }
 				<div
-					className="wordpress-mcp-documentation"
+					className="mcpfowo-documentation"
 					dangerouslySetInnerHTML={ { __html: content } }
 				/>
 				<style>{ `
-					.wordpress-mcp-documentation pre {
+					.mcpfowo-documentation pre {
 						position: relative;
 					}
-					.wordpress-mcp-documentation pre:hover .copy-button {
+					.mcpfowo-documentation pre:hover .copy-button {
 						opacity: 1;
 					}
 					.copy-button {

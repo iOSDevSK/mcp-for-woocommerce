@@ -39,12 +39,12 @@ const ToolsTab = () => {
 					setTools( response.tools );
 				} else {
 					setError(
-						__( 'Failed to load tools data', 'wordpress-mcp' )
+						__( 'Failed to load tools data', 'mcp-for-woocommerce' )
 					);
 				}
 			} catch ( err ) {
 				setError(
-					__( 'Error loading tools: ', 'wordpress-mcp' ) + err.message
+					__( 'Error loading tools: ', 'mcp-for-woocommerce' ) + err.message
 				);
 			} finally {
 				setLoading( false );
@@ -112,47 +112,47 @@ const ToolsTab = () => {
 	return (
 		<Card>
 			<CardHeader>
-				<h2>{ __( 'Registered Tools', 'wordpress-mcp' ) }</h2>
+				<h2>{ __( 'Registered Tools', 'mcp-for-woocommerce' ) }</h2>
 			</CardHeader>
 			<CardBody>
 				<p>
 					{ __(
 						'List of all registered tools in the system. Use the toggles to enable or disable individual tools.',
-						'wordpress-mcp'
+						'mcp-for-woocommerce'
 					) }
 				</p>
 
 				{ loading ? (
-					<div className="wordpress-mcp-loading">
+					<div className="mcpfowo-loading">
 						<Spinner />
-						<p>{ __( 'Loading tools...', 'wordpress-mcp' ) }</p>
+						<p>{ __( 'Loading tools...', 'mcp-for-woocommerce' ) }</p>
 					</div>
 				) : error ? (
-					<div className="wordpress-mcp-error">
+					<div className="mcpfowo-error">
 						<p>{ error }</p>
 					</div>
 				) : tools.length === 0 ? (
 					<p>
 						{ __(
 							'No tools are currently registered.',
-							'wordpress-mcp'
+							'mcp-for-woocommerce'
 						) }
 					</p>
 				) : (
-					<table className="wordpress-mcp-table">
+					<table className="mcpfowo-table">
 						<thead>
 							<tr>
-								<th>{ __( 'Name', 'wordpress-mcp' ) }</th>
+								<th>{ __( 'Name', 'mcp-for-woocommerce' ) }</th>
 								<th>
-									{ __( 'Description', 'wordpress-mcp' ) }
+									{ __( 'Description', 'mcp-for-woocommerce' ) }
 								</th>
 								<th>
 									{ __(
 										'Functionality Type',
-										'wordpress-mcp'
+										'mcp-for-woocommerce'
 									) }
 								</th>
-								<th>{ __( 'Status', 'wordpress-mcp' ) }</th>
+								<th>{ __( 'Status', 'mcp-for-woocommerce' ) }</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -184,11 +184,11 @@ const ToolsTab = () => {
 												tool.tool_type_enabled
 													? __(
 															'Enabled',
-															'wordpress-mcp'
+															'mcp-for-woocommerce'
 													  )
 													: __(
 															'Disabled',
-															'wordpress-mcp'
+															'mcp-for-woocommerce'
 													  )
 											}
 										/>

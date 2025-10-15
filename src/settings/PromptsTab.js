@@ -43,12 +43,12 @@ const PromptsTab = () => {
 					setPrompts( response.prompts );
 				} else {
 					setError(
-						__( 'Failed to load prompts data', 'wordpress-mcp' )
+						__( 'Failed to load prompts data', 'mcp-for-woocommerce' )
 					);
 				}
 			} catch ( err ) {
 				setError(
-					__( 'Error loading prompts: ', 'wordpress-mcp' ) +
+					__( 'Error loading prompts: ', 'mcp-for-woocommerce' ) +
 						err.message
 				);
 			} finally {
@@ -90,12 +90,12 @@ const PromptsTab = () => {
 				console.log( 'Setting showPromptDetails to true', promptData );
 			} else {
 				setDetailsError(
-					__( 'Failed to load prompt details', 'wordpress-mcp' )
+					__( 'Failed to load prompt details', 'mcp-for-woocommerce' )
 				);
 			}
 		} catch ( err ) {
 			setDetailsError(
-				__( 'Error loading prompt details: ', 'wordpress-mcp' ) +
+				__( 'Error loading prompt details: ', 'mcp-for-woocommerce' ) +
 					err.message
 			);
 		} finally {
@@ -112,41 +112,41 @@ const PromptsTab = () => {
 	return (
 		<Card>
 			<CardHeader>
-				<h2>{ __( 'Available Prompts', 'wordpress-mcp' ) }</h2>
+				<h2>{ __( 'Available Prompts', 'mcp-for-woocommerce' ) }</h2>
 			</CardHeader>
 			<CardBody>
 				<p>
 					{ __(
 						'List of all available prompts in the system.',
-						'wordpress-mcp'
+						'mcp-for-woocommerce'
 					) }
 				</p>
 
 				{ loading ? (
-					<div className="wordpress-mcp-loading">
+					<div className="mcpfowo-loading">
 						<Spinner />
-						<p>{ __( 'Loading prompts...', 'wordpress-mcp' ) }</p>
+						<p>{ __( 'Loading prompts...', 'mcp-for-woocommerce' ) }</p>
 					</div>
 				) : error ? (
-					<div className="wordpress-mcp-error">
+					<div className="mcpfowo-error">
 						<p>{ error }</p>
 					</div>
 				) : prompts.length === 0 ? (
 					<p>
 						{ __(
 							'No prompts are currently available.',
-							'wordpress-mcp'
+							'mcp-for-woocommerce'
 						) }
 					</p>
 				) : (
-					<table className="wordpress-mcp-table">
+					<table className="mcpfowo-table">
 						<thead>
 							<tr>
-								<th>{ __( 'Name', 'wordpress-mcp' ) }</th>
+								<th>{ __( 'Name', 'mcp-for-woocommerce' ) }</th>
 								<th>
-									{ __( 'Description', 'wordpress-mcp' ) }
+									{ __( 'Description', 'mcp-for-woocommerce' ) }
 								</th>
-								<th>{ __( 'Actions', 'wordpress-mcp' ) }</th>
+								<th>{ __( 'Actions', 'mcp-for-woocommerce' ) }</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -163,7 +163,7 @@ const PromptsTab = () => {
 												handleViewPrompt( prompt )
 											}
 										>
-											{ __( 'View', 'wordpress-mcp' ) }
+											{ __( 'View', 'mcp-for-woocommerce' ) }
 										</Button>
 									</td>
 								</tr>
@@ -177,57 +177,57 @@ const PromptsTab = () => {
 						title={
 							selectedPrompt
 								? selectedPrompt.name
-								: __( 'Prompt Details', 'wordpress-mcp' )
+								: __( 'Prompt Details', 'mcp-for-woocommerce' )
 						}
 						onRequestClose={ handleClosePromptDetails }
-						className="wordpress-mcp-prompt-modal"
+						className="mcpfowo-prompt-modal"
 					>
 						{ loadingDetails ? (
-							<div className="wordpress-mcp-loading">
+							<div className="mcpfowo-loading">
 								<Spinner />
 								<p>
 									{ __(
 										'Loading prompt details...',
-										'wordpress-mcp'
+										'mcp-for-woocommerce'
 									) }
 								</p>
 							</div>
 						) : detailsError ? (
-							<div className="wordpress-mcp-error">
+							<div className="mcpfowo-error">
 								<p>{ detailsError }</p>
 							</div>
 						) : selectedPrompt ? (
-							<div className="wordpress-mcp-prompt-details-content">
+							<div className="mcpfowo-prompt-details-content">
 								<p>
 									<strong>
 										{ __(
 											'Description:',
-											'wordpress-mcp'
+											'mcp-for-woocommerce'
 										) }
 									</strong>{ ' ' }
 									{ selectedPrompt.description ||
 										__(
 											'No description available',
-											'wordpress-mcp'
+											'mcp-for-woocommerce'
 										) }
 								</p>
 								{ selectedPrompt.content && (
-									<div className="wordpress-mcp-prompt-content">
+									<div className="mcpfowo-prompt-content">
 										<strong>
 											{ __(
 												'Content:',
-												'wordpress-mcp'
+												'mcp-for-woocommerce'
 											) }
 										</strong>
 										<div>{ selectedPrompt.content }</div>
 									</div>
 								) }
 								{ selectedPrompt.parameters && (
-									<div className="wordpress-mcp-prompt-parameters">
+									<div className="mcpfowo-prompt-parameters">
 										<strong>
 											{ __(
 												'Parameters:',
-												'wordpress-mcp'
+												'mcp-for-woocommerce'
 											) }
 										</strong>
 										<pre>
@@ -241,12 +241,12 @@ const PromptsTab = () => {
 								) }
 							</div>
 						) : null }
-						<div className="wordpress-mcp-modal-footer">
+						<div className="mcpfowo-modal-footer">
 							<Button
 								variant="primary"
 								onClick={ handleClosePromptDetails }
 							>
-								{ __( 'Close', 'wordpress-mcp' ) }
+								{ __( 'Close', 'mcp-for-woocommerce' ) }
 							</Button>
 						</div>
 					</Modal>

@@ -48,6 +48,7 @@ fi
 echo -e "${GREEN}Cleaning up unnecessary files...${NC}"
 find "$TEMP_DIR" -name "*.sh" -delete
 find "$TEMP_DIR" -name ".git*" -delete
+find "$TEMP_DIR" -name ".wordpress-org" -type d -exec rm -rf {} + 2>/dev/null || true
 find "$TEMP_DIR" -name "node_modules" -type d -exec rm -rf {} + 2>/dev/null || true
 find "$TEMP_DIR" -name "*.log" -delete
 find "$TEMP_DIR" -name "*.tmp" -delete

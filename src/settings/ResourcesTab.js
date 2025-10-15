@@ -85,12 +85,12 @@ const ResourcesTab = () => {
 					setResources( response.resources );
 				} else {
 					setError(
-						__( 'Failed to load resources data', 'wordpress-mcp' )
+						__( 'Failed to load resources data', 'mcp-for-woocommerce' )
 					);
 				}
 			} catch ( err ) {
 				setError(
-					__( 'Error loading resources: ', 'wordpress-mcp' ) +
+					__( 'Error loading resources: ', 'mcp-for-woocommerce' ) +
 						err.message
 				);
 			} finally {
@@ -140,12 +140,12 @@ const ResourcesTab = () => {
 				}
 			} else {
 				setDetailsError(
-					__( 'Failed to load resource details', 'wordpress-mcp' )
+					__( 'Failed to load resource details', 'mcp-for-woocommerce' )
 				);
 			}
 		} catch ( err ) {
 			setDetailsError(
-				__( 'Error loading resource details: ', 'wordpress-mcp' ) +
+				__( 'Error loading resource details: ', 'mcp-for-woocommerce' ) +
 					err.message
 			);
 		} finally {
@@ -176,42 +176,42 @@ const ResourcesTab = () => {
 	return (
 		<Card>
 			<CardHeader>
-				<h2>{ __( 'Available Resources', 'wordpress-mcp' ) }</h2>
+				<h2>{ __( 'Available Resources', 'mcp-for-woocommerce' ) }</h2>
 			</CardHeader>
 			<CardBody>
 				<p>
 					{ __(
 						'List of all available resources in the system.',
-						'wordpress-mcp'
+						'mcp-for-woocommerce'
 					) }
 				</p>
 
 				{ loading ? (
-					<div className="wordpress-mcp-loading">
+					<div className="mcpfowo-loading">
 						<Spinner />
-						<p>{ __( 'Loading resources...', 'wordpress-mcp' ) }</p>
+						<p>{ __( 'Loading resources...', 'mcp-for-woocommerce' ) }</p>
 					</div>
 				) : error ? (
-					<div className="wordpress-mcp-error">
+					<div className="mcpfowo-error">
 						<p>{ error }</p>
 					</div>
 				) : resources.length === 0 ? (
 					<p>
 						{ __(
 							'No resources are currently available.',
-							'wordpress-mcp'
+							'mcp-for-woocommerce'
 						) }
 					</p>
 				) : (
-					<table className="wordpress-mcp-table">
+					<table className="mcpfowo-table">
 						<thead>
 							<tr>
-								<th>{ __( 'Name', 'wordpress-mcp' ) }</th>
-								<th>{ __( 'URI', 'wordpress-mcp' ) }</th>
+								<th>{ __( 'Name', 'mcp-for-woocommerce' ) }</th>
+								<th>{ __( 'URI', 'mcp-for-woocommerce' ) }</th>
 								<th>
-									{ __( 'Description', 'wordpress-mcp' ) }
+									{ __( 'Description', 'mcp-for-woocommerce' ) }
 								</th>
-								<th>{ __( 'Actions', 'wordpress-mcp' ) }</th>
+								<th>{ __( 'Actions', 'mcp-for-woocommerce' ) }</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -229,7 +229,7 @@ const ResourcesTab = () => {
 												viewResource( resource )
 											}
 										>
-											{ __( 'View', 'wordpress-mcp' ) }
+											{ __( 'View', 'mcp-for-woocommerce' ) }
 										</Button>
 									</td>
 								</tr>
@@ -240,39 +240,39 @@ const ResourcesTab = () => {
 
 				{ selectedResource && (
 					<Modal
-						title={ __( 'Resource Details', 'wordpress-mcp' ) }
+						title={ __( 'Resource Details', 'mcp-for-woocommerce' ) }
 						onRequestClose={ closeModal }
-						className="wordpress-mcp-resource-modal"
+						className="mcpfowo-resource-modal"
 					>
 						{ detailsLoading ? (
-							<div className="wordpress-mcp-loading">
+							<div className="mcpfowo-loading">
 								<Spinner />
 								<p>
 									{ __(
 										'Loading resource details...',
-										'wordpress-mcp'
+										'mcp-for-woocommerce'
 									) }
 								</p>
 							</div>
 						) : detailsError ? (
-							<div className="wordpress-mcp-error">
+							<div className="mcpfowo-error">
 								<p>{ detailsError }</p>
 							</div>
 						) : resourceDetails ? (
-							<div className="wordpress-mcp-resource-details">
+							<div className="mcpfowo-resource-details">
 								<h3>
 									{ resourceDetails.name ||
 										selectedResource.name }
 								</h3>
 
-								<div className="wordpress-mcp-resource-json">
+								<div className="mcpfowo-resource-json">
 									<h4>
 										{ __(
 											'Full Resource Data',
-											'wordpress-mcp'
+											'mcp-for-woocommerce'
 										) }
 									</h4>
-									<pre className="wordpress-mcp-json-display">
+									<pre className="mcpfowo-json-display">
 										{ prettyPrintJson( resourceDetails ) }
 									</pre>
 								</div>
@@ -281,7 +281,7 @@ const ResourcesTab = () => {
 							<p>
 								{ __(
 									'No details available for this resource.',
-									'wordpress-mcp'
+									'mcp-for-woocommerce'
 								) }
 							</p>
 						) }

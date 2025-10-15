@@ -44,36 +44,36 @@ export const SettingsApp = () => {
 		() => [
 			{
 				name: 'settings',
-				title: __( 'Settings', 'wordpress-mcp' ),
-				className: 'wordpress-mcp-settings-tab',
+				title: __( 'Settings', 'mcp-for-woocommerce' ),
+				className: 'mcpfowo-settings-tab',
 			},
 			{
 				name: 'authentication-tokens',
-				title: __( 'Authentication Tokens', 'wordpress-mcp' ),
+				title: __( 'Authentication Tokens', 'mcp-for-woocommerce' ),
 				className: 'authentication-tokens-tab',
 				disabled: ! jwtRequired,
 			},
 			{
 				name: 'documentation',
-				title: __( 'Documentation', 'wordpress-mcp' ),
-				className: 'wordpress-mcp-documentation-tab',
+				title: __( 'Documentation', 'mcp-for-woocommerce' ),
+				className: 'mcpfowo-documentation-tab',
 			},
 			{
 				name: 'tools',
-				title: __( 'Tools', 'wordpress-mcp' ),
-				className: 'wordpress-mcp-tools-tab',
+				title: __( 'Tools', 'mcp-for-woocommerce' ),
+				className: 'mcpfowo-tools-tab',
 				disabled: ! settings.enabled,
 			},
 			{
 				name: 'resources',
-				title: __( 'Resources', 'wordpress-mcp' ),
-				className: 'wordpress-mcp-resources-tab',
+				title: __( 'Resources', 'mcp-for-woocommerce' ),
+				className: 'mcpfowo-resources-tab',
 				disabled: ! settings.enabled,
 			},
 			{
 				name: 'prompts',
-				title: __( 'Prompts', 'wordpress-mcp' ),
-				className: 'wordpress-mcp-prompts-tab',
+				title: __( 'Prompts', 'mcp-for-woocommerce' ),
+				className: 'mcpfowo-prompts-tab',
 				disabled: ! settings.enabled,
 			},
 		],
@@ -285,7 +285,7 @@ export const SettingsApp = () => {
 		: null;
 
 	return (
-		<div className="wordpress-mcp-settings">
+		<div className="mcpfowo-settings">
 			{ notice && (
 				<Notice
 					status={ notice.status }
@@ -298,7 +298,7 @@ export const SettingsApp = () => {
 			) }
 
 			<TabPanel
-				className="wordpress-mcp-tabs"
+				className="mcpfowo-tabs"
 				tabs={ tabs }
 				activeClass="is-active"
 				initialTabName={ activeTab }
@@ -313,25 +313,25 @@ export const SettingsApp = () => {
 						if ( tab.name === 'authentication-tokens' ) {
 							disabledMessage = __(
 								'Authentication tokens are only available when JWT authentication is enabled.',
-								'wordpress-mcp'
+								'mcp-for-woocommerce'
 							);
 							enableMessage = __(
 								'Please enable "Require JWT Authentication" in the Settings tab first.',
-								'wordpress-mcp'
+								'mcp-for-woocommerce'
 							);
 						} else {
 							disabledMessage = __(
 								'This feature is only available when MCP functionality is enabled.',
-								'wordpress-mcp'
+								'mcp-for-woocommerce'
 							);
 							enableMessage = __(
 								'Please enable MCP in the Settings tab first.',
-								'wordpress-mcp'
+								'mcp-for-woocommerce'
 							);
 						}
 
 						return (
-							<div className="wordpress-mcp-disabled-tab-notice">
+							<div className="mcpfowo-disabled-tab-notice">
 								<p>{ disabledMessage }</p>
 								<p>{ enableMessage }</p>
 							</div>
