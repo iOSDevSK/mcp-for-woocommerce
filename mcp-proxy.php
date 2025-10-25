@@ -10,7 +10,7 @@
  *   "mcpServers": {
  *     "woocommerce": {
  *       "command": "php",
- *       "args": ["/path/to/woo-mcp/mcp-proxy.php"]
+ *       "args": ["/path/to/mcp-for-woocommerce/mcp-proxy.php"]
  *     }
  *   }
  * }
