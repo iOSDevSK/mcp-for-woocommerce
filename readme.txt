@@ -4,7 +4,7 @@ Tags: ai, mcp, woocommerce, chatbot, ecommerce
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 8.0
-Stable tag: 1.1.8
+Stable tag: 1.1.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,10 @@ No, the plugin only activates when specifically called by an MCP client. It has 
 4. Real-time connection testing interface
 
 == Changelog ==
+
+= 1.1.9 =
+* Fix missing build files in WordPress.org distribution
+* Ensure React admin UI loads correctly after installation
 
 = 1.1.8 =
 * Apply WordPress.org review requirements

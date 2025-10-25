@@ -2,7 +2,7 @@
 /**
  * Plugin name:       MCP for WooCommerce
  * Description:       Community-developed AI integration plugin that connects WooCommerce & WordPress with Model Context Protocol (MCP). Not affiliated with Automattic. Provides comprehensive AI-accessible interfaces to WooCommerce products, orders, categories, shipping, payments, and WordPress posts/pages through standardized tools, resources, and prompts. Enables AI assistants to seamlessly interact with your e-commerce data and content. Acts as a WooCommerce MCP Server for MCP clients; pair with Webtalkbot to add a WooCommerce AI Chatbot/Agent to your site.
- * Version:           1.1.8
+ * Version:           1.1.9
  * Requires at least: 6.4
  * Tested up to:      6.8
  * Requires PHP:      8.0
@@ -29,7 +29,7 @@ use McpForWoo\Admin\Settings;
 use McpForWoo\Auth\JwtAuth;
 use McpForWoo\CLI\ValidateToolsCommand;
 
-define( 'MCPFOWO_VERSION', '1.1.8' );
+define( 'MCPFOWO_VERSION', '1.1.9' );
 define( 'MCPFOWO_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MCPFOWO_URL', plugin_dir_url( __FILE__ ) );
 define( 'MCPFOWO_PLUGIN_FILE', __FILE__ );
