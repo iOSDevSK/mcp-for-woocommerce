@@ -12,7 +12,7 @@ AI integration plugin connecting WooCommerce & WordPress with Model Context Prot
 
 == Description ==
 
-MCP for WooCommerce is a comprehensive WordPress plugin that bridges your WooCommerce store and WordPress site with AI assistants through the Model Context Protocol (MCP). This plugin provides a standardized interface for AI assistants to access and interact with your e-commerce data in a secure, read-only manner. This is a community-developed plugin and is not an official WooCommerce or WordPress plugin.
+MCP for WooCommerce is a comprehensive WordPress plugin that bridges your WooCommerce store and WordPress site with AI assistants through the Model Context Protocol (MCP). This plugin provides a standardized interface for AI assistants to access and interact with your e-commerce data in a secure, read-only manner. This is a community-developed plugin and is not an official WooCommerce or WordPress plugin. This plugin is not affiliated with Automattic.
 
 **Key Features:**
 
