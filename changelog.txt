@@ -1,5 +1,16 @@
 === MCP for WooCommerce Plugin Changelog ===
 
+= Version 1.1.9 - Release #000014 - October 25, 2025 @ CET =
+
+**BUILD FILES DISTRIBUTION FIX**
+
+* #000026 - Fix missing build files in WordPress.org distribution
+  Date: October 25, 2025
+  - FIXED: Ensure build/ directory included in SVN tag for WordPress.org
+  - FIXED: React admin UI loading correctly after plugin installation
+  - VERIFIED: All build files (index.js, index.asset.php, CSS) present in distribution
+  - RESOLVED: Empty settings page issue on fresh installations from WordPress.org
+
 = Version 1.1.8 - Release #000013 - October 15, 2025 @ CET =
 
 **WORDPRESS.ORG COMPLIANCE & BOOLEAN STORAGE FIXES**
