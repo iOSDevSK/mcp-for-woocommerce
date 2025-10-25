@@ -1,6 +1,11 @@
 # Claude AI instructions file - keep local only
 CLAUDE.md
 
+# SVN credentials - keep secure!
+SVN-CREDENTIALS.md
+svn-helper.sh
+svn-deploy.sh
+
 # Build outputs
 *.zip
 mcp-for-woocommerce-*.zip
@@ -18,3 +23,6 @@ composer.lock
 
 # Build assets (will be rebuilt)
 build/
+
+# SVN directory
+.svn/

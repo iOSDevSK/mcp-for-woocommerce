@@ -89,6 +89,12 @@ No, the plugin only activates when specifically called by an MCP client. It has 
 
 == Changelog ==
 
+= 1.1.8 =
+* Apply WordPress.org review requirements
+* Improve boolean settings storage consistency
+* Resolve admin UI rendering issues
+* Update documentation for WordPress.org submission
+
 = 1.1.7 =
 * Rebranded as community plugin independent from Automattic
 * Updated author information to Filip Dvoran only
