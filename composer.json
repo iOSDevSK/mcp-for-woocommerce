@@ -19,12 +19,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Automattic\\WordpressMcp\\": "includes/"
+            "McpForWoo\\": "includes/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Automattic\\WordpressMcp\\Tests\\": "tests/phpunit/"
+            "McpForWoo\\Tests\\": "tests/phpunit/"
         }
     }
 }

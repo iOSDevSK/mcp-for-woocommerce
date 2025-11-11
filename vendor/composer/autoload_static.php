@@ -7,28 +7,37 @@ namespace Composer\Autoload;
 class ComposerStaticInitd9af409213085c7d90bd269508594646
 {
     public static $prefixLengthsPsr4 = array (
+        'M' => 
+        array (
+            'McpForWoo\\' => 10,
+        ),
         'F' => 
         array (
             'Firebase\\JWT\\' => 13,
         ),
-        'A' => 
-        array (
-            'McpForWoo\\' => 24,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Firebase\\JWT\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
-        ),
         'McpForWoo\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes',
         ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
+        ),
     );
 
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Firebase\\JWT\\BeforeValidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/BeforeValidException.php',
+        'Firebase\\JWT\\CachedKeySet' => __DIR__ . '/..' . '/firebase/php-jwt/src/CachedKeySet.php',
+        'Firebase\\JWT\\ExpiredException' => __DIR__ . '/..' . '/firebase/php-jwt/src/ExpiredException.php',
+        'Firebase\\JWT\\JWK' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWK.php',
+        'Firebase\\JWT\\JWT' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWT.php',
+        'Firebase\\JWT\\JWTExceptionWithPayloadInterface' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWTExceptionWithPayloadInterface.php',
+        'Firebase\\JWT\\Key' => __DIR__ . '/..' . '/firebase/php-jwt/src/Key.php',
+        'Firebase\\JWT\\SignatureInvalidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/SignatureInvalidException.php',
         'McpForWoo\\Admin\\Settings' => __DIR__ . '/../..' . '/includes/Admin/Settings.php',
         'McpForWoo\\Auth\\JwtAuth' => __DIR__ . '/../..' . '/includes/Auth/JwtAuth.php',
         'McpForWoo\\CLI\\ValidateToolsCommand' => __DIR__ . '/../..' . '/includes/CLI/ValidateToolsCommand.php',
@@ -83,16 +92,8 @@ class ComposerStaticInitd9af409213085c7d90bd269508594646
         'McpForWoo\\Utils\\HandleToolsCall' => __DIR__ . '/../..' . '/includes/Utils/HandleToolsCall.php',
         'McpForWoo\\Utils\\InputSchema' => __DIR__ . '/../..' . '/includes/Utils/InputSchema.php',
         'McpForWoo\\Utils\\PluginsInfo' => __DIR__ . '/../..' . '/includes/Utils/PluginsInfo.php',
+        'McpForWoo\\Utils\\SchemaValidator' => __DIR__ . '/../..' . '/includes/Utils/SchemaValidator.php',
         'McpForWoo\\Utils\\UsersInfo' => __DIR__ . '/../..' . '/includes/Utils/UsersInfo.php',
-        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Firebase\\JWT\\BeforeValidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/BeforeValidException.php',
-        'Firebase\\JWT\\CachedKeySet' => __DIR__ . '/..' . '/firebase/php-jwt/src/CachedKeySet.php',
-        'Firebase\\JWT\\ExpiredException' => __DIR__ . '/..' . '/firebase/php-jwt/src/ExpiredException.php',
-        'Firebase\\JWT\\JWK' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWK.php',
-        'Firebase\\JWT\\JWT' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWT.php',
-        'Firebase\\JWT\\JWTExceptionWithPayloadInterface' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWTExceptionWithPayloadInterface.php',
-        'Firebase\\JWT\\Key' => __DIR__ . '/..' . '/firebase/php-jwt/src/Key.php',
-        'Firebase\\JWT\\SignatureInvalidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/SignatureInvalidException.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

@@ -6,6 +6,15 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Firebase\\JWT\\BeforeValidException' => $vendorDir . '/firebase/php-jwt/src/BeforeValidException.php',
+    'Firebase\\JWT\\CachedKeySet' => $vendorDir . '/firebase/php-jwt/src/CachedKeySet.php',
+    'Firebase\\JWT\\ExpiredException' => $vendorDir . '/firebase/php-jwt/src/ExpiredException.php',
+    'Firebase\\JWT\\JWK' => $vendorDir . '/firebase/php-jwt/src/JWK.php',
+    'Firebase\\JWT\\JWT' => $vendorDir . '/firebase/php-jwt/src/JWT.php',
+    'Firebase\\JWT\\JWTExceptionWithPayloadInterface' => $vendorDir . '/firebase/php-jwt/src/JWTExceptionWithPayloadInterface.php',
+    'Firebase\\JWT\\Key' => $vendorDir . '/firebase/php-jwt/src/Key.php',
+    'Firebase\\JWT\\SignatureInvalidException' => $vendorDir . '/firebase/php-jwt/src/SignatureInvalidException.php',
     'McpForWoo\\Admin\\Settings' => $baseDir . '/includes/Admin/Settings.php',
     'McpForWoo\\Auth\\JwtAuth' => $baseDir . '/includes/Auth/JwtAuth.php',
     'McpForWoo\\CLI\\ValidateToolsCommand' => $baseDir . '/includes/CLI/ValidateToolsCommand.php',
@@ -60,14 +69,6 @@ return array(
     'McpForWoo\\Utils\\HandleToolsCall' => $baseDir . '/includes/Utils/HandleToolsCall.php',
     'McpForWoo\\Utils\\InputSchema' => $baseDir . '/includes/Utils/InputSchema.php',
     'McpForWoo\\Utils\\PluginsInfo' => $baseDir . '/includes/Utils/PluginsInfo.php',
+    'McpForWoo\\Utils\\SchemaValidator' => $baseDir . '/includes/Utils/SchemaValidator.php',
     'McpForWoo\\Utils\\UsersInfo' => $baseDir . '/includes/Utils/UsersInfo.php',
-    'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
-    'Firebase\\JWT\\BeforeValidException' => $vendorDir . '/firebase/php-jwt/src/BeforeValidException.php',
-    'Firebase\\JWT\\CachedKeySet' => $vendorDir . '/firebase/php-jwt/src/CachedKeySet.php',
-    'Firebase\\JWT\\ExpiredException' => $vendorDir . '/firebase/php-jwt/src/ExpiredException.php',
-    'Firebase\\JWT\\JWK' => $vendorDir . '/firebase/php-jwt/src/JWK.php',
-    'Firebase\\JWT\\JWT' => $vendorDir . '/firebase/php-jwt/src/JWT.php',
-    'Firebase\\JWT\\JWTExceptionWithPayloadInterface' => $vendorDir . '/firebase/php-jwt/src/JWTExceptionWithPayloadInterface.php',
-    'Firebase\\JWT\\Key' => $vendorDir . '/firebase/php-jwt/src/Key.php',
-    'Firebase\\JWT\\SignatureInvalidException' => $vendorDir . '/firebase/php-jwt/src/SignatureInvalidException.php',
 );
