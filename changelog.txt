@@ -1,5 +1,24 @@
 === MCP for WooCommerce Plugin Changelog ===
 
+= Version 1.2.0 - Release #000015 - November 11, 2025 @ CET =
+
+**CRITICAL AUTOLOADER FIX & DOCUMENTATION**
+
+* #000027 - Fix incorrect PSR-4 namespace in composer.json causing fatal errors
+  Date: November 11, 2025
+  - FIXED: Changed autoloader namespace from "Automattic\WordpressMcp" to "McpForWoo"
+  - FIXED: JWT token generation now works correctly (was causing critical WordPress errors)
+  - FIXED: Autoloader now loads 65 classes instead of 9
+  - FIXED: "Class McpForWoo\Core\WpMcp not found" fatal error resolved
+  - IMPACT: This was preventing JWT authentication and causing site-wide errors
+  - RESOLVED: Production deployment now requires `composer install` to be run on server
+
+* #000028 - Remove broken GitHub Actions docs badge from README
+  Date: November 11, 2025
+  - REMOVED: Broken GitHub Actions docs badge that showed "Unable to select next GitHub token from pool"
+  - CAUSE: Badge referenced deleted gh-pages.yml workflow file (removed in commit 5f86a4cf1)
+  - RESOLVED: README now displays correctly without error messages
+
 = Version 1.1.9 - Release #000014 - October 25, 2025 @ CET =
 
 **BUILD FILES DISTRIBUTION FIX**
