@@ -1,6 +1,6 @@
 # MCP for WooCommerce
 
-[![docs](https://github.com/iOSDevSK/mcp-for-woocommerce/actions/workflows/gh-pages.yml/badge.svg)](https://github.com/iOSDevSK/mcp-for-woocommerce/actions/workflows/gh-pages.yml) [![Latest Release](https://img.shields.io/github/v/release/iOSDevSK/mcp-for-woocommerce)](https://github.com/iOSDevSK/mcp-for-woocommerce/releases) [![License](https://img.shields.io/github/license/iOSDevSK/mcp-for-woocommerce)](https://github.com/iOSDevSK/mcp-for-woocommerce/blob/main/LICENSE) [![GitHub Stars](https://img.shields.io/github/stars/iOSDevSK/mcp-for-woocommerce?style=social)](https://github.com/iOSDevSK/mcp-for-woocommerce/stargazers)
+[![Latest Release](https://img.shields.io/github/v/release/iOSDevSK/mcp-for-woocommerce)](https://github.com/iOSDevSK/mcp-for-woocommerce/releases) [![License](https://img.shields.io/github/license/iOSDevSK/mcp-for-woocommerce)](https://github.com/iOSDevSK/mcp-for-woocommerce/blob/main/LICENSE) [![GitHub Stars](https://img.shields.io/github/stars/iOSDevSK/mcp-for-woocommerce?style=social)](https://github.com/iOSDevSK/mcp-for-woocommerce/stargazers)
 
 **Connect your WooCommerce store to AI assistants like Claude and VS Code.** This WordPress plugin enables AI clients to access your store's product catalog, categories, reviews, and content through a secure, read-only interface.
 
