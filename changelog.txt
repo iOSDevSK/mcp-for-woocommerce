@@ -1,5 +1,23 @@
 === MCP for WooCommerce Plugin Changelog ===
 
+= Version 1.2.1 - Release #000016 - November 13, 2025 @ CET =
+
+**OAUTH 2.0 AUTHENTICATION & CLAUDE.AI WEB SUPPORT**
+
+* #000029 - Implement OAuth 2.0 Authorization Code Flow with PKCE support
+  Date: November 13, 2025
+  - ADDED: Full OAuth 2.0 Authorization Code Flow with PKCE (RFC 7636)
+  - ADDED: Dynamic client registration endpoint (RFC 7591)
+  - ADDED: Custom authorization form for seamless OAuth flow without WordPress login
+  - ADDED: OAuth discovery endpoint (/.well-known/oauth-authorization-server)
+  - ADDED: Support for claude.ai web version authentication
+  - ENHANCED: JWT authentication to accept tokens with or without Bearer prefix
+  - IMPROVED: Claude Code compatibility with OAuth-compliant error responses
+  - IMPROVED: Token endpoint returns OAuth-standard response format (access_token, token_type)
+  - ADDED: Activation/deactivation hooks for automatic OAuth discovery file management
+  - SECURITY: PKCE code challenge methods supported (S256, plain)
+  - COMPATIBILITY: Works with Claude Code, Claude.ai web, and any MCP client supporting OAuth 2.0
+
 = Version 1.2.0 - Release #000015 - November 11, 2025 @ CET =
 
 **CRITICAL AUTOLOADER FIX & DOCUMENTATION**
