@@ -561,7 +561,7 @@ const AuthenticationTokensTab = () => {
 								</h3>
 								<TextareaControl
 									readOnly
-									value={ token.token }
+									value={ token.access_token || token.token }
 									rows={ 4 }
 								/>
 								<div
@@ -574,7 +574,7 @@ const AuthenticationTokensTab = () => {
 									<Button
 										isSecondary
 										onClick={ () =>
-											copyToClipboard( token.token )
+											copyToClipboard( token.access_token || token.token )
 										}
 									>
 										{ __( 'Copy', 'mcp-for-woocommerce' ) }
