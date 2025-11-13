@@ -4,7 +4,7 @@ Tags: ai, mcp, woocommerce, chatbot, ecommerce
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 8.0
-Stable tag: 1.1.9
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,21 @@ No, the plugin only activates when specifically called by an MCP client. It has 
 4. Real-time connection testing interface
 
 == Changelog ==
+
+= 1.2.1 =
+* Added OAuth 2.0 Authorization Code Flow with PKCE support
+* Implemented dynamic client registration for MCP clients
+* Added custom authorization form for seamless OAuth flow
+* Enhanced JWT authentication to accept tokens with or without Bearer prefix
+* Automatic OAuth discovery endpoint creation on plugin activation
+* Added activation/deactivation hooks for automated setup
+* Improved Claude Code compatibility with OAuth-compliant error responses
+* Token endpoint now returns OAuth-standard response format (access_token, token_type)
+
+= 1.2.0 =
+* Enhanced JWT authentication system
+* Improved security and token management
+* Better MCP client compatibility
 
 = 1.1.9 =
 * Fix missing build files in WordPress.org distribution

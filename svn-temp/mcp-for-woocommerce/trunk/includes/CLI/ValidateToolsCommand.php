@@ -47,9 +47,9 @@ class ValidateToolsCommand {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp woo-mcp validate-tools
-	 *     wp woo-mcp validate-tools --level=strict
-	 *     wp woo-mcp validate-tools --format=json
+	 *     wp mcp-for-woocommerce validate-tools
+	 *     wp mcp-for-woocommerce validate-tools --level=strict
+	 *     wp mcp-for-woocommerce validate-tools --format=json
 	 *
 	 * @param array $args Command arguments.
 	 * @param array $assoc_args Associative arguments.
