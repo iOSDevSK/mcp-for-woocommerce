@@ -73,6 +73,20 @@ class JwtAuth {
 	private const TOKEN_REGISTRY_OPTION = 'mcpfowo_jwt_token_registry';
 
 	/**
+	 * Option name for storing authorization codes.
+	 *
+	 * @var string
+	 */
+	private const AUTH_CODE_OPTION = 'mcpfowo_oauth_auth_codes';
+
+	/**
+	 * Option name for storing registered clients.
+	 *
+	 * @var string
+	 */
+	private const REGISTERED_CLIENTS_OPTION = 'mcpfowo_oauth_clients';
+
+	/**
 	 * MCP endpoint path pattern for authentication.
 	 *
 	 * @var string
@@ -130,6 +144,7 @@ class JwtAuth {
 	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 		add_action( 'init', array( $this, 'maybe_register_auth_filter' ) );
+		add_action( 'template_redirect', array( $this, 'handle_oauth_discovery' ) );
 	}
 
 	/**
@@ -193,6 +208,272 @@ class JwtAuth {
 				'permission_callback' => array( $this, 'check_revoke_permission' ),
 			)
 		);
+
+		// Register dynamic client registration endpoint
+		register_rest_route(
+			'jwt-auth/v1',
+			'/register',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'register_client' ),
+				'permission_callback' => '__return_true',
+			)
+		);
+
+		// Register authorization endpoint for OAuth code flow
+		register_rest_route(
+			'jwt-auth/v1',
+			'/authorize',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'authorize' ),
+				'permission_callback' => '__return_true',
+			)
+		);
+
+		// Register authorization submit endpoint
+		register_rest_route(
+			'jwt-auth/v1',
+			'/authorize-submit',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'authorize_submit' ),
+				'permission_callback' => '__return_true',
+			)
+		);
+
+	}
+
+	/**
+	 * Handle OAuth discovery endpoint request.
+	 */
+	public function handle_oauth_discovery(): void {
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+
+		if ( $request_uri === '/.well-known/oauth-authorization-server' ) {
+			$site_url = get_bloginfo( 'url' );
+
+			$discovery_data = array(
+				'issuer'                    => $site_url,
+				'authorization_endpoint'    => $site_url . '/wp-json/jwt-auth/v1/authorize',
+				'token_endpoint'            => $site_url . '/wp-json/jwt-auth/v1/token',
+				'registration_endpoint'     => $site_url . '/wp-json/jwt-auth/v1/register',
+				'response_types_supported'  => array( 'code', 'token' ),
+				'grant_types_supported'     => array( 'authorization_code', 'password', 'client_credentials' ),
+				'token_endpoint_auth_methods_supported' => array( 'client_secret_basic', 'client_secret_post' ),
+				'code_challenge_methods_supported' => array( 'S256', 'plain' ),
+				'ai_plugin_url'             => $site_url . '/.well-known/ai-plugin.json',
+			);
+
+			header( 'Content-Type: application/json' );
+			echo wp_json_encode( $discovery_data );
+			exit;
+		}
+	}
+
+	/**
+	 * Register a dynamic client for OAuth.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function register_client( WP_REST_Request $request ) {
+		$params = $request->get_json_params();
+
+		// Generate client credentials
+		$client_id = 'mcp_' . wp_generate_password( 32, false );
+		$client_secret = wp_generate_password( 64, true, true );
+		$client_secret_hash = wp_hash_password( $client_secret );
+
+		// Get redirect_uris from request or use default
+		$redirect_uris = isset( $params['redirect_uris'] ) ? $params['redirect_uris'] : array();
+
+		// Store client registration
+		$clients = get_option( self::REGISTERED_CLIENTS_OPTION, array() );
+		$clients[ $client_id ] = array(
+			'client_secret_hash' => $client_secret_hash,
+			'redirect_uris'      => $redirect_uris,
+			'created_at'         => time(),
+		);
+		update_option( self::REGISTERED_CLIENTS_OPTION, $clients );
+
+		$response = array(
+			'client_id'     => $client_id,
+			'client_secret' => $client_secret,
+			'client_id_issued_at' => time(),
+			'grant_types'   => array( 'authorization_code', 'password', 'client_credentials' ),
+			'token_endpoint_auth_method' => 'client_secret_post',
+			'redirect_uris' => $redirect_uris,
+		);
+
+		return rest_ensure_response( $response );
+	}
+
+	/**
+	 * OAuth authorize endpoint - handles authorization code flow.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function authorize( WP_REST_Request $request ) {
+		$client_id = $request->get_param( 'client_id' );
+		$redirect_uri = $request->get_param( 'redirect_uri' );
+		$response_type = $request->get_param( 'response_type' );
+		$state = $request->get_param( 'state' );
+		$code_challenge = $request->get_param( 'code_challenge' );
+		$code_challenge_method = $request->get_param( 'code_challenge_method' );
+
+		// Validate client
+		$clients = get_option( self::REGISTERED_CLIENTS_OPTION, array() );
+		if ( ! isset( $clients[ $client_id ] ) ) {
+			return new WP_Error( 'invalid_client', 'Invalid client_id', array( 'status' => 400 ) );
+		}
+
+		// Validate redirect_uri
+		$client = $clients[ $client_id ];
+		if ( ! in_array( $redirect_uri, $client['redirect_uris'], true ) ) {
+			return new WP_Error( 'invalid_redirect_uri', 'Invalid redirect_uri', array( 'status' => 400 ) );
+		}
+
+		// Check if user is logged in as admin
+		if ( ! is_user_logged_in() || ! current_user_can( 'manage_options' ) ) {
+			// Return HTML form for authentication
+			$this->render_authorization_form( $request );
+			exit;
+		}
+
+		// Generate authorization code
+		$code = wp_generate_password( 32, false );
+		$auth_codes = get_option( self::AUTH_CODE_OPTION, array() );
+		$auth_codes[ $code ] = array(
+			'client_id'             => $client_id,
+			'user_id'               => get_current_user_id(),
+			'redirect_uri'          => $redirect_uri,
+			'expires_at'            => time() + 600, // 10 minutes
+			'code_challenge'        => $code_challenge,
+			'code_challenge_method' => $code_challenge_method,
+		);
+		update_option( self::AUTH_CODE_OPTION, $auth_codes );
+
+		// Redirect back to client with authorization code
+		$redirect_url = add_query_arg(
+			array(
+				'code'  => $code,
+				'state' => $state,
+			),
+			$redirect_uri
+		);
+
+		wp_redirect( $redirect_url );
+		exit;
+	}
+
+	/**
+	 * Render authorization form for OAuth flow.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 */
+	private function render_authorization_form( WP_REST_Request $request ): void {
+		$site_name = get_bloginfo( 'name' );
+		$authorize_url = rest_url( 'jwt-auth/v1/authorize-submit' );
+
+		// Get all query params
+		$query_params = $request->get_query_params();
+
+		header( 'Content-Type: text/html; charset=utf-8' );
+		?>
+		<!DOCTYPE html>
+		<html>
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<title>Authorize Access - <?php echo esc_html( $site_name ); ?></title>
+			<style>
+				body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f0f1; margin: 0; padding: 20px; }
+				.container { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+				h1 { margin: 0 0 20px; font-size: 24px; color: #1d2327; }
+				.info { background: #f0f6fc; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-size: 14px; color: #1d2327; }
+				label { display: block; margin-bottom: 5px; font-weight: 500; color: #1d2327; }
+				input[type="text"], input[type="password"] { width: 100%; padding: 10px; border: 1px solid #dcdcde; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px; }
+				button { width: 100%; padding: 12px; background: #2271b1; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+				button:hover { background: #135e96; }
+				.error { background: #fcf0f1; color: #d63638; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
+			</style>
+		</head>
+		<body>
+			<div class="container">
+				<h1>Authorize Access</h1>
+				<div class="info">
+					<strong><?php echo esc_html( $site_name ); ?></strong> is requesting access to your account.
+				</div>
+				<form method="POST" action="<?php echo esc_url( $authorize_url ); ?>">
+					<?php foreach ( $query_params as $key => $value ) : ?>
+						<input type="hidden" name="<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $value ); ?>">
+					<?php endforeach; ?>
+
+					<label for="username">Username</label>
+					<input type="text" id="username" name="username" required autocomplete="username">
+
+					<label for="password">Password</label>
+					<input type="password" id="password" name="password" required autocomplete="current-password">
+
+					<button type="submit">Authorize</button>
+				</form>
+			</div>
+		</body>
+		</html>
+		<?php
+	}
+
+	/**
+	 * Handle authorization form submission.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 */
+	public function authorize_submit( WP_REST_Request $request ) {
+		$username = $request->get_param( 'username' );
+		$password = $request->get_param( 'password' );
+		$client_id = $request->get_param( 'client_id' );
+		$redirect_uri = $request->get_param( 'redirect_uri' );
+		$state = $request->get_param( 'state' );
+		$code_challenge = $request->get_param( 'code_challenge' );
+		$code_challenge_method = $request->get_param( 'code_challenge_method' );
+
+		// Authenticate user
+		$user = wp_authenticate( $username, $password );
+		if ( is_wp_error( $user ) ) {
+			wp_die( 'Invalid username or password. <a href="javascript:history.back()">Go back</a>' );
+		}
+
+		// Check if user has admin capabilities
+		if ( ! user_can( $user->ID, 'manage_options' ) ) {
+			wp_die( 'You do not have permission to authorize this application. Only administrators can authorize access.' );
+		}
+
+		// Generate authorization code
+		$code = wp_generate_password( 32, false );
+		$auth_codes = get_option( self::AUTH_CODE_OPTION, array() );
+		$auth_codes[ $code ] = array(
+			'client_id'             => $client_id,
+			'user_id'               => $user->ID,
+			'redirect_uri'          => $redirect_uri,
+			'expires_at'            => time() + 600, // 10 minutes
+			'code_challenge'        => $code_challenge,
+			'code_challenge_method' => $code_challenge_method,
+		);
+		update_option( self::AUTH_CODE_OPTION, $auth_codes );
+
+		// Redirect back to client with authorization code
+		$redirect_url = add_query_arg(
+			array(
+				'code'  => $code,
+				'state' => $state,
+			),
+			$redirect_uri
+		);
+
+		wp_redirect( $redirect_url );
+		exit;
 	}
 
 	/**
@@ -205,7 +486,7 @@ class JwtAuth {
 		if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
 			return true;
 		}
-		
+
 		// If not authenticated via cookies, return error with details
 		return new WP_Error(
 			'rest_forbidden',
@@ -222,13 +503,19 @@ class JwtAuth {
 	 */
 	public function generate_jwt_token( WP_REST_Request $request ) {
 		$params     = $request->get_json_params();
+		$grant_type = isset( $params['grant_type'] ) ? $params['grant_type'] : 'password';
 		$expires_in = isset( $params['expires_in'] ) ? $params['expires_in'] : self::JWT_ACCESS_EXP_DEFAULT;
+
+		// Handle authorization_code grant type
+		if ( $grant_type === 'authorization_code' ) {
+			return $this->handle_authorization_code_grant( $params, $expires_in );
+		}
 
 		// If user is already authenticated, use their ID.
 		if ( is_user_logged_in() ) {
 			$result = $this->generate_token( get_current_user_id(), $expires_in );
 			if ( is_wp_error( $result ) ) {
-				return $result;
+				return $this->oauth_error_response( 'server_error', $result->get_error_message() );
 			}
 			return rest_ensure_response( $result );
 		}
@@ -239,17 +526,104 @@ class JwtAuth {
 
 		$user = wp_authenticate( $username, $password );
 		if ( is_wp_error( $user ) ) {
-			return new WP_Error(
-				'invalid_credentials',
-				'Invalid username or password',
-				array( 'status' => 403 )
-			);
+			return $this->oauth_error_response( 'invalid_grant', 'Invalid username or password', 401 );
 		}
 
 		$result = $this->generate_token( $user->ID, $expires_in );
 		if ( is_wp_error( $result ) ) {
-			return $result;
+			return $this->oauth_error_response( 'server_error', $result->get_error_message() );
 		}
+		return rest_ensure_response( $result );
+	}
+
+	/**
+	 * Return OAuth-compliant error response.
+	 *
+	 * @param string $error Error code.
+	 * @param string $error_description Error description.
+	 * @param int    $status HTTP status code.
+	 * @return WP_REST_Response
+	 */
+	private function oauth_error_response( string $error, string $error_description, int $status = 400 ): WP_REST_Response {
+		$response = new WP_REST_Response(
+			array(
+				'error'             => $error,
+				'error_description' => $error_description,
+			),
+			$status
+		);
+		return $response;
+	}
+
+	/**
+	 * Handle authorization code grant.
+	 *
+	 * @param array      $params Request parameters.
+	 * @param string|int $expires_in Token expiration.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	private function handle_authorization_code_grant( array $params, $expires_in ) {
+		$code = isset( $params['code'] ) ? $params['code'] : '';
+		$client_id = isset( $params['client_id'] ) ? $params['client_id'] : '';
+		$client_secret = isset( $params['client_secret'] ) ? $params['client_secret'] : '';
+		$redirect_uri = isset( $params['redirect_uri'] ) ? $params['redirect_uri'] : '';
+		$code_verifier = isset( $params['code_verifier'] ) ? $params['code_verifier'] : '';
+
+		// Validate client credentials
+		$clients = get_option( self::REGISTERED_CLIENTS_OPTION, array() );
+		if ( ! isset( $clients[ $client_id ] ) ) {
+			return $this->oauth_error_response( 'invalid_client', 'Invalid client credentials', 401 );
+		}
+
+		$client = $clients[ $client_id ];
+		if ( ! wp_check_password( $client_secret, $client['client_secret_hash'] ) ) {
+			return $this->oauth_error_response( 'invalid_client', 'Invalid client credentials', 401 );
+		}
+
+		// Validate authorization code
+		$auth_codes = get_option( self::AUTH_CODE_OPTION, array() );
+		if ( ! isset( $auth_codes[ $code ] ) ) {
+			return $this->oauth_error_response( 'invalid_grant', 'Invalid authorization code', 400 );
+		}
+
+		$auth_code = $auth_codes[ $code ];
+
+		// Check if code is expired
+		if ( time() > $auth_code['expires_at'] ) {
+			unset( $auth_codes[ $code ] );
+			update_option( self::AUTH_CODE_OPTION, $auth_codes );
+			return $this->oauth_error_response( 'invalid_grant', 'Authorization code expired', 400 );
+		}
+
+		// Validate client_id and redirect_uri match
+		if ( $auth_code['client_id'] !== $client_id || $auth_code['redirect_uri'] !== $redirect_uri ) {
+			return $this->oauth_error_response( 'invalid_grant', 'Invalid authorization code', 400 );
+		}
+
+		// Validate PKCE if code_challenge was provided
+		if ( ! empty( $auth_code['code_challenge'] ) ) {
+			$method = $auth_code['code_challenge_method'] ?? 'plain';
+			$challenge = $method === 'S256'
+				? rtrim( strtr( base64_encode( hash( 'sha256', $code_verifier, true ) ), '+/', '-_' ), '=' )
+				: $code_verifier;
+
+			if ( $challenge !== $auth_code['code_challenge'] ) {
+				return $this->oauth_error_response( 'invalid_grant', 'Invalid code_verifier', 400 );
+			}
+		}
+
+		// Generate token for the user
+		$user_id = $auth_code['user_id'];
+
+		// Delete the authorization code (one-time use)
+		unset( $auth_codes[ $code ] );
+		update_option( self::AUTH_CODE_OPTION, $auth_codes );
+
+		$result = $this->generate_token( $user_id, $expires_in );
+		if ( is_wp_error( $result ) ) {
+			return $this->oauth_error_response( 'server_error', $result->get_error_message() );
+		}
+
 		return rest_ensure_response( $result );
 	}
 
@@ -325,11 +699,12 @@ class JwtAuth {
 		$this->register_token( $jti, $user_id, $issued_at, $expires_at, $never_expire );
 
 		$response = array(
-			'token'      => $token,
-			'user_id'    => $user_id,
-			'expires_at' => $expires_at,
+			'access_token' => $token,
+			'token_type'   => 'Bearer',
+			'user_id'      => $user_id,
+			'expires_at'   => $expires_at,
 		);
-		
+
 		if ( $never_expire ) {
 			$response['expires_in'] = 'never';
 			$response['never_expire'] = true;
@@ -576,9 +951,17 @@ class JwtAuth {
     * @return string|null Token if found, null otherwise.
     */
    private function extract_bearer_token( string $auth ): ?string {
+   	// Try with Bearer prefix first
    	if ( preg_match( self::BEARER_TOKEN_PATTERN, $auth, $matches ) ) {
    		return $matches[1];
    	}
+
+   	// If no Bearer prefix, check if the whole string looks like a JWT token
+   	// JWT tokens have format: xxx.yyy.zzz (3 base64 parts separated by dots)
+   	if ( preg_match( '/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/', $auth ) ) {
+   		return $auth;
+   	}
+
    	return null;
    }
 
