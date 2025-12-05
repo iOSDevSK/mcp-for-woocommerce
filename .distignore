@@ -2,6 +2,7 @@
 .git
 .gitignore
 .github
+.distignore
 node_modules
 src
 .wordpress-org
@@ -43,6 +44,10 @@ create-final-zip.sh
 create-wp-package.sh
 create_wordpress_org_package.sh
 create-wordpress-org-zip.sh
+create-release-zip.sh
+create-wordpress-org-compliant.sh
+svn-helper.sh
+svn-deploy.sh
 build-release.sh
 pushall.sh
 BUILD-README.md

@@ -130,7 +130,7 @@ function mcpfowo_deactivate() {
 	// Optionally remove the OAuth discovery file
 	$oauth_discovery_file = ABSPATH . '.well-known/oauth-authorization-server';
 	if ( file_exists( $oauth_discovery_file ) ) {
-		unlink( $oauth_discovery_file );
+		wp_delete_file( $oauth_discovery_file );
 	}
 
 	// Flush rewrite rules

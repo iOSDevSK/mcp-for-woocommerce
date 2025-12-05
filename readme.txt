@@ -2,7 +2,7 @@
 Contributors: filipdvoran
 Tags: ai, mcp, woocommerce, chatbot, ecommerce
 Requires at least: 6.4
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 8.0
 Stable tag: 1.2.1
 License: GPLv2 or later
