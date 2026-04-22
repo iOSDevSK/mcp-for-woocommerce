@@ -89,6 +89,11 @@ No, the plugin only activates when specifically called by an MCP client. It has 
 
 == Changelog ==
 
+= 1.2.2 =
+* Fix "Unable to generate new token" error when jwt-authentication-for-wp-rest-api plugin is active (issue #3)
+* Move all JWT auth REST routes from `jwt-auth/v1/*` to plugin-specific `mcpfowo/v1/auth/*` namespace to avoid collisions
+* Update OAuth discovery endpoint URLs to the new namespace
+
 = 1.2.1 =
 * Added OAuth 2.0 Authorization Code Flow with PKCE support
 * Implemented dynamic client registration for MCP clients

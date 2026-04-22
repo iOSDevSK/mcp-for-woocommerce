@@ -1,5 +1,18 @@
 === MCP for WooCommerce Plugin Changelog ===
 
+= Version 1.2.2 - Release #000017 - April 22, 2026 @ CET =
+
+**BUGFIX: JWT AUTH REST ROUTE COLLISION**
+
+* #000030 - Fix "Unable to generate new token" error (GitHub issue #3)
+  Date: April 22, 2026
+  - FIXED: Token generation from admin UI no longer fails with "The username field is empty" error when the popular `jwt-authentication-for-wp-rest-api` plugin is also active.
+  - ROOT CAUSE: Both plugins previously registered REST routes under the generic `jwt-auth/v1` namespace, causing the other plugin's handler to intercept our requests and reject them for missing credentials.
+  - CHANGED: All auth REST routes moved from `jwt-auth/v1/*` to plugin-specific `mcpfowo/v1/auth/*` namespace (e.g. `/mcpfowo/v1/auth/token`, `/mcpfowo/v1/auth/tokens`, `/mcpfowo/v1/auth/revoke`, `/mcpfowo/v1/auth/register`, `/mcpfowo/v1/auth/authorize`, `/mcpfowo/v1/auth/authorize-submit`).
+  - UPDATED: OAuth 2.0 discovery document now advertises the new endpoint URLs. MCP clients relying on discovery will pick up the change automatically on the next connect.
+  - UPDATED: React admin UI now calls the new endpoint paths.
+  - NOTE: External integrations that hard-coded `/wp-json/jwt-auth/v1/*` URLs must update them to `/wp-json/mcpfowo/v1/auth/*`.
+
 = Version 1.2.1 - Release #000016 - November 13, 2025 @ CET =
 
 **OAUTH 2.0 AUTHENTICATION & CLAUDE.AI WEB SUPPORT**
