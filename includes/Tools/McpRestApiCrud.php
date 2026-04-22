@@ -180,6 +180,7 @@ class McpRestApiCrud {
 			'autosaves',
 			'revisions',
 			'jwt-auth',
+			'mcpfowo/v1/auth',
 		);
 		// Get all routes and methods from the WordPress REST API.
 		$routes = rest_get_server()->get_routes();

@@ -130,7 +130,7 @@ class Settings {
 			'mcpfowoSettings',
 			array(
 				'apiUrl'              => rest_url( 'mcpfowo/v1/settings' ),
-				'jwtApiUrl'           => rest_url( 'jwt-auth/v1' ),
+				'jwtApiUrl'           => rest_url( 'mcpfowo/v1/auth' ),
 				'restFallbackUrl'     => home_url( '/index.php?rest_route=' ),
 				'nonce'               => wp_create_nonce( 'mcpfowo_settings' ),
 				'settings'            => get_option( self::OPTION_NAME, array() ),

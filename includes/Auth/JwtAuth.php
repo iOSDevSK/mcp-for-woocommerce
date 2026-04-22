@@ -158,12 +158,20 @@ class JwtAuth {
 	}
 
 	/**
+	 * REST namespace for all auth endpoints.
+	 * Plugin-specific to avoid collisions with other JWT plugins (e.g. jwt-authentication-for-wp-rest-api).
+	 *
+	 * @var string
+	 */
+	private const REST_NAMESPACE = 'mcpfowo/v1';
+
+	/**
 	 * Register REST API routes for JWT authentication.
 	 */
 	public function register_routes(): void {
 		register_rest_route(
-			'jwt-auth/v1',
-			'/token',
+			self::REST_NAMESPACE,
+			'/auth/token',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'generate_jwt_token' ),
@@ -180,7 +188,6 @@ class JwtAuth {
 						'required'    => false,
 					),
 					'expires_in' => array(
-						//'type'        => 'string',
 						'description' => 'Token expiration time in seconds (3600-86400) or "never" for no expiration',
 						'required'    => false,
 						'default'     => self::JWT_ACCESS_EXP_DEFAULT,
@@ -190,8 +197,8 @@ class JwtAuth {
 		);
 
 		register_rest_route(
-			'jwt-auth/v1',
-			'/revoke',
+			self::REST_NAMESPACE,
+			'/auth/revoke',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'revoke_token' ),
@@ -200,8 +207,8 @@ class JwtAuth {
 		);
 
 		register_rest_route(
-			'jwt-auth/v1',
-			'/tokens',
+			self::REST_NAMESPACE,
+			'/auth/tokens',
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( $this, 'list_tokens' ),
@@ -209,10 +216,9 @@ class JwtAuth {
 			)
 		);
 
-		// Register dynamic client registration endpoint
 		register_rest_route(
-			'jwt-auth/v1',
-			'/register',
+			self::REST_NAMESPACE,
+			'/auth/register',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'register_client' ),
@@ -220,10 +226,9 @@ class JwtAuth {
 			)
 		);
 
-		// Register authorization endpoint for OAuth code flow
 		register_rest_route(
-			'jwt-auth/v1',
-			'/authorize',
+			self::REST_NAMESPACE,
+			'/auth/authorize',
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( $this, 'authorize' ),
@@ -231,17 +236,15 @@ class JwtAuth {
 			)
 		);
 
-		// Register authorization submit endpoint
 		register_rest_route(
-			'jwt-auth/v1',
-			'/authorize-submit',
+			self::REST_NAMESPACE,
+			'/auth/authorize-submit',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'authorize_submit' ),
 				'permission_callback' => '__return_true',
 			)
 		);
-
 	}
 
 	/**
@@ -255,9 +258,9 @@ class JwtAuth {
 
 			$discovery_data = array(
 				'issuer'                    => $site_url,
-				'authorization_endpoint'    => $site_url . '/wp-json/jwt-auth/v1/authorize',
-				'token_endpoint'            => $site_url . '/wp-json/jwt-auth/v1/token',
-				'registration_endpoint'     => $site_url . '/wp-json/jwt-auth/v1/register',
+				'authorization_endpoint'    => $site_url . '/wp-json/mcpfowo/v1/auth/authorize',
+				'token_endpoint'            => $site_url . '/wp-json/mcpfowo/v1/auth/token',
+				'registration_endpoint'     => $site_url . '/wp-json/mcpfowo/v1/auth/register',
 				'response_types_supported'  => array( 'code', 'token' ),
 				'grant_types_supported'     => array( 'authorization_code', 'password', 'client_credentials' ),
 				'token_endpoint_auth_methods_supported' => array( 'client_secret_basic', 'client_secret_post' ),
@@ -375,7 +378,7 @@ class JwtAuth {
 	 */
 	private function render_authorization_form( WP_REST_Request $request ): void {
 		$site_name = get_bloginfo( 'name' );
-		$authorize_url = rest_url( 'jwt-auth/v1/authorize-submit' );
+		$authorize_url = rest_url( self::REST_NAMESPACE . '/auth/authorize-submit' );
 
 		// Get all query params
 		$query_params = $request->get_query_params();

@@ -48,13 +48,13 @@ const AuthenticationTokensTab = () => {
 	const fetchTokens = async () => {
 		try {
 			// Try with fallback URL if wp-json doesn't work
-			const jwtApiUrl = window.mcpfowoSettings?.jwtApiUrl || '/jwt-auth/v1';
+			const jwtApiUrl = window.mcpfowoSettings?.jwtApiUrl || '/mcpfowo/v1/auth';
 			const fallbackUrl = window.mcpfowoSettings?.restFallbackUrl;
 			
 			let response;
 			try {
 				response = await apiFetch( {
-					path: '/jwt-auth/v1/tokens',
+					path: '/mcpfowo/v1/auth/tokens',
 					method: 'GET',
 					includeCredentials: true,
 				} );
@@ -62,7 +62,7 @@ const AuthenticationTokensTab = () => {
 				// If primary path fails, try fallback
 				if (fallbackUrl) {
 					response = await apiFetch( {
-						url: fallbackUrl + '/jwt-auth/v1/tokens',
+						url: fallbackUrl + '/mcpfowo/v1/auth/tokens',
 						method: 'GET',
 						includeCredentials: true,
 					} );
@@ -102,7 +102,7 @@ const AuthenticationTokensTab = () => {
 			let response;
 			try {
 				response = await apiFetch( {
-					path: '/jwt-auth/v1/token',
+					path: '/mcpfowo/v1/auth/token',
 					method: 'POST',
 					data: {
 						expires_in: selectedDuration,
@@ -113,7 +113,7 @@ const AuthenticationTokensTab = () => {
 				// If primary path fails, try fallback
 				if (fallbackUrl) {
 					response = await apiFetch( {
-						url: fallbackUrl + '/jwt-auth/v1/token',
+						url: fallbackUrl + '/mcpfowo/v1/auth/token',
 						method: 'POST',
 						data: {
 							expires_in: selectedDuration,
@@ -154,7 +154,7 @@ const AuthenticationTokensTab = () => {
 			
 			try {
 				await apiFetch( {
-					path: '/jwt-auth/v1/revoke',
+					path: '/mcpfowo/v1/auth/revoke',
 					method: 'POST',
 					data: {
 						jti: jti,
@@ -165,7 +165,7 @@ const AuthenticationTokensTab = () => {
 				// If primary path fails, try fallback
 				if (fallbackUrl) {
 					await apiFetch( {
-						url: fallbackUrl + '/jwt-auth/v1/revoke',
+						url: fallbackUrl + '/mcpfowo/v1/auth/revoke',
 						method: 'POST',
 						data: {
 							jti: jti,

@@ -90,16 +90,16 @@ class JwtAuthTest extends WP_UnitTestCase {
 	public function test_jwt_routes_are_registered(): void {
 		$routes = rest_get_server()->get_routes();
 
-		$this->assertArrayHasKey( '/jwt-auth/v1/token', $routes );
-		$this->assertArrayHasKey( '/jwt-auth/v1/revoke', $routes );
-		$this->assertArrayHasKey( '/jwt-auth/v1/tokens', $routes );
+		$this->assertArrayHasKey( '/mcpfowo/v1/auth/token', $routes );
+		$this->assertArrayHasKey( '/mcpfowo/v1/auth/revoke', $routes );
+		$this->assertArrayHasKey( '/mcpfowo/v1/auth/tokens', $routes );
 	}
 
 	/**
 	 * Test token generation with valid credentials.
 	 */
 	public function test_generate_token_with_valid_credentials(): void {
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body(
 			wp_json_encode(
 				array(
@@ -127,7 +127,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 	 * Test token generation with invalid credentials.
 	 */
 	public function test_generate_token_with_invalid_credentials(): void {
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body(
 			wp_json_encode(
 				array(
@@ -151,7 +151,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 	public function test_generate_token_with_custom_expiration(): void {
 		$expires_in = 7200; // 2 hours
 
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body(
 			wp_json_encode(
 				array(
@@ -174,7 +174,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 	 * Test token generation with invalid expiration time.
 	 */
 	public function test_generate_token_with_invalid_expiration(): void {
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body(
 			wp_json_encode(
 				array(
@@ -199,7 +199,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 	public function test_generate_token_for_logged_in_user(): void {
 		wp_set_current_user( $this->admin_user->ID );
 
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body( wp_json_encode( array() ) );
 		$request->add_header( 'Content-Type', 'application/json' );
 
@@ -216,7 +216,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 	public function test_token_validation(): void {
 		// Generate a token first.
 		wp_set_current_user( $this->admin_user->ID );
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body( wp_json_encode( array() ) );
 		$request->add_header( 'Content-Type', 'application/json' );
 
@@ -292,7 +292,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 	public function test_token_revocation(): void {
 		// Generate a token first.
 		wp_set_current_user( $this->admin_user->ID );
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body( wp_json_encode( array() ) );
 		$request->add_header( 'Content-Type', 'application/json' );
 
@@ -305,7 +305,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 		$jti        = $decoded->jti ?? '';
 
 		// Revoke the token.
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/revoke' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/revoke' );
 		$request->set_body(
 			wp_json_encode(
 				array(
@@ -327,7 +327,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 	public function test_token_revocation_with_missing_jti(): void {
 		wp_set_current_user( $this->admin_user->ID );
 
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/revoke' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/revoke' );
 		$request->set_body( wp_json_encode( array() ) );
 		$request->add_header( 'Content-Type', 'application/json' );
 
@@ -343,7 +343,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 	public function test_token_revocation_with_non_existent_jti(): void {
 		wp_set_current_user( $this->admin_user->ID );
 
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/revoke' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/revoke' );
 		$request->set_body(
 			wp_json_encode(
 				array(
@@ -366,13 +366,13 @@ class JwtAuthTest extends WP_UnitTestCase {
 		wp_set_current_user( $this->admin_user->ID );
 
 		// Generate a token first.
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body( wp_json_encode( array() ) );
 		$request->add_header( 'Content-Type', 'application/json' );
 		rest_do_request( $request );
 
 		// List tokens.
-		$request  = new WP_REST_Request( 'GET', '/jwt-auth/v1/tokens' );
+		$request  = new WP_REST_Request( 'GET', '/mcpfowo/v1/auth/tokens' );
 		$response = rest_do_request( $request );
 		$data     = $response->get_data();
 
@@ -397,14 +397,14 @@ class JwtAuthTest extends WP_UnitTestCase {
 		wp_set_current_user( $this->subscriber_user->ID );
 
 		// Try to list tokens as subscriber.
-		$request  = new WP_REST_Request( 'GET', '/jwt-auth/v1/tokens' );
+		$request  = new WP_REST_Request( 'GET', '/mcpfowo/v1/auth/tokens' );
 		$response = rest_do_request( $request );
 
 		$this->assertEquals( 403, $response->get_status() );
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
 
 		// Try to revoke tokens as subscriber.
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/revoke' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/revoke' );
 		$request->set_body(
 			wp_json_encode(
 				array(
@@ -424,7 +424,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 	public function test_authentication_with_revoked_token(): void {
 		// Generate a token.
 		wp_set_current_user( $this->admin_user->ID );
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body( wp_json_encode( array() ) );
 		$request->add_header( 'Content-Type', 'application/json' );
 
@@ -467,7 +467,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 		update_option( 'jwt_token_registry', $registry );
 
 		// List tokens.
-		$request  = new WP_REST_Request( 'GET', '/jwt-auth/v1/tokens' );
+		$request  = new WP_REST_Request( 'GET', '/mcpfowo/v1/auth/tokens' );
 		$response = rest_do_request( $request );
 		$data     = $response->get_data();
 
@@ -489,7 +489,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 
 		// Generate a token which should trigger secret key generation.
 		wp_set_current_user( $this->admin_user->ID );
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body( wp_json_encode( array() ) );
 		$request->add_header( 'Content-Type', 'application/json' );
 		rest_do_request( $request );
@@ -506,7 +506,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 	public function test_authentication_with_non_existent_user(): void {
 		// Generate a token with a valid user.
 		wp_set_current_user( $this->admin_user->ID );
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body( wp_json_encode( array() ) );
 		$request->add_header( 'Content-Type', 'application/json' );
 
@@ -546,7 +546,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 	public function test_authentication_with_expired_token(): void {
 		// Generate a token with short expiration.
 		wp_set_current_user( $this->admin_user->ID );
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body(
 			wp_json_encode(
 				array(
@@ -583,7 +583,7 @@ class JwtAuthTest extends WP_UnitTestCase {
 		// Ensure no user is logged in.
 		wp_set_current_user( 0 );
 
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body( wp_json_encode( array() ) );
 		$request->add_header( 'Content-Type', 'application/json' );
 

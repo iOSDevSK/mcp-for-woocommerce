@@ -195,7 +195,7 @@ abstract class McpTransportTestBase extends WP_UnitTestCase {
 	protected function generate_jwt_token_for_user( int $user_id ): string {
 		wp_set_current_user( $user_id );
 
-		$request = new WP_REST_Request( 'POST', '/jwt-auth/v1/token' );
+		$request = new WP_REST_Request( 'POST', '/mcpfowo/v1/auth/token' );
 		$request->set_body( wp_json_encode( array() ) );
 		$request->add_header( 'Content-Type', 'application/json' );
 

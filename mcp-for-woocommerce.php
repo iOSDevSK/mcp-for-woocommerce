@@ -103,9 +103,9 @@ function mcpfowo_activate() {
 
 	$discovery_data = array(
 		'issuer'                    => $site_url,
-		'authorization_endpoint'    => $site_url . '/wp-json/jwt-auth/v1/authorize',
-		'token_endpoint'            => $site_url . '/wp-json/jwt-auth/v1/token',
-		'registration_endpoint'     => $site_url . '/wp-json/jwt-auth/v1/register',
+		'authorization_endpoint'    => $site_url . '/wp-json/mcpfowo/v1/auth/authorize',
+		'token_endpoint'            => $site_url . '/wp-json/mcpfowo/v1/auth/token',
+		'registration_endpoint'     => $site_url . '/wp-json/mcpfowo/v1/auth/register',
 		'response_types_supported'  => array( 'code', 'token' ),
 		'grant_types_supported'     => array( 'authorization_code', 'password', 'client_credentials' ),
 		'token_endpoint_auth_methods_supported' => array( 'client_secret_basic', 'client_secret_post' ),
