@@ -10,7 +10,10 @@
 # Run PHP syntax check on all files
 find includes -name "*.php" -exec php -l {} \;
 
-# Run PHPUnit tests if available
+# Run PHPUnit tests if available.
+# NOTE: not currently runnable — dev dependencies are not installed, there is no
+# phpunit.xml, and the transport tests in tests/phpunit/ expect a WP_REST_Response
+# from handlers that call exit(). Treat a missing run as a known gap, not a pass.
 vendor/bin/phpunit
 
 # Check for WooCommerce plugin compatibility
@@ -33,88 +36,55 @@ vendor/bin/phpunit
 3. **Admin Tool Loading**: Verify tools display properly in WordPress admin
 4. **Product Link Generation**: Confirm `permalink` fields are included in product responses
 
-## Post-Commit Synchronization Requirements
+## Deployment
 
-**CRITICAL:** After every commit, verify changes are synchronized across all environments.
+There is no staging/demo server for this plugin. The `woo.webtalkbot.com` host that
+earlier revisions of this file described has been decommissioned — do not try to SSH
+to it, sync it, or verify a push against it. GitHub is the only remote that matters.
 
-### Required Sync Commands
+Releases go out through `build-release.sh` / `create-release-zip.sh` and the
+WordPress.org SVN repo; see those scripts before shipping a version.
 
-```bash
-# 1. Check local git status
-git status
-git log --oneline -1
+## UI Build Requirements
 
-# 2. Verify server sync
-ssh woo.webtalkbot.com "cd /var/www/html/wp-content/plugins/woo-mcp && git status"
-ssh woo.webtalkbot.com "cd /var/www/html/wp-content/plugins/woo-mcp && git log --oneline -1"
-
-# 3. If server is behind, update server
-ssh woo.webtalkbot.com "cd /var/www/html/wp-content/plugins/woo-mcp && git pull origin main"
-
-# 4. Build on server after updates
-ssh woo.webtalkbot.com "cd /var/www/html/wp-content/plugins/woo-mcp && npm run build"
-
-# 5. Verify all environments have same commit hash
-echo "Local:" && git log --oneline -1
-echo "Server:" && ssh woo.webtalkbot.com "cd /var/www/html/wp-content/plugins/woo-mcp && git log --oneline -1"
-echo "GitHub: Check repository directly or use git ls-remote origin main"
-```
-
-### Synchronization Rules
-
-1. **When making changes locally**: Always sync to Git from local, then update server
-2. **When making changes on server**: Always sync to Git from server, then update local
-3. **Always verify**: Ensure local, server, and GitHub have identical commit hashes
-4. **Never assume**: Always check sync status before and after making changes
-
-### CRITICAL: Post-Push Server Verification
-
-**MANDATORY:** After every local change and GitHub push, ALWAYS verify changes are deployed to the server!
+After any change under `src/` (React admin components such as `DocumentationTab.js`
+or `SettingsTab.js`), or any change to build dependencies in `package.json`, rebuild
+before committing — the WordPress admin serves the compiled output from `build/`:
 
 ```bash
-# After every git push, run these verification commands:
-
-# 1. Check if server needs updates
-ssh woo.webtalkbot.com "cd /var/www/html/wp-content/plugins/woo-mcp && git status"
-
-# 2. If server is behind, pull changes
-ssh woo.webtalkbot.com "cd /var/www/html/wp-content/plugins/woo-mcp && git pull origin main"
-
-# 3. Verify server matches GitHub
-ssh woo.webtalkbot.com "cd /var/www/html/wp-content/plugins/woo-mcp && git log --oneline -1"
-
-# 4. If UI changes were made, run build on server
-ssh woo.webtalkbot.com "cd /var/www/html/wp-content/plugins/woo-mcp && npm run build"
+npm run build
 ```
 
-**Never assume server auto-updates!** Server sync is MANUAL and must be verified after every push.
+## Local Testing Environment
 
-## Server Access
+`wp-env` is configured (`.wp-env.json`, port 8888). WooCommerce is a hard dependency,
+so it must be activated before this plugin. A local `.wp-env.override.json` (untracked)
+is the easiest way to add it:
 
-For server access, use: `ssh woo.webtalkbot.com`
+```json
+{
+  "plugins": [
+    "https://downloads.wordpress.org/plugin/woocommerce.zip",
+    "https://downloads.wordpress.org/plugin/wordpress-importer.zip",
+    "."
+  ],
+  "themes": ["https://downloads.wordpress.org/theme/storefront.zip"]
+}
+```
 
-## Server UI Build Requirements
-
-**CRITICAL:** After any UI-related changes on the server, always run the build command:
+MCP is disabled until the settings option exists, and sample products give the
+product tools something to return:
 
 ```bash
-ssh woo.webtalkbot.com "cd /var/www/html/wp-content/plugins/woo-mcp && npm run build"
+npx wp-env run cli -- wp option update mcpfowo_settings '{"enabled":1}' --format=json
+npx wp-env run cli -- wp import wp-content/plugins/woocommerce/sample-data/sample_products.xml --authors=create
 ```
 
-### When to Run Server Build
-
-- After pulling changes that affect React components (src/ directory)
-- After modifying DocumentationTab.js, SettingsTab.js, or any UI components
-- After changes to package.json or any build dependencies
-- When WordPress admin UI is not reflecting recent changes
-- **Always after git pull** if the changes include frontend modifications
-
-### Build Command
-
-```bash
-# Full server build command
-ssh woo.webtalkbot.com "cd /var/www/html/wp-content/plugins/woo-mcp && npm run build"
-```
+**Transport testing caveat:** `wp-env` runs Apache + mod_php, which is more forgiving
+about response headers than the nginx + PHP-FPM setup most users run. Bugs in the
+`/wp-json/wp/v2/wpmcp/streamable` response path can be invisible on Apache and fatal
+on nginx (see issue #5). Verify transport-level changes against nginx + PHP-FPM, and
+inspect raw bytes with `curl --raw` rather than trusting a client that de-chunks for you.
 
 ## Development Notes
 
