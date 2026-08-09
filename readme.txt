@@ -4,7 +4,7 @@ Tags: ai, mcp, woocommerce, chatbot, ecommerce
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.2.1
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,13 @@ No, the plugin only activates when specifically called by an MCP client. It has 
 4. Real-time connection testing interface
 
 == Changelog ==
+
+= 1.2.3 =
+* Fix Streamable HTTP transport writing HTTP chunk framing into the JSON body, which made every JSON-RPC response unparseable for spec-compliant MCP clients (issue #5)
+* Responses are now a single complete application/json body with a correct Content-Length; the plugin no longer sets Transfer-Encoding or Connection headers
+* Fix Mcp-Session-Id header being silently dropped for batches of more than 5 messages
+* Notification-only requests now return an empty 202 body instead of stray framing bytes
+* Remove references to a decommissioned demo host from the setup docs; mcp-proxy.php now takes the endpoint URL as an argument instead of hard-coding one
 
 = 1.2.2 =
 * Fix "Unable to generate new token" error when jwt-authentication-for-wp-rest-api plugin is active (issue #3)

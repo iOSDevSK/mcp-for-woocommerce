@@ -1,5 +1,29 @@
 === MCP for WooCommerce Plugin Changelog ===
 
+= Version 1.2.3 - Release #000018 - August 9, 2026 @ CET =
+
+**BUGFIX: STREAMABLE HTTP TRANSPORT CORRUPTED EVERY JSON-RPC RESPONSE**
+
+* #000031 - Fix unlabelled chunked-encoding framing on /wpmcp/streamable (GitHub issue #5)
+  Date: August 9, 2026
+  - FIXED: Every response from `/wp-json/wp/v2/wpmcp/streamable` arrived with HTTP chunk framing embedded in the JSON body (a hex length line before the payload and a trailing `0` chunk), so `json_decode()` and every spec-compliant MCP client failed to parse it.
+  - ROOT CAUSE: The transport hand-wrote HTTP/1.1 chunked transfer-encoding framing into the response body and set the hop-by-hop `Transfer-Encoding: chunked` and `Connection: keep-alive` headers itself. Transfer encoding belongs to the web server / SAPI layer.
+  - IMPACT: On nginx + PHP-FPM the FastCGI layer drops the hop-by-hop header and re-frames the body, so clients de-chunk one layer and are left with the application's framing bytes. HTTP/2 has no chunked encoding at all and fails the same way. Apache + mod_php happened to honour the header, which is why this went unnoticed.
+  - CHANGED: The transport now returns a single, complete `application/json` body with a correct `Content-Length`, which is what the MCP Streamable HTTP transport specifies for a JSON response to a POST.
+  - FIXED: Batches of more than 5 messages took a separate streaming code path that called `header('Mcp-Session-Id: ...')` after body output, so the session ID was silently dropped for any such batch containing `initialize`. Batches are now buffered and sent as one JSON array.
+  - FIXED: Notification-only requests now return a genuinely empty `202` body instead of a stray `0\r\n\r\n`.
+  - AFFECTED CLIENTS: Any backend MCP client relying on the transport spec, including `laravel/mcp`'s `WebClient` and the official MCP SDK `StreamableHTTPClientTransport`.
+
+* #000032 - Remove references to the decommissioned demo host
+  Date: August 9, 2026
+  - FIXED: `docs/setup/claude-ai-connector-setup.md` pointed users at a demo endpoint that no longer exists; rewritten around `https://your-site.com` with auth, troubleshooting and verification steps.
+  - CHANGED: `mcp-proxy.php` no longer hard-codes an endpoint. It now takes the URL from argv or the `MCPFOWO_URL` environment variable and exits with usage text if neither is given, so it can never silently point at somebody else's store.
+  - FIXED: Connection logging recorded a hard-coded host instead of the actual site; now uses `home_url()`.
+
+* #000033 - Add end-to-end transport tests
+  Date: August 9, 2026
+  - ADDED: `tests/e2e/` — raw-byte HTTP tests for the streamable endpoint, covering both the JWT and JWT-disabled proxy paths, plus a disposable nginx + PHP-FPM container stack. PHPUnit cannot cover this: the response emitter calls `exit()`, and Apache masks exactly the class of bug that issue #5 was.
+
 = Version 1.2.2 - Release #000017 - April 22, 2026 @ CET =
 
 **BUGFIX: JWT AUTH REST ROUTE COLLISION**

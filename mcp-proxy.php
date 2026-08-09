@@ -4,22 +4,52 @@
  * PHP MCP Proxy Server for WordPress MCP Plugin
  * Pure PHP implementation - no Node.js dependencies required
  *
- * Usage: php mcp-proxy.php
+ * Usage: php mcp-proxy.php https://your-site.com/wp-json/wp/v2/wpmcp/streamable
+ *    or: MCPFOWO_URL=https://your-site.com/wp-json/wp/v2/wpmcp/streamable php mcp-proxy.php
+ *
  * For Claude Desktop, configure in claude_desktop_config.json:
  * {
  *   "mcpServers": {
  *     "woocommerce": {
  *       "command": "php",
- *       "args": ["/path/to/mcp-for-woocommerce/mcp-proxy.php"]
+ *       "args": [
+ *         "/path/to/mcp-for-woocommerce/mcp-proxy.php",
+ *         "https://your-site.com/wp-json/wp/v2/wpmcp/streamable"
+ *       ]
  *     }
  *   }
  * }
+ *
+ * The plugin's admin screen can also generate a copy of this proxy with your site's
+ * endpoint already filled in.
  */
 
 declare(strict_types=1);
 
-// WordPress MCP endpoint URL
-const MCPFOWO_URL = 'https://woo.webtalkbot.com/wp-json/wp/v2/wpmcp/streamable';
+/**
+ * Resolve the WordPress MCP endpoint from argv or the environment.
+ *
+ * There is no default: this proxy is site-specific, and a stale hard-coded host
+ * silently points every request at somebody else's store.
+ */
+function mcpfowo_resolve_endpoint( array $argv ): string {
+    $url = $argv[1] ?? getenv('MCPFOWO_URL') ?: '';
+
+    if ('' === $url) {
+        fwrite(STDERR, "Error: no MCP endpoint given.\n\n" .
+            "Usage: php mcp-proxy.php <endpoint-url>\n" .
+            "   or: MCPFOWO_URL=<endpoint-url> php mcp-proxy.php\n\n" .
+            "Example: php mcp-proxy.php https://your-site.com/wp-json/wp/v2/wpmcp/streamable\n");
+        exit(1);
+    }
+
+    if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        fwrite(STDERR, "Error: '{$url}' is not a valid URL.\n");
+        exit(1);
+    }
+
+    return $url;
+}
 
 /**
  * Simple PHP MCP Proxy - standalone implementation
@@ -289,5 +319,5 @@ class McpPhpProxyStandalone {
 }
 
 // Run the proxy server
-$proxy = new McpPhpProxyStandalone(MCPFOWO_URL);
+$proxy = new McpPhpProxyStandalone(mcpfowo_resolve_endpoint($argv));
 $proxy->run();

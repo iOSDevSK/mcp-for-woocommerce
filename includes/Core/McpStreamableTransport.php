@@ -773,7 +773,7 @@ class McpStreamableTransport extends McpTransportBase {
 			'method' => $log_data['method'],
 			'remote_addr' => $log_data['remote_addr'],
 			'user_agent' => $log_data['user_agent'],
-			'endpoint' => 'https://woo.webtalkbot.com' . $log_data['url'],
+			'endpoint' => home_url( $log_data['url'] ),
 			'has_auth' => $log_data['authorization'] === '[PRESENT]',
 			'anthropic_beta' => $log_data['anthropic_beta'],
 			'request_size' => $log_data['body_length']

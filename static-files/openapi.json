@@ -2,13 +2,13 @@
   "openapi": "3.0.1",
   "info": {
     "title": "WooCommerce MCP Connector",
-    "description": "API for accessing WooCommerce store data. Allows searching products, orders, and customer information via Model Context Protocol.",
-    "version": "1.1.4"
+    "description": "API for accessing WooCommerce store data. Allows searching products, orders, and customer information via Model Context Protocol. Replace the server URL below with your own WooCommerce site; the plugin also serves a live spec with the correct URL at /wp-json/wp/v2/wpmcp/openapi.json.",
+    "version": "1.2.3"
   },
   "servers": [
     {
-      "url": "https://woo.webtalkbot.com",
-      "description": "WooCommerce MCP Server"
+      "url": "https://your-site.com",
+      "description": "Your WooCommerce MCP Server"
     }
   ],
   "paths": {
@@ -62,11 +62,17 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["jsonrpc", "method", "id"],
+                "required": [
+                  "jsonrpc",
+                  "method",
+                  "id"
+                ],
                 "properties": {
                   "jsonrpc": {
                     "type": "string",
-                    "enum": ["2.0"]
+                    "enum": [
+                      "2.0"
+                    ]
                   },
                   "method": {
                     "type": "string",
@@ -78,8 +84,12 @@
                   },
                   "id": {
                     "oneOf": [
-                      {"type": "string"},
-                      {"type": "integer"}
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "integer"
+                      }
                     ]
                   }
                 }
@@ -97,15 +107,21 @@
                   "properties": {
                     "jsonrpc": {
                       "type": "string",
-                      "enum": ["2.0"]
+                      "enum": [
+                        "2.0"
+                      ]
                     },
                     "result": {
                       "type": "object"
                     },
                     "id": {
                       "oneOf": [
-                        {"type": "string"},
-                        {"type": "integer"}
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "integer"
+                        }
                       ]
                     }
                   }

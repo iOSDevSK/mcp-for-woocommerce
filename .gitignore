@@ -26,3 +26,9 @@ build/
 
 # SVN directory
 .svn/
+# e2e test artifacts
+tests/e2e/out-*/
+tests/e2e/nginx-stack/.env
+
+# Local wp-env overrides
+.wp-env.override.json
