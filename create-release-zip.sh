@@ -39,9 +39,10 @@ cp readme.txt "$TEMP_DIR/"
 cp LICENSE "$TEMP_DIR/"
 cp composer.json "$TEMP_DIR/"
 
-# Copy client-setup.md if it exists
-if [ -f "client-setup.md" ]; then
-    cp client-setup.md "$TEMP_DIR/"
+# Copy bundled documentation (rendered by the admin Documentation tab)
+if [ -d "documentation" ]; then
+    mkdir -p "$TEMP_DIR/documentation"
+    cp -r documentation/* "$TEMP_DIR/documentation/"
 fi
 
 # Remove unnecessary files

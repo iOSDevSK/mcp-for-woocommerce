@@ -42,6 +42,7 @@ function mcp_for_woocommerce_cleanup_transients() {
     global $wpdb;
 
     // Delete all transients that start with mcp_for_woocommerce_
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- uninstall-time cleanup of prefixed rows; there is no core API for a LIKE delete and caching is meaningless while the plugin is being removed.
     $wpdb->query( 
         $wpdb->prepare(
             "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
@@ -52,6 +53,7 @@ function mcp_for_woocommerce_cleanup_transients() {
 
     // For multisite
     if ( is_multisite() ) {
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- uninstall-time cleanup, see above.
         $wpdb->query(
             $wpdb->prepare(
                 "DELETE FROM {$wpdb->sitemeta} WHERE meta_key LIKE %s OR meta_key LIKE %s",
@@ -69,6 +71,7 @@ function mcp_for_woocommerce_cleanup_user_meta() {
     global $wpdb;
 
     // Delete user meta related to the plugin
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- uninstall-time cleanup, see above.
     $wpdb->query(
         $wpdb->prepare(
             "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE %s",

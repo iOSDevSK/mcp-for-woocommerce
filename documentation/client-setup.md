@@ -70,14 +70,21 @@ Add to your Claude Desktop `claude_desktop_config.json`:
 
 #### Local Development Configuration
 
-To use with Claude Desktop for local development, add this configuration to your claude_desktop_config.json:
+For local development there is a standalone PHP STDIO proxy in the project's GitHub
+repository — it is not bundled with the released plugin, because it is a command-line
+script rather than plugin code. Download
+[`mcp-proxy.php`](https://github.com/iOSDevSK/mcp-for-woocommerce/blob/main/mcp-proxy.php)
+and pass it your endpoint:
 
 ```json
 {
 	"mcpServers": {
 		"woocommerce": {
 			"command": "php",
-			"args": [ "/path/to/your/mcp-for-woocommerce/mcp-proxy.php" ]
+			"args": [
+				"/path/to/mcp-proxy.php",
+				"https://your-site.com/wp-json/wp/v2/wpmcp/streamable"
+			]
 		}
 	}
 }

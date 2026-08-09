@@ -40,17 +40,9 @@ class ToolsHandler {
 	 * @return array
 	 */
 	public function list_tools(): array {
-		// Add timeout and memory limit increase for complex tool loading
-		if ( ! ini_get( 'safe_mode' ) ) {
-			@set_time_limit( 120 ); // 2 minutes
-			@ini_set( 'memory_limit', '512M' );
-		}
-		
 		try {
 			$tools = $this->mcp->get_tools();
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			}
-			
+
 			return array(
 				'tools' => array_values( $tools ),
 			);

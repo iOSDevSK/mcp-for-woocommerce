@@ -1,5 +1,37 @@
 === MCP for WooCommerce Plugin Changelog ===
 
+= Version 1.2.4 - Release #000019 - August 9, 2026 @ CET =
+
+**SECURITY & WORDPRESS.ORG PLUGIN CHECK COMPLIANCE**
+
+* #000034 - SECURITY: Validate client_id and redirect_uri on the OAuth authorization form submission
+  Date: August 9, 2026
+  - FIXED: `/mcpfowo/v1/auth/authorize-submit` accepted any `client_id` and `redirect_uri` from the POST body without checking them against a registered client. It then minted an authorization code bound to that URI and redirected the browser there with the code in the query string.
+  - IMPACT: An attacker could host a form pointing at the endpoint with `redirect_uri` set to a host they control. An administrator who submitted credentials to it would hand over a valid authorization code, exchangeable for an access token. Open redirect plus authorization code leak.
+  - CHANGED: Both `authorize()` and `authorize_submit()` now go through a shared `validate_client_redirect_uri()` check, which requires the client to be registered and the redirect_uri to match one of its registered URIs exactly. `authorize_submit()` validates before processing credentials.
+  - NOTE: The `authorize()` endpoint already validated correctly; only the form submission path was affected.
+
+* #000035 - Harden tax rate query and add caching
+  Date: August 9, 2026
+  - CHANGED: `wc_get_tax_rates` built its WHERE clause by concatenation and interpolated it into `$wpdb->prepare()`, which hid the placeholders from static analysis. Rewritten as a single literal query with every placeholder visible. The query was safe in practice; it is now verifiably so.
+  - ADDED: Results are cached in the object cache for 5 minutes.
+
+* #000036 - Serve the OAuth discovery document dynamically only
+  Date: August 9, 2026
+  - FIXED: `/.well-known/oauth-authorization-server` was served with a 404 status when no static file existed, because the handler runs on `template_redirect` after WordPress has already resolved the request as a 404. OAuth clients discard a 404. Now sends an explicit 200.
+  - REMOVED: Activation no longer writes a static discovery file into the web root. It went stale when the site URL changed, and plugins should not write outside `wp-content`. Any file left by an earlier version is deleted on activation and deactivation.
+  - FIXED: The discovery path is now matched against the parsed URL path, so a query string or trailing slash no longer breaks it.
+
+* #000037 - WordPress.org Plugin Check compliance
+  Date: August 9, 2026
+  - The distributed package now passes `wp plugin check` with zero errors and zero warnings.
+  - REMOVED: `set_time_limit()` and `ini_set('memory_limit')` from `tools/list`.
+  - REMOVED: `includes/Core/McpPhpProxy.php`, dead code duplicating the standalone CLI proxy.
+  - CHANGED: Globally scoped functions renamed to the plugin prefix (`init_mcpfowo` to `mcpfowo_init_plugin`, `register_mcpfowo_cli_commands` to `mcpfowo_register_cli_commands`).
+  - MOVED: `client-setup.md` to `documentation/client-setup.md`; the admin Documentation tab loads it from the new path.
+  - REMOVED: `mcp-proxy.php` from the distributed package. It is a command-line script, so it cannot carry a direct-access guard and its STDERR writes cannot use WP_Filesystem. It remains available in the GitHub repository.
+  - UPDATED: "Tested up to" is now 7.0 and lives only in readme.txt, so the two cannot disagree.
+
 = Version 1.2.3 - Release #000018 - August 9, 2026 @ CET =
 
 **BUGFIX: STREAMABLE HTTP TRANSPORT CORRUPTED EVERY JSON-RPC RESPONSE**

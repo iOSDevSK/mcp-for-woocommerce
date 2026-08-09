@@ -252,8 +252,10 @@ class JwtAuth {
 	 */
 	public function handle_oauth_discovery(): void {
 		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$path        = (string) wp_parse_url( $request_uri, PHP_URL_PATH );
+		$path        = '/' === $path ? $path : untrailingslashit( $path );
 
-		if ( $request_uri === '/.well-known/oauth-authorization-server' ) {
+		if ( '/.well-known/oauth-authorization-server' === $path ) {
 			$site_url = get_bloginfo( 'url' );
 
 			$discovery_data = array(
@@ -268,6 +270,11 @@ class JwtAuth {
 				'ai_plugin_url'             => $site_url . '/.well-known/ai-plugin.json',
 			);
 
+			// This runs on template_redirect, by which point WordPress has already
+			// resolved the request to a 404. Without an explicit 200 the discovery
+			// document is served with a 404 status and OAuth clients discard it.
+			status_header( 200 );
+			nocache_headers();
 			header( 'Content-Type: application/json' );
 			echo wp_json_encode( $discovery_data );
 			exit;
@@ -313,6 +320,39 @@ class JwtAuth {
 	}
 
 	/**
+	 * Validate an OAuth client_id and its redirect_uri.
+	 *
+	 * The authorization code is handed to the browser as a query parameter on the
+	 * redirect, so an unvalidated redirect_uri would leak the code to any host an
+	 * attacker names — an open redirect and an account takeover in one. Every path
+	 * that mints a code must run this first.
+	 *
+	 * @param mixed $client_id    The submitted client_id.
+	 * @param mixed $redirect_uri The submitted redirect_uri.
+	 * @return true|WP_Error True when the pair is registered, WP_Error otherwise.
+	 */
+	private function validate_client_redirect_uri( $client_id, $redirect_uri ) {
+		if ( ! is_string( $client_id ) || '' === $client_id ) {
+			return new WP_Error( 'invalid_client', 'Invalid client_id', array( 'status' => 400 ) );
+		}
+
+		$clients = get_option( self::REGISTERED_CLIENTS_OPTION, array() );
+		if ( ! isset( $clients[ $client_id ] ) ) {
+			return new WP_Error( 'invalid_client', 'Invalid client_id', array( 'status' => 400 ) );
+		}
+
+		$registered_uris = isset( $clients[ $client_id ]['redirect_uris'] ) && is_array( $clients[ $client_id ]['redirect_uris'] )
+			? $clients[ $client_id ]['redirect_uris']
+			: array();
+
+		if ( ! is_string( $redirect_uri ) || ! in_array( $redirect_uri, $registered_uris, true ) ) {
+			return new WP_Error( 'invalid_redirect_uri', 'Invalid redirect_uri', array( 'status' => 400 ) );
+		}
+
+		return true;
+	}
+
+	/**
 	 * OAuth authorize endpoint - handles authorization code flow.
 	 *
 	 * @param WP_REST_Request $request The request object.
@@ -326,16 +366,10 @@ class JwtAuth {
 		$code_challenge = $request->get_param( 'code_challenge' );
 		$code_challenge_method = $request->get_param( 'code_challenge_method' );
 
-		// Validate client
-		$clients = get_option( self::REGISTERED_CLIENTS_OPTION, array() );
-		if ( ! isset( $clients[ $client_id ] ) ) {
-			return new WP_Error( 'invalid_client', 'Invalid client_id', array( 'status' => 400 ) );
-		}
-
-		// Validate redirect_uri
-		$client = $clients[ $client_id ];
-		if ( ! in_array( $redirect_uri, $client['redirect_uris'], true ) ) {
-			return new WP_Error( 'invalid_redirect_uri', 'Invalid redirect_uri', array( 'status' => 400 ) );
+		// Validate client and redirect_uri
+		$validation = $this->validate_client_redirect_uri( $client_id, $redirect_uri );
+		if ( is_wp_error( $validation ) ) {
+			return $validation;
 		}
 
 		// Check if user is logged in as admin
@@ -367,6 +401,7 @@ class JwtAuth {
 			$redirect_uri
 		);
 
+		// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- OAuth redirect_uri is an external host by design; it is validated against the registered client via validate_client_redirect_uri() above, which wp_safe_redirect() cannot express.
 		wp_redirect( $redirect_url );
 		exit;
 	}
@@ -442,6 +477,18 @@ class JwtAuth {
 		$code_challenge = $request->get_param( 'code_challenge' );
 		$code_challenge_method = $request->get_param( 'code_challenge_method' );
 
+		// Validate client and redirect_uri BEFORE touching credentials. Without this,
+		// anyone could POST their own form here with an arbitrary redirect_uri and
+		// receive the authorization code on a host they control.
+		$validation = $this->validate_client_redirect_uri( $client_id, $redirect_uri );
+		if ( is_wp_error( $validation ) ) {
+			wp_die(
+				esc_html( $validation->get_error_message() ),
+				esc_html__( 'Authorization failed', 'mcp-for-woocommerce' ),
+				array( 'response' => 400 )
+			);
+		}
+
 		// Authenticate user
 		$user = wp_authenticate( $username, $password );
 		if ( is_wp_error( $user ) ) {
@@ -475,6 +522,7 @@ class JwtAuth {
 			$redirect_uri
 		);
 
+		// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- OAuth redirect_uri is an external host by design; it is validated against the registered client via validate_client_redirect_uri() above, which wp_safe_redirect() cannot express.
 		wp_redirect( $redirect_url );
 		exit;
 	}

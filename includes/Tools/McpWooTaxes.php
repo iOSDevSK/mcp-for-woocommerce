@@ -14,6 +14,16 @@ use McpForWoo\Core\RegisterMcpTool;
  */
 class McpWooTaxes {
 
+    /**
+     * Object cache group for tax rate lookups.
+     */
+    private const CACHE_GROUP = 'mcpfowo_taxes';
+
+    /**
+     * How long tax rate lookups stay cached, in seconds.
+     */
+    private const CACHE_TTL = 300;
+
     public function __construct() {
         add_action('mcpfowo_init', [$this, 'register_tools']);
     }
@@ -100,40 +110,39 @@ class McpWooTaxes {
      */
     public function get_tax_rates($params): array {
         global $wpdb;
-        
-        $where = [];
-        $where_values = [];
-        
-        if (!empty($params['class'])) {
-            $where[] = 'tax_rate_class = %s';
-            $where_values[] = $params['class'];
-        }
-        
-        if (!empty($params['country'])) {
-            $where[] = 'tax_rate_country = %s';
-            $where_values[] = $params['country'];
-        }
-        
-        if (!empty($params['state'])) {
-            $where[] = 'tax_rate_state = %s';
-            $where_values[] = $params['state'];
-        }
-        
-        if (!empty($where)) {
-            $where_clause = 'WHERE ' . implode(' AND ', $where);
+
+        // An empty filter matches every row, so the WHERE clause can stay a literal
+        // string with every placeholder visible to $wpdb->prepare(). Building the
+        // clause dynamically and interpolating it would hide the placeholders.
+        $class   = isset($params['class']) ? (string) $params['class'] : '';
+        $country = isset($params['country']) ? (string) $params['country'] : '';
+        $state   = isset($params['state']) ? (string) $params['state'] : '';
+
+        $cache_key = 'tax_rates_' . md5($class . '|' . $country . '|' . $state);
+        $tax_rates = wp_cache_get($cache_key, self::CACHE_GROUP);
+
+        if (false === $tax_rates) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- woocommerce_tax_rates is a custom WooCommerce table with no core API for this filter combination; the result is cached below.
             $tax_rates = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates {$where_clause} ORDER BY tax_rate_order",
-                    ...$where_values
+                    "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates
+                     WHERE ( %s = '' OR tax_rate_class = %s )
+                       AND ( %s = '' OR tax_rate_country = %s )
+                       AND ( %s = '' OR tax_rate_state = %s )
+                     ORDER BY tax_rate_order",
+                    $class,
+                    $class,
+                    $country,
+                    $country,
+                    $state,
+                    $state
                 ),
                 ARRAY_A
             );
-        } else {
-            $tax_rates = $wpdb->get_results(
-                "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates ORDER BY tax_rate_order",
-                ARRAY_A
-            );
+
+            wp_cache_set($cache_key, $tax_rates, self::CACHE_GROUP, self::CACHE_TTL);
         }
+
         $results = [];
         
         foreach ($tax_rates as $rate) {

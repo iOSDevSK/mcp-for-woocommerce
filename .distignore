@@ -38,6 +38,11 @@ mkdocs.yml
 security
 tests
 
+# Standalone CLI proxy - not plugin code, cannot carry an ABSPATH guard
+mcp-proxy.php
+mcp-proxy.js
+AGENTS.md
+
 # Build scripts
 create-wp-build.sh
 create-final-zip.sh

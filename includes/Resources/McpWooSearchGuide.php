@@ -161,7 +161,7 @@ class McpWooSearchGuide {
               'promotional' => [
                   'on_sale' => [
                       'keywords' => ['sale', 'discount', 'promo', 'offer', 'deal', 'reduced', 'clearance', 'special offer'],
-                      'parameters' => ['meta_query' => [['key' => '_sale_price', 'value' => '', 'compare' => '!=']]],
+                      'parameters' => ['meta_query' => [['key' => '_sale_price', 'value' => '', 'compare' => '!=']]], // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- inherent to a product-search plugin; the query shape is the point of the tool and results are paginated.
                       'fallback_removal' => 'ALWAYS remove in stage_2 - this is often the cause of empty results'
                   ]
               ]
@@ -276,7 +276,7 @@ class McpWooSearchGuide {
                           'orderby' => 'price',
                           'order' => 'asc',
                           'category' => '[matched_category_id]',
-                          'meta_query' => [['key' => '_sale_price', 'compare' => '!=']]
+                          'meta_query' => [['key' => '_sale_price', 'compare' => '!=']] // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- inherent to a product-search plugin; the query shape is the point of the tool and results are paginated.
                       ],
                       'stage_2_fallback' => [
                           'orderby' => 'price',

@@ -105,7 +105,7 @@ class McpWooIntentAnalyzer {
         // Universal sale patterns
         $sale_pattern = '/\b(zľav|sale|akci|discount|promo|offer|deal|reduc|special)\w*/i';
         if (preg_match($sale_pattern, $query)) {
-            $intent['search_params']['meta_query'] = [
+            $intent['search_params']['meta_query'] = [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- inherent to a product-search plugin; the query shape is the point of the tool and results are paginated.
                 [
                     'key' => '_sale_price',
                     'value' => '',

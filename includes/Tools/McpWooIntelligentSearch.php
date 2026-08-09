@@ -765,12 +765,12 @@ class McpWooIntelligentSearch {
 
             // Map meta_query
             if ( isset( $params['meta_query'] ) ) {
-                $wc_params['meta_query'] = $params['meta_query'];
+                $wc_params['meta_query'] = $params['meta_query']; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- inherent to a product-search plugin; the query shape is the point of the tool and results are paginated.
             }
 
             // Map tax_query
             if ( isset( $params['tax_query'] ) ) {
-                $wc_params['tax_query'] = $params['tax_query'];
+                $wc_params['tax_query'] = $params['tax_query']; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- inherent to a product-search plugin; the query shape is the point of the tool and results are paginated.
             }
 
             $products = wc_get_products( $wc_params );
@@ -1052,7 +1052,7 @@ class McpWooIntelligentSearch {
                     'limit' => $per_page,
                     'page' => $page,
                     'status' => 'publish',
-                    'tax_query' => array(
+                    'tax_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- inherent to a product-search plugin; the query shape is the point of the tool and results are paginated.
                         array(
                             'taxonomy' => $taxonomy,
                             'field' => 'slug',
@@ -1181,7 +1181,7 @@ class McpWooIntelligentSearch {
             'status' => 'publish',
         );
 
-        $search_params['tax_query'] = array( 'relation' => 'AND' );
+        $search_params['tax_query'] = array( 'relation' => 'AND' ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- inherent to a product-search plugin; the query shape is the point of the tool and results are paginated.
         
         foreach ( $attributes as $attribute_name => $attribute_value ) {
             $attribute_taxonomy = 'pa_' . sanitize_title( $attribute_name );
@@ -1244,7 +1244,7 @@ class McpWooIntelligentSearch {
 
             if ( $brand_term ) {
                 if ( !isset( $search_params['tax_query'] ) ) {
-                    $search_params['tax_query'] = array( 'relation' => 'AND' );
+                    $search_params['tax_query'] = array( 'relation' => 'AND' ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- inherent to a product-search plugin; the query shape is the point of the tool and results are paginated.
                 }
                 $search_params['tax_query'][] = array(
                     'taxonomy' => $brand_term->taxonomy,
@@ -1271,7 +1271,7 @@ class McpWooIntelligentSearch {
             $price_range = $params['price_range'];
             if ( isset( $price_range['min'] ) || isset( $price_range['max'] ) ) {
                 if ( !isset( $search_params['meta_query'] ) ) {
-                    $search_params['meta_query'] = array( 'relation' => 'AND' );
+                    $search_params['meta_query'] = array( 'relation' => 'AND' ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- inherent to a product-search plugin; the query shape is the point of the tool and results are paginated.
                 }
                 $search_params['meta_query'][] = array(
                     'key'     => '_price',
@@ -1286,7 +1286,7 @@ class McpWooIntelligentSearch {
         // Apply attributes
         if ( !empty( $params['attributes'] ) ) {
             if ( !isset( $search_params['tax_query'] ) ) {
-                $search_params['tax_query'] = array( 'relation' => 'AND' );
+                $search_params['tax_query'] = array( 'relation' => 'AND' ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- inherent to a product-search plugin; the query shape is the point of the tool and results are paginated.
             }
             
             foreach ( $params['attributes'] as $attr_name => $attr_value ) {

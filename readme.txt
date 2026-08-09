@@ -2,9 +2,9 @@
 Contributors: filipdvoran
 Tags: ai, mcp, woocommerce, chatbot, ecommerce
 Requires at least: 6.4
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,14 @@ No, the plugin only activates when specifically called by an MCP client. It has 
 4. Real-time connection testing interface
 
 == Changelog ==
+
+= 1.2.4 =
+* SECURITY: The OAuth authorization form submission accepted any client_id and redirect_uri without validation, so a crafted form could capture an authorization code on an attacker-controlled host. Both are now validated against the registered client before credentials are processed.
+* Harden the tax rate query so every SQL placeholder is visible to static analysis, and cache results in the object cache
+* Serve /.well-known/oauth-authorization-server with a 200 status instead of 404, and stop writing a static copy into the web root on activation
+* Pass the WordPress.org Plugin Check with zero errors and zero warnings
+* Remove set_time_limit() and ini_set() calls, and delete unused proxy code
+* Move client-setup.md into documentation/ and drop the command-line proxy script from the distributed package
 
 = 1.2.3 =
 * Fix Streamable HTTP transport writing HTTP chunk framing into the JSON body, which made every JSON-RPC response unparseable for spec-compliant MCP clients (issue #5)

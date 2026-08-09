@@ -2,9 +2,8 @@
 /**
  * Plugin name:       MCP for WooCommerce
  * Description:       Community-developed AI integration plugin that connects WooCommerce & WordPress with Model Context Protocol (MCP). Not affiliated with Automattic. Provides comprehensive AI-accessible interfaces to WooCommerce products, orders, categories, shipping, payments, and WordPress posts/pages through standardized tools, resources, and prompts. Enables AI assistants to seamlessly interact with your e-commerce data and content. Acts as a WooCommerce MCP Server for MCP clients; pair with Webtalkbot to add a WooCommerce AI Chatbot/Agent to your site.
- * Version:           1.2.3
+ * Version:           1.2.4
  * Requires at least: 6.4
- * Tested up to:      6.8
  * Requires PHP:      8.0
  * Requires Plugins:  woocommerce
  * Author:            Filip Dvoran
@@ -29,7 +28,7 @@ use McpForWoo\Admin\Settings;
 use McpForWoo\Auth\JwtAuth;
 use McpForWoo\CLI\ValidateToolsCommand;
 
-define( 'MCPFOWO_VERSION', '1.2.3' );
+define( 'MCPFOWO_VERSION', '1.2.4' );
 define( 'MCPFOWO_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MCPFOWO_URL', plugin_dir_url( __FILE__ ) );
 define( 'MCPFOWO_PLUGIN_FILE', __FILE__ );
@@ -58,7 +57,7 @@ function WPMCP() { // phpcs:ignore
 /**
  * Initialize the plugin.
  */
-function init_mcpfowo() {
+function mcpfowo_init_plugin() {
 	$mcp = WPMCP();
 
 	// Initialize the STDIO transport.
@@ -79,7 +78,7 @@ function init_mcpfowo() {
 /**
  * Register WP-CLI commands
  */
-function register_mcpfowo_cli_commands() {
+function mcpfowo_register_cli_commands() {
 	if ( ! class_exists( 'WP_CLI' ) ) {
 		return;
 	}
@@ -91,49 +90,32 @@ function register_mcpfowo_cli_commands() {
  * Plugin activation hook.
  */
 function mcpfowo_activate() {
-	// Create .well-known directory if it doesn't exist
-	$well_known_dir = ABSPATH . '.well-known';
-	if ( ! file_exists( $well_known_dir ) ) {
-		wp_mkdir_p( $well_known_dir );
-	}
+	// The OAuth discovery document at /.well-known/oauth-authorization-server is
+	// served dynamically by JwtAuth::handle_oauth_discovery(). Earlier versions
+	// wrote a static copy into the web root; that is unnecessary, goes stale when
+	// the site URL changes, and writing outside wp-content is bad practice.
+	// Remove any stale copy left by an earlier version, which would otherwise be
+	// served by the web server in preference to the dynamic handler.
+	mcpfowo_remove_legacy_discovery_file();
 
-	// Create OAuth discovery file
-	$oauth_discovery_file = $well_known_dir . '/oauth-authorization-server';
-	$site_url = get_bloginfo( 'url' );
-
-	$discovery_data = array(
-		'issuer'                    => $site_url,
-		'authorization_endpoint'    => $site_url . '/wp-json/mcpfowo/v1/auth/authorize',
-		'token_endpoint'            => $site_url . '/wp-json/mcpfowo/v1/auth/token',
-		'registration_endpoint'     => $site_url . '/wp-json/mcpfowo/v1/auth/register',
-		'response_types_supported'  => array( 'code', 'token' ),
-		'grant_types_supported'     => array( 'authorization_code', 'password', 'client_credentials' ),
-		'token_endpoint_auth_methods_supported' => array( 'client_secret_basic', 'client_secret_post' ),
-		'code_challenge_methods_supported' => array( 'S256', 'plain' ),
-		'ai_plugin_url'             => $site_url . '/.well-known/ai-plugin.json',
-	);
-
-	// Write the file with proper JSON formatting
-	file_put_contents(
-		$oauth_discovery_file,
-		wp_json_encode( $discovery_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES )
-	);
-
-	// Flush rewrite rules
 	flush_rewrite_rules();
+}
+
+/**
+ * Delete the static OAuth discovery file written by versions before 1.2.4.
+ */
+function mcpfowo_remove_legacy_discovery_file() {
+	$legacy_discovery_file = ABSPATH . '.well-known/oauth-authorization-server';
+	if ( file_exists( $legacy_discovery_file ) ) {
+		wp_delete_file( $legacy_discovery_file );
+	}
 }
 
 /**
  * Plugin deactivation hook.
  */
 function mcpfowo_deactivate() {
-	// Optionally remove the OAuth discovery file
-	$oauth_discovery_file = ABSPATH . '.well-known/oauth-authorization-server';
-	if ( file_exists( $oauth_discovery_file ) ) {
-		wp_delete_file( $oauth_discovery_file );
-	}
-
-	// Flush rewrite rules
+	mcpfowo_remove_legacy_discovery_file();
 	flush_rewrite_rules();
 }
 
@@ -142,7 +124,7 @@ register_activation_hook( __FILE__, 'mcpfowo_activate' );
 register_deactivation_hook( __FILE__, 'mcpfowo_deactivate' );
 
 // Initialize the plugin on plugins_loaded to ensure all dependencies are available.
-add_action( 'plugins_loaded', 'init_mcpfowo' );
+add_action( 'plugins_loaded', 'mcpfowo_init_plugin' );
 
 // Register CLI commands
-add_action( 'cli_init', 'register_mcpfowo_cli_commands' );
+add_action( 'cli_init', 'mcpfowo_register_cli_commands' );

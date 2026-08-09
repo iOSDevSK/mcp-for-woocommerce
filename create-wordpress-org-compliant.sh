@@ -32,7 +32,6 @@ cp LICENSE "${BUILD_DIR}/${PLUGIN_SLUG}/"
 cp composer.json "${BUILD_DIR}/${PLUGIN_SLUG}/"
 cp composer.lock "${BUILD_DIR}/${PLUGIN_SLUG}/"
 cp package.json "${BUILD_DIR}/${PLUGIN_SLUG}/"
-cp client-setup.md "${BUILD_DIR}/${PLUGIN_SLUG}/"
 
 # Copy directories (excluding those in .distignore)
 # Create includes directory and copy contents properly
@@ -47,12 +46,13 @@ cp -r vendor/* "${BUILD_DIR}/${PLUGIN_SLUG}/vendor/"
 # Create build directory and copy contents properly
 mkdir -p "${BUILD_DIR}/${PLUGIN_SLUG}/build"
 cp -r build/* "${BUILD_DIR}/${PLUGIN_SLUG}/build/"
+# Create documentation directory and copy contents properly
+mkdir -p "${BUILD_DIR}/${PLUGIN_SLUG}/documentation"
+cp -r documentation/* "${BUILD_DIR}/${PLUGIN_SLUG}/documentation/"
 # Create static-files directory and copy contents properly
 mkdir -p "${BUILD_DIR}/${PLUGIN_SLUG}/static-files"
 cp -r static-files/* "${BUILD_DIR}/${PLUGIN_SLUG}/static-files/"
 
-# Copy PHP proxy files
-cp mcp-proxy.php "${BUILD_DIR}/${PLUGIN_SLUG}/"
 
 # Remove any .DS_Store files
 find "${BUILD_DIR}" -name ".DS_Store" -delete

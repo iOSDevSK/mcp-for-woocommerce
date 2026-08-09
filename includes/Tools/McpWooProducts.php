@@ -200,7 +200,7 @@ class McpWooProducts {
 			}
 
 			if ( isset( $params['category'] ) && ! empty( $params['category'] ) ) {
-				$args['tax_query'] = array(
+				$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- inherent to a product-search plugin; the query shape is the point of the tool and results are paginated.
 					array(
 						'taxonomy' => 'product_cat',
 						'field'    => 'slug',
