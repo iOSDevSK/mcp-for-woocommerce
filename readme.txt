@@ -1,5 +1,5 @@
 === MCP for WooCommerce ===
-Contributors: filipdvoran
+Contributors: webtalkbot
 Tags: ai, mcp, woocommerce, chatbot, ecommerce
 Requires at least: 6.4
 Tested up to: 7.0
@@ -80,16 +80,11 @@ Yes, the plugin includes various settings to control access levels and configure
 
 No, the plugin only activates when specifically called by an MCP client. It has no impact on your regular website performance.
 
-== Screenshots ==
-
-1. Settings overview page with connection examples
-2. JWT token management interface
-3. Available tools and resources documentation
-4. Real-time connection testing interface
-
 == Changelog ==
 
 = 1.2.4 =
+* Confirm compatibility with WordPress 7.0
+* Correct the Contributors field to a valid WordPress.org username, and remove a Screenshots section that had no matching assets
 * SECURITY: The OAuth authorization form submission accepted any client_id and redirect_uri without validation, so a crafted form could capture an authorization code on an attacker-controlled host. Both are now validated against the registered client before credentials are processed.
 * Harden the tax rate query so every SQL placeholder is visible to static analysis, and cache results in the object cache
 * Serve /.well-known/oauth-authorization-server with a 200 status instead of 404, and stop writing a static copy into the web root on activation

@@ -22,6 +22,12 @@
   - REMOVED: Activation no longer writes a static discovery file into the web root. It went stale when the site URL changed, and plugins should not write outside `wp-content`. Any file left by an earlier version is deleted on activation and deactivation.
   - FIXED: The discovery path is now matched against the parsed URL path, so a query string or trailing slash no longer breaks it.
 
+* #000038 - Fix readme fields flagged by the WordPress.org importer
+  Date: August 9, 2026
+  - FIXED: `Contributors: filipdvoran` was ignored by the directory importer because no such WordPress.org user exists. Corrected to `webtalkbot`, the account that owns the plugin.
+  - REMOVED: The Screenshots section listed four screenshots with no matching assets in the repository.
+  - NOTE: The `Stable tag` pointed at 1.2.1, a tag that was never created in SVN, so the directory silently fell back to trunk. It now points at 1.2.4, which is tagged.
+
 * #000037 - WordPress.org Plugin Check compliance
   Date: August 9, 2026
   - The distributed package now passes `wp plugin check` with zero errors and zero warnings.
