@@ -2,9 +2,9 @@
 Contributors: webtalkbot
 Tags: ai, mcp, woocommerce, chatbot, ecommerce
 Requires at least: 6.4
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Yes, the plugin includes various settings to control access levels and configure
 No, the plugin only activates when specifically called by an MCP client. It has no impact on your regular website performance.
 
 == Changelog ==
+
+= 1.2.5 =
+* Confirm compatibility with WordPress 7.1
 
 = 1.2.4 =
 * Confirm compatibility with WordPress 7.0

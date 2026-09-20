@@ -1,5 +1,13 @@
 === MCP for WooCommerce Plugin Changelog ===
 
+= Version 1.2.5 - Release #000020 - September 20, 2026 @ CET =
+
+**WORDPRESS 7.1 COMPATIBILITY**
+
+* #000035 - Confirm compatibility with WordPress 7.1
+  Date: September 20, 2026
+  - CHANGED: `Tested up to` is 7.1, the current WordPress release. No code changes.
+
 = Version 1.2.4 - Release #000019 - August 9, 2026 @ CET =
 
 **SECURITY & WORDPRESS.ORG PLUGIN CHECK COMPLIANCE**
