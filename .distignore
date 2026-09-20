@@ -67,3 +67,10 @@ svn-temp
 test-proxy.js
 mcp-server-simple.js
 mcp-settings-fix.js
+
+# Never ships anywhere. .gitignore keeps it out of git; THIS keeps it out of the
+# package and out of SVN. It reached four public tags once (1.1.8–1.2.2).
+SVN-CREDENTIALS.md
+*CREDENTIALS*
+.env
+.env.*

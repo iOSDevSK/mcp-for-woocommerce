@@ -39,11 +39,22 @@ rsync -av --delete \
     --exclude='.git' \
     --exclude='.github' \
     --exclude='*.md' \
+    --exclude='SVN-CREDENTIALS.md' \
+    --exclude='*CREDENTIALS*' \
+    --exclude='.env*' \
     --exclude='package*.json' \
     --exclude='*.sh' \
     --exclude='composer.json' \
     --exclude='composer.lock' \
     ../../ trunk/
+
+# A credentials file reached four public tags once. .gitignore does nothing for SVN,
+# and an exclude list is one edit away from being wrong, so this checks the RESULT.
+if find trunk -iname '*credential*' -o -name '.env*' | grep -q .; then
+    echo "❌ REFUSED: a credentials or .env file is in svn trunk:"
+    find trunk -iname '*credential*' -o -name '.env*'
+    exit 1
+fi
 
 # Check SVN status
 svn status | grep -v "^?" || true
