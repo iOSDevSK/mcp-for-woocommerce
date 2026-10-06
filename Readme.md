@@ -310,6 +310,10 @@ vendor/bin/phpunit
 
 This project is licensed under the GPL v2 or later. See the LICENSE file for details.
 
+## More from the author
+
+[html2wp](https://html2wp.dev) converts a static HTML site (a Lovable, Bolt or v0 export, or hand-written HTML) into a standalone WordPress block theme, with WooCommerce for shops.
+
 ---
 
 AI Assistant Tips (best practice):
