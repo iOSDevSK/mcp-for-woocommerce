@@ -34,58 +34,11 @@ class PromptsHandler {
 	}
 
 	/**
-	 * Check if user has permission to access prompts.
-	 *
-	 * @return array|null Returns error array if permission denied, null if allowed.
-	 */
-	private function check_permission(): ?array {
-		// Force debug log to see if method is called
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-		}
-		
-		// Check JWT required setting
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
-		
-		// Debug logging
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-		}
-		
-		if ( ! $jwt_required ) {
-			// JWT is disabled, allow access without authentication (readonly mode)
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			}
-			return null;
-		}
-		
-		if ( ! current_user_can( 'manage_options' ) ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			}
-			return array(
-				'error' => array(
-					'code'    => 'rest_forbidden',
-					'message' => 'You do not have permission to access prompts.',
-					'data'    => array( 'status' => 403 ),
-				),
-			);
-		}
-		return null;
-	}
-
-	/**
 	 * Handle the prompts/list request.
 	 *
 	 * @return array
 	 */
 	public function list_prompts(): array {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-		}
-		$permission_error = $this->check_permission();
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-		}
-		if ( $permission_error ) {
-			return $permission_error;
-		}
-
 		return array(
 			'prompts' => array_values( $this->mcp->get_prompts() ),
 		);
@@ -98,11 +51,6 @@ class PromptsHandler {
 	 * @return array
 	 */
 	public function get_prompt( array $params ): array {
-		$permission_error = $this->check_permission();
-		if ( $permission_error ) {
-			return $permission_error;
-		}
-
 		// Handle both direct params and nested params structure.
 		$request_params = $params['params'] ?? $params;
 

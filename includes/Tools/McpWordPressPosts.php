@@ -7,6 +7,7 @@ namespace McpForWoo\Tools;
 use McpForWoo\Core\WpMcp;
 use WP_Query;
 use WP_Post;
+use McpForWoo\Utils\StorefrontVisibility;
 
 /**
  * WordPress Posts MCP Tool - Read Only
@@ -34,12 +35,6 @@ class McpWordPressPosts {
             'inputSchema' => [
                 'type' => 'object',
                 'properties' => [
-                    'status' => [
-                        'type' => 'string',
-                        'description' => 'Post status filter',
-                        'enum' => ['publish', 'draft', 'private', 'future', 'pending', 'any'],
-                        'default' => 'publish'
-                    ],
                     'per_page' => [
                         'type' => 'integer',
                         'description' => 'Number of posts per page',
@@ -115,7 +110,8 @@ class McpWordPressPosts {
                 'post_type' => 'post',
                 'posts_per_page' => $args['per_page'] ?? 10,
                 'paged' => $args['page'] ?? 1,
-                'post_status' => $args['status'] ?? 'publish',
+                'post_status' => 'publish',
+                'has_password' => false,
                 'orderby' => $args['orderby'] ?? 'date',
                 'order' => $args['order'] ?? 'DESC'
             ];
@@ -181,7 +177,7 @@ class McpWordPressPosts {
             $post_id = intval($args['id']);
             $post = get_post($post_id);
 
-            if (!$post || $post->post_type !== 'post') {
+            if (!StorefrontVisibility::is_post_public($post, 'post')) {
                 return [
                     'error' => 'Post not found or invalid post type',
                     'post_id' => $post_id
@@ -213,7 +209,6 @@ class McpWordPressPosts {
             'title' => $post->post_title,
             'content' => $post->post_content,
             'excerpt' => $post->post_excerpt,
-            'status' => $post->post_status,
             'slug' => $post->post_name,
             'date' => $post->post_date,
             'date_gmt' => $post->post_date_gmt,
@@ -223,8 +218,6 @@ class McpWordPressPosts {
             'author' => [
                 'id' => $author->ID,
                 'name' => $author->display_name,
-                'login' => $author->user_login,
-                'email' => $author->user_email
             ],
             'categories' => array_map(function($cat) {
                 return [

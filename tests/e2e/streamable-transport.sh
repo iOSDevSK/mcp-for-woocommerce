@@ -14,19 +14,13 @@ pass=0; fail=0
 ok()   { echo "  PASS: $1"; pass=$((pass+1)); }
 bad()  { echo "  FAIL: $1"; fail=$((fail+1)); }
 
-echo "=== Getting JWT token ==="
-TOKEN=$(curl -s -X POST "$BASE/wp-json/mcpfowo/v1/auth/token" \
-  -H 'Content-Type: application/json' \
-  -d '{"username":"admin","password":"password"}' | php -r '$d=json_decode(file_get_contents("php://stdin"),true); echo $d["access_token"] ?? $d["token"] ?? "";')
-if [ -z "$TOKEN" ]; then echo "!! no token obtained"; exit 1; fi
-echo "token: ${TOKEN:0:25}..."
+# The endpoint is public by design: no Authorization header is sent.
 
 # $1 = name, $2 = json body
 post_raw() {
   local name="$1" body="$2"
   curl -s --raw -D "$OUT/$name.headers" -o "$OUT/$name.body" \
     -X POST "$EP" \
-    -H "Authorization: Bearer $TOKEN" \
     -H 'Content-Type: application/json' \
     -H "Accept: $ACCEPT" \
     --data "$body"
@@ -89,13 +83,13 @@ grep -q '202' <(head -1 "$OUT/notif.headers") && ok "notification: HTTP 202" || 
 echo
 echo "=== 7. GET health ==="
 curl -s --raw -D "$OUT/health.headers" -o "$OUT/health.body" \
-  -H "Authorization: Bearer $TOKEN" -H "Accept: $ACCEPT" "$EP"
+  -H "Accept: $ACCEPT" "$EP"
 check_clean_json health
 
 echo
 echo "=== 8. HEAD ==="
 curl -s --raw -D "$OUT/head.headers" -o /dev/null -I \
-  -H "Authorization: Bearer $TOKEN" -H "Accept: $ACCEPT" "$EP"
+  -H "Accept: $ACCEPT" "$EP"
 head -1 "$OUT/head.headers"
 grep -q '200' <(head -1 "$OUT/head.headers") && ok "HEAD: HTTP 200" || bad "HEAD: not 200"
 grep -i '^transfer-encoding' "$OUT/head.headers" >/dev/null \
@@ -105,7 +99,7 @@ grep -i '^transfer-encoding' "$OUT/head.headers" >/dev/null \
 echo
 echo "=== 9. error path: bad Accept header ==="
 curl -s --raw -D "$OUT/badaccept.headers" -o "$OUT/badaccept.body" \
-  -X POST "$EP" -H "Authorization: Bearer $TOKEN" \
+  -X POST "$EP" \
   -H 'Content-Type: application/json' -H 'Accept: text/plain' \
   --data '{"jsonrpc":"2.0","id":9,"method":"ping"}'
 check_clean_json badaccept

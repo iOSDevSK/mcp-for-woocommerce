@@ -22,11 +22,6 @@
               "default": true,
               "description": "Whether the tool is currently enabled"
             },
-            "rest_alias": {
-              "type": "string",
-              "pattern": "^[a-zA-Z0-9_/-]{1,128}$",
-              "description": "REST API endpoint alias for the tool"
-            },
             "capability": {
               "type": "string",
               "description": "WordPress capability required to use this tool"

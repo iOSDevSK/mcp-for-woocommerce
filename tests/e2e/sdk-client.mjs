@@ -5,17 +5,8 @@ import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/
 
 const url = new URL(`${BASE}/wp-json/wp/v2/wpmcp/streamable`);
 
-const res = await fetch(`${BASE}/wp-json/mcpfowo/v1/auth/token`, {
-	method: 'POST',
-	headers: { 'Content-Type': 'application/json' },
-	body: JSON.stringify({ username: 'admin', password: 'password' }),
-});
-const { access_token: token } = await res.json();
-if (!token) throw new Error('no token');
-
-const transport = new StreamableHTTPClientTransport(url, {
-	requestInit: { headers: { Authorization: `Bearer ${token}` } },
-});
+// The endpoint is public by design: the client sends no credentials.
+const transport = new StreamableHTTPClientTransport(url);
 
 const client = new Client({ name: 'issue5-e2e', version: '1.0.0' }, { capabilities: {} });
 

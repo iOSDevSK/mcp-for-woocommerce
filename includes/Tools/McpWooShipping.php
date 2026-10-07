@@ -118,7 +118,7 @@ class McpWooShipping {
      * Get all shipping zones
      */
     public function get_shipping_zones($params): array {
-        $zones = WC_Shipping_Zones::get_zones();
+        $zones = \WC_Shipping_Zones::get_zones();
         $results = [];
         
         foreach ($zones as $zone_id => $zone_data) {
@@ -147,7 +147,7 @@ class McpWooShipping {
      * Get single shipping zone
      */
     public function get_shipping_zone($params): array {
-        $zone_id = $params['id'];
+        $zone_id = absint($params['id'] ?? 0);
         $zone = new \WC_Shipping_Zone($zone_id);
         
         if (!$zone->get_id() && $zone_id != 0) {
@@ -168,13 +168,14 @@ class McpWooShipping {
      * Get shipping methods for zone
      */
     public function get_shipping_methods($params): array {
-        $zone_id = $params['zone_id'];
+        $zone_id = absint($params['zone_id'] ?? 0);
         $zone = new \WC_Shipping_Zone($zone_id);
         
         if (!$zone->get_id() && $zone_id != 0) {
             return ['error' => 'Shipping zone not found'];
         }
         
+        // Only enabled methods, and only what checkout shows a shopper.
         $methods = $zone->get_shipping_methods(true);
         $results = [];
         
@@ -183,8 +184,8 @@ class McpWooShipping {
                 'id' => $method->get_instance_id(),
                 'method_id' => $method->id,
                 'title' => $method->get_title(),
-                'enabled' => $method->is_enabled(),
-                'settings' => $method->get_instance_form_fields()
+                'cost' => $method->get_option('cost', ''),
+                'min_amount' => $method->get_option('min_amount', '')
             ];
         }
         
@@ -195,7 +196,7 @@ class McpWooShipping {
      * Get shipping locations for zone
      */
     public function get_shipping_locations($params): array {
-        $zone_id = $params['zone_id'];
+        $zone_id = absint($params['zone_id'] ?? 0);
         $zone = new \WC_Shipping_Zone($zone_id);
         
         if (!$zone->get_id() && $zone_id != 0) {

@@ -13,6 +13,9 @@ FINAL_ZIP="${PLUGIN_SLUG}-${VERSION}.zip"
 
 echo "Creating WordPress.org compliant distribution for ${PLUGIN_SLUG} v${VERSION}"
 
+# Refuse to package a release in which a reviewed finding has come back.
+./tools/regression-sweep.sh > /dev/null || { ./tools/regression-sweep.sh; exit 1; }
+
 # Clean up any existing build
 rm -rf "${BUILD_DIR}"
 rm -f "${FINAL_ZIP}"
@@ -49,9 +52,6 @@ cp -r build/* "${BUILD_DIR}/${PLUGIN_SLUG}/build/"
 # Create documentation directory and copy contents properly
 mkdir -p "${BUILD_DIR}/${PLUGIN_SLUG}/documentation"
 cp -r documentation/* "${BUILD_DIR}/${PLUGIN_SLUG}/documentation/"
-# Create static-files directory and copy contents properly
-mkdir -p "${BUILD_DIR}/${PLUGIN_SLUG}/static-files"
-cp -r static-files/* "${BUILD_DIR}/${PLUGIN_SLUG}/static-files/"
 
 
 # Remove any .DS_Store files

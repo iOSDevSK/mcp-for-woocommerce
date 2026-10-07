@@ -7,6 +7,7 @@ namespace McpForWoo\Tools;
 use McpForWoo\Core\WpMcp;
 use WP_Query;
 use WP_Post;
+use McpForWoo\Utils\StorefrontVisibility;
 
 /**
  * WordPress Pages MCP Tool - Read Only
@@ -34,12 +35,6 @@ class McpWordPressPages {
             'inputSchema' => [
                 'type' => 'object',
                 'properties' => [
-                    'status' => [
-                        'type' => 'string',
-                        'description' => 'Page status filter',
-                        'enum' => ['publish', 'draft', 'private', 'future', 'pending', 'any'],
-                        'default' => 'publish'
-                    ],
                     'per_page' => [
                         'type' => 'integer',
                         'description' => 'Number of pages per page',
@@ -107,7 +102,8 @@ class McpWordPressPages {
                 'post_type' => 'page',
                 'posts_per_page' => $args['per_page'] ?? 10,
                 'paged' => $args['page'] ?? 1,
-                'post_status' => $args['status'] ?? 'publish',
+                'post_status' => 'publish',
+                'has_password' => false,
                 'orderby' => $args['orderby'] ?? 'menu_order',
                 'order' => $args['order'] ?? 'ASC'
             ];
@@ -157,7 +153,7 @@ class McpWordPressPages {
             $page_id = intval($args['id']);
             $page = get_post($page_id);
 
-            if (!$page || $page->post_type !== 'page') {
+            if (!StorefrontVisibility::is_post_public($page, 'page')) {
                 return [
                     'error' => 'Page not found or invalid post type',
                     'page_id' => $page_id
@@ -181,10 +177,14 @@ class McpWordPressPages {
     private function format_page(WP_Post $page): array {
         $author = get_userdata($page->post_author);
         $parent = $page->post_parent ? get_post($page->post_parent) : null;
+        if (!StorefrontVisibility::is_post_public($parent, 'page')) {
+            $parent = null;
+        }
         $children = get_children([
             'post_parent' => $page->ID,
             'post_type' => 'page',
-            'post_status' => 'publish'
+            'post_status' => 'publish',
+            'has_password' => false
         ]);
         $featured_image = get_the_post_thumbnail_url($page->ID, 'full');
 
@@ -193,7 +193,6 @@ class McpWordPressPages {
             'title' => $page->post_title,
             'content' => $page->post_content,
             'excerpt' => $page->post_excerpt,
-            'status' => $page->post_status,
             'slug' => $page->post_name,
             'date' => $page->post_date,
             'date_gmt' => $page->post_date_gmt,
@@ -217,8 +216,6 @@ class McpWordPressPages {
             'author' => [
                 'id' => $author->ID,
                 'name' => $author->display_name,
-                'login' => $author->user_login,
-                'email' => $author->user_email
             ],
             'featured_image' => $featured_image ?: null,
             'template' => get_page_template_slug($page->ID),

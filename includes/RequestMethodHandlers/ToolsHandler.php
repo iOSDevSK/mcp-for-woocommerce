@@ -59,16 +59,25 @@ class ToolsHandler {
 	/**
 	 * Handle the tools/list/all request.
 	 *
-	 * Return ALL tools, including those disabled by settings, with reasons.
-	 * This is useful for debugging when clients report "tools disabled".
+	 * Returns every tool, including the ones the site owner switched off, so the
+	 * settings screen can list them with their on/off state. Only an administrator
+	 * signed in to the dashboard can call it.
 	 *
 	 * @param array $params Request parameters.
 	 * @return array
 	 */
 	public function list_all_tools( array $params ): array {
-		$tools = method_exists( $this->mcp, 'get_all_tools' )
-			? $this->mcp->get_all_tools()
-			: $this->mcp->get_tools();
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return array(
+				'error' => array(
+					'code'    => 'rest_forbidden',
+					'message' => 'You do not have permission to list all tools.',
+					'data'    => array( 'status' => 403 ),
+				),
+			);
+		}
+
+		$tools = $this->mcp->get_all_tools();
 
 		return array(
 			'tools' => array_values( $tools ),
@@ -104,6 +113,20 @@ class ToolsHandler {
 			// Implement a tool calling logic here.
 			$result = HandleToolsCall::run( $request_params );
 
+			// A tool that reports a problem as plain text ("Product not found") is a
+			// tool-level error: per MCP it goes back as a result flagged isError.
+			if ( isset( $result['error'] ) && is_string( $result['error'] ) ) {
+				return array(
+					'content' => array(
+						array(
+							'type' => 'text',
+							'text' => $result['error'],
+						),
+					),
+					'isError' => true,
+				);
+			}
+
 			// Check if the result contains an error
 			if ( isset( $result['error'] ) ) {
 				return $result; // Return error directly
@@ -120,7 +143,7 @@ class ToolsHandler {
 			// @todo: add support for EmbeddedResource schema.ts:619.
 			if ( isset( $result['type'] ) && 'image' === $result['type'] ) {
 				$response['content'][0]['type'] = 'image';
-				$response['content'][0]['data'] = base64_encode( $result['results'] ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+				$response['content'][0]['data'] = base64_encode( $result['results'] ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- MCP image content must be base64 per the protocol.
 
 				// @todo: improve this ?!.
 				$response['content'][0]['mimeType'] = $result['mimeType'] ?? 'image/png';
@@ -143,37 +166,4 @@ class ToolsHandler {
 			);
 		}
 	}
-
-	/**
-	 * Debug method that returns a snapshot of tool availability and settings.
-	 * Useful to diagnose why Claude shows tools disabled.
-	 *
-	 * @return array
-	 */
-	public function debug_tools_state(): array {
-		try {
-			$settings = function_exists('get_option') ? (array) get_option('mcpfowo_settings', array()) : array();
-			$jwt_required = function_exists('get_option') ? (bool) get_option('mcpfowo_jwt_required', true) : true;
-			$active_tools = $this->mcp->get_tools();
-			$all_tools = method_exists($this->mcp, 'get_all_tools') ? $this->mcp->get_all_tools() : $active_tools;
-
-			return array(
-				'settings' => array(
-					'enabled' => !empty($settings['enabled']),
-					'enable_rest_api_crud_tools' => !empty($settings['enable_rest_api_crud_tools']),
-					'features_adapter_enabled' => !empty($settings['features_adapter_enabled'] ?? false),
-					'jwt_required' => $jwt_required,
-				),
-				'counts' => array(
-					'active' => count($active_tools),
-					'all' => count($all_tools),
-				),
-				'activeTools' => $active_tools,
-				'allTools' => $all_tools,
-			);
-		} catch (\Throwable $e) {
-			return array('error' => 'debug_tools_state failed: ' . $e->getMessage());
-		}
-	}
 }
-

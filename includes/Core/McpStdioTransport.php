@@ -43,38 +43,12 @@ class McpStdioTransport extends McpTransportBase {
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'handle_request' ),
-				'permission_callback' => array( $this, 'check_permission' ),
+				// Intentionally public: every tool returns only storefront data a
+				// visitor can already see, nothing is written, and no caller is ever
+				// signed in. The route exists only while "Enable MCP" is on.
+				'permission_callback' => '__return_true',
 			)
 		);
-	}
-
-	/**
-	 * Check if the user has permission to access the MCP API
-	 *
-	 * @return bool|WP_Error
-	 */
-	public function check_permission(): WP_Error|bool {
-		// If MCP is disabled, deny access.
-		if ( ! $this->is_mcp_enabled() ) {
-			return new WP_Error(
-				'mcp_disabled',
-				'MCP functionality is currently disabled.',
-				array( 'status' => 403 )
-			);
-		}
-		
-		// Check JWT required setting
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
-		
-		if ( ! $jwt_required ) {
-			// JWT is disabled, allow access without authentication (readonly mode)
-			return true;
-		}
-		
-		// JWT is required, check if user is authenticated via JWT or cookies
-		// The JWT authentication is handled by the rest_authentication_errors filter
-		// which runs before permission callbacks
-		return is_user_logged_in();
 	}
 
 	/**

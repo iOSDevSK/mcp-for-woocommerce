@@ -76,7 +76,7 @@ final class McpWooIntelligentSearchTest extends WP_UnitTestCase {
 		);
 
 		// Get the MCP instance.
-		$this->mcp = WPMCP();
+		$this->mcp = mcpfowo_instance();
 
 		// Activate WooCommerce if not already active.
 		if ( ! class_exists( 'WooCommerce' ) ) {

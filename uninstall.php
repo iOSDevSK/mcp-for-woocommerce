@@ -20,6 +20,14 @@ function mcp_for_woocommerce_cleanup_options() {
     // Remove plugin options
     $options_to_delete = [
         'mcpfowo_settings',
+        'mcpfowo_tool_states',
+        'mcpfowo_db_version',
+        // Options written by versions before 1.3.0.
+        'mcpfowo_jwt_required',
+        'mcpfowo_jwt_secret_key',
+        'mcpfowo_jwt_token_registry',
+        'mcpfowo_oauth_auth_codes',
+        'mcpfowo_oauth_clients',
         'mcp_for_woocommerce_jwt_secret',
         'mcp_for_woocommerce_jwt_tokens',
         'mcp_for_woocommerce_auth_settings',

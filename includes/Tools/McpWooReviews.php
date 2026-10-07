@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace McpForWoo\Tools;
 
 use McpForWoo\Core\RegisterMcpTool;
+use McpForWoo\Utils\StorefrontVisibility;
 
 /**
  * Class McpWooReviews
@@ -80,33 +81,35 @@ class McpWooReviews {
 
     /**
      * Get product reviews
+     *
+     * Returns approved reviews of published products only, without the
+     * reviewer's e-mail address, which the storefront never shows.
      */
     public function get_product_reviews($params): array {
         $args = [
             'status' => 'approve',
-            'number' => $params['per_page'] ?? 10
+            'post_type' => 'product',
+            'post_status' => 'publish',
+            'number' => isset($params['per_page']) ? absint($params['per_page']) : 10
         ];
-        
+
         if (isset($params['product_id'])) {
-            $args['post_id'] = $params['product_id'];
+            if (!StorefrontVisibility::is_product_public(wc_get_product(absint($params['product_id'])))) {
+                return ['reviews' => [], 'total' => 0];
+            }
+            $args['post_id'] = absint($params['product_id']);
         }
-        
+
         $reviews = get_comments($args);
         $results = [];
-        
+
         foreach ($reviews as $review) {
-            $results[] = [
-                'id' => $review->comment_ID,
-                'product_id' => $review->comment_post_ID,
-                'reviewer_name' => $review->comment_author,
-                'reviewer_email' => $review->comment_author_email,
-                'content' => $review->comment_content,
-                'rating' => get_comment_meta($review->comment_ID, 'rating', true),
-                'date_created' => $review->comment_date,
-                'verified' => get_comment_meta($review->comment_ID, 'verified', true)
-            ];
+            if (!StorefrontVisibility::is_product_public(wc_get_product((int) $review->comment_post_ID))) {
+                continue;
+            }
+            $results[] = $this->format_review($review);
         }
-        
+
         return ['reviews' => $results, 'total' => count($results)];
     }
 
@@ -114,23 +117,30 @@ class McpWooReviews {
      * Get single product review
      */
     public function get_product_review($params): array {
-        $review = get_comment($params['id']);
-        
-        if (!$review || $review->comment_approved !== '1') {
+        $review = get_comment(absint($params['id'] ?? 0));
+
+        if (!$review || $review->comment_approved !== '1' || !StorefrontVisibility::is_product_public(wc_get_product((int) $review->comment_post_ID))) {
             return ['error' => 'Review not found or not approved'];
         }
-        
+
+        return ['review' => $this->format_review($review)];
+    }
+
+    /**
+     * Shape a review the way the storefront shows it.
+     *
+     * @param \WP_Comment $review The review.
+     * @return array
+     */
+    private function format_review(\WP_Comment $review): array {
         return [
-            'review' => [
-                'id' => $review->comment_ID,
-                'product_id' => $review->comment_post_ID,
-                'reviewer_name' => $review->comment_author,
-                'reviewer_email' => $review->comment_author_email,
-                'content' => $review->comment_content,
-                'rating' => get_comment_meta($review->comment_ID, 'rating', true),
-                'date_created' => $review->comment_date,
-                'verified' => get_comment_meta($review->comment_ID, 'verified', true)
-            ]
+            'id' => $review->comment_ID,
+            'product_id' => $review->comment_post_ID,
+            'reviewer_name' => $review->comment_author,
+            'content' => $review->comment_content,
+            'rating' => get_comment_meta($review->comment_ID, 'rating', true),
+            'date_created' => $review->comment_date,
+            'verified' => get_comment_meta($review->comment_ID, 'verified', true)
         ];
     }
 }

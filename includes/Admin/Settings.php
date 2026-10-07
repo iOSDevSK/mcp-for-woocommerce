@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace McpForWoo\Admin;
 
 use McpForWoo\Core\WpMcp;
-use McpForWoo\Core\McpProxyGenerator;
 
 /**
  * Class Settings
@@ -23,11 +22,6 @@ class Settings {
 	const TOOL_STATES_OPTION = 'mcpfowo_tool_states';
 
 	/**
-	 * The JWT required option name.
-	 */
-	const JWT_REQUIRED_OPTION = 'mcpfowo_jwt_required';
-
-	/**
 	 * Initialize the settings page.
 	 */
 	public function __construct() {
@@ -37,18 +31,6 @@ class Settings {
 		add_action( 'wp_ajax_mcpfowo_save_settings', array( $this, 'ajax_save_settings' ) );
 		add_action( 'wp_ajax_mcpfowo_toggle_tool', array( $this, 'ajax_toggle_tool' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( MCPFOWO_PATH . 'mcp-for-woocommerce.php' ), array( $this, 'plugin_action_links' ) );
-		
-		// Initialize JWT required option with default value if not exists
-		add_action( 'init', array( $this, 'init_jwt_option' ) );
-	}
-	
-	/**
-	 * Initialize JWT required option with default value.
-	 */
-	public function init_jwt_option(): void {
-		if ( false === get_option( self::JWT_REQUIRED_OPTION ) ) {
-			add_option( self::JWT_REQUIRED_OPTION, true );
-		}
 	}
 
 	/**
@@ -129,15 +111,11 @@ class Settings {
 			'mcpfowo-settings',
 			'mcpfowoSettings',
 			array(
-				'apiUrl'              => rest_url( 'mcpfowo/v1/settings' ),
-				'jwtApiUrl'           => rest_url( 'mcpfowo/v1/auth' ),
-				'restFallbackUrl'     => home_url( '/index.php?rest_route=' ),
+				'mcpEndpoint'         => rest_url( 'wp/v2/wpmcp/streamable' ),
 				'nonce'               => wp_create_nonce( 'mcpfowo_settings' ),
 				'settings'            => get_option( self::OPTION_NAME, array() ),
 				'toolStates'          => get_option( self::TOOL_STATES_OPTION, array() ),
-				'jwtRequired'         => get_option( self::JWT_REQUIRED_OPTION, true ),
 				'pluginUrl'           => MCPFOWO_URL,
-				'claudeSetupInstructions' => McpProxyGenerator::should_generate_proxy() ? McpProxyGenerator::get_claude_setup_instructions() : null,
 				'systemStatus'        => array(
 					'restApiEnabled'   => $this->is_rest_api_enabled(),
 					'permalinksCorrect' => $this->are_permalinks_correct(),
@@ -153,20 +131,7 @@ class Settings {
 					// translators: %1$s is the tool name, %2$s is the status (enabled/disabled).
 					'toolDisabled'                     => __( 'Tool %1$s has been %2$s.', 'mcp-for-woocommerce' ),
 
-					'neverExpireWarning'               => __( 'Never-expiring tokens pose significant security risks. If compromised, they cannot be invalidated through expiration. Only use this option if you fully understand the security implications and have proper token management procedures in place.', 'mcp-for-woocommerce' ),
-					'neverExpires'                     => __( 'Never expires', 'mcp-for-woocommerce' ),
-					'activeNeverExpires'               => __( 'Active (Never expires)', 'mcp-for-woocommerce' ),
-					'thisTokenNeverExpires'            => __( 'This token never expires', 'mcp-for-woocommerce' ),
-					'securityWarning'                  => __( 'Security Warning', 'mcp-for-woocommerce' ),
-					'neverExpiringTokens'              => __( 'Never-Expiring Tokens:', 'mcp-for-woocommerce' ),
-					'requireJwtAuth'                   => __( 'Require JWT Authentication', 'mcp-for-woocommerce' ),
-					'requireJwtAuthDescription'        => __( 'When enabled, all MCP requests must include a valid JWT token. When disabled, MCP endpoints are accessible without authentication (readonly mode only) and can be used as a Claude.ai Desktop connector.', 'mcp-for-woocommerce' ),
-					'webtalkbotNote'                   => __( 'Note for Webtalkbot users:', 'mcp-for-woocommerce' ),
-					'webtalkbotDescription'            => __( 'JWT Authentication must be enabled if you want to create a WooCommerce AI Agent in', 'mcp-for-woocommerce' ),
-					'claudeConnectorNote'              => __( 'Claude.ai Desktop Connector:', 'mcp-for-woocommerce' ),
-					'claudeConnectorDescription'       => __( 'When JWT Authentication is disabled, this plugin can be used as a connector in Claude.ai Desktop. A proxy file will be automatically generated for easy setup.', 'mcp-for-woocommerce' ),
-					'proxyFileGenerated'               => __( 'MCP Proxy file generated at:', 'mcp-for-woocommerce' ),
-					'claudeSetupInstructions'          => __( 'To use with Claude.ai Desktop, add this configuration to your claude_desktop_config.json:', 'mcp-for-woocommerce' ),
+					'publicAccessNote'                 => __( 'The MCP endpoint is public. It returns only information that shop visitors can already see: published products, categories, tags, attributes, approved reviews, shipping and tax rates, enabled payment methods, and published posts and pages. It cannot create, change or delete anything, and it never signs in as a WordPress user.', 'mcp-for-woocommerce' ),
 				),
 			)
 		);
@@ -190,23 +155,6 @@ class Settings {
 		$settings     = $this->sanitize_settings( json_decode( $settings_raw, true ) );
 		update_option( self::OPTION_NAME, $settings );
 
-		// Handle JWT required setting separately
-		// Always store as integer (0 or 1) for consistency
-		$jwt_required = isset( $_POST['jwt_required'] ) ? filter_var( wp_unslash( $_POST['jwt_required'] ), FILTER_VALIDATE_BOOLEAN ) : true;
-		$old_jwt_required = (bool) get_option( self::JWT_REQUIRED_OPTION, true );
-		update_option( self::JWT_REQUIRED_OPTION, $jwt_required ? 1 : 0 );
-
-		// Handle MCP proxy file generation/removal
-		if ( $old_jwt_required !== $jwt_required ) {
-			if ( ! $jwt_required ) {
-				// JWT disabled - generate proxy file
-				McpProxyGenerator::generate_proxy_file();
-			} else {
-				// JWT enabled - remove proxy file
-				McpProxyGenerator::remove_proxy_file();
-			}
-		}
-
 		wp_send_json_success( array( 'message' => __( 'Settings saved successfully!', 'mcp-for-woocommerce' ) ) );
 	}
 
@@ -225,13 +173,6 @@ class Settings {
 		} else {
 			$sanitized['enabled'] = 0;
 		}
-
-		// Hardcode the removed settings for MCP for WooCommerce functionality
-		$sanitized['features_adapter_enabled'] = false;     // WordPress Features Adapter disabled for MCP for WooCommerce
-		$sanitized['enable_create_tools'] = true;           // Create tools always enabled for MCP for WooCommerce
-		$sanitized['enable_update_tools'] = true;           // Update tools always enabled for MCP for WooCommerce
-		$sanitized['enable_delete_tools'] = true;           // Delete tools always enabled for MCP for WooCommerce
-		$sanitized['enable_rest_api_crud_tools'] = false;   // REST API CRUD tools always disabled for MCP for WooCommerce
 
 		return $sanitized;
 	}
@@ -330,10 +271,7 @@ class Settings {
 	 */
 	private function is_rest_api_enabled(): bool {
 		// Try to make a simple REST API request
-		$response = wp_remote_get( rest_url( 'wp/v2/types' ), array( 
-			'timeout' => 5,
-			'sslverify' => false 
-		) );
+		$response = wp_remote_get( rest_url( 'wp/v2/types' ), array( 'timeout' => 5 ) );
 		
 		if ( is_wp_error( $response ) ) {
 			return false;

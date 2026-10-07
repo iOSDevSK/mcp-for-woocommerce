@@ -57,15 +57,11 @@ docker compose exec -T cli wp import wp-content/plugins/woocommerce/sample-data/
 
 ## Running
 
-Both stacks assume `admin` / `password`.
+The endpoint is public, so the scripts send no credentials.
 
 ```bash
-# JWT-required path (the default)
 BASE=http://localhost:8899 tests/e2e/streamable-transport.sh nginx
 tests/e2e/streamable-transport.sh apache            # defaults to :8888
-
-# JWT-disabled proxy path — a separate emitter, toggles the option and restores it
-BASE=http://localhost:8899 CLI=nginx-stack-cli-1 tests/e2e/streamable-proxy-mode.sh nginx
 
 # End-to-end with the official MCP SDK client
 npm install --no-save @modelcontextprotocol/sdk
@@ -75,14 +71,6 @@ BASE=http://localhost:8899 node tests/e2e/sdk-client.mjs
 Each script prints per-check PASS/FAIL, dumps the first 32 bytes of every response
 body, and exits non-zero on any failure. Response artifacts land in `out-<label>/`
 next to the scripts (untracked).
-
-**Gotcha:** the plugin caps a user at 10 active JWTs, and every run mints one. Once
-you hit the cap the scripts abort with `!! no token obtained`. Clear it with:
-
-```bash
-npx wp-env run cli -- wp option delete mcpfowo_jwt_token_registry
-# nginx stack: docker compose exec -T cli wp option delete mcpfowo_jwt_token_registry
-```
 
 ## What is covered
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace McpForWoo\Tools;
 
 use McpForWoo\Core\RegisterMcpTool;
+use McpForWoo\Utils\StorefrontVisibility;
 
 /**
  * Class McpWooProducts
@@ -171,17 +172,6 @@ class McpWooProducts {
 	 * @return array Search results with product links.
 	 */
 	public function search_products( array $params ): array {
-		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
-		
-		if ( ! $jwt_required ) {
-			// JWT disabled - allow public read access to products
-			// Continue with function execution
-		} elseif ( ! current_user_can( 'manage_woocommerce' ) ) {
-			// JWT enabled - require admin privileges
-			return array( 'error' => 'Insufficient permissions' );
-		}
-		
 		// Safety check for WooCommerce functions
 		if ( ! function_exists( 'wc_get_product' ) || ! function_exists( 'get_woocommerce_currency' ) ) {
 			return array( 'error' => 'WooCommerce functions not available' );
@@ -191,6 +181,7 @@ class McpWooProducts {
 			$args = array(
 				'post_type'      => 'product',
 				'post_status'    => 'publish',
+				'has_password'   => false,
 				'posts_per_page' => isset( $params['per_page'] ) ? (int) $params['per_page'] : 10,
 				'paged'          => isset( $params['page'] ) ? (int) $params['page'] : 1,
 			);
@@ -214,7 +205,7 @@ class McpWooProducts {
 
 			foreach ( $query->posts as $post ) {
 				$product = wc_get_product( $post->ID );
-				if ( $product ) {
+				if ( StorefrontVisibility::is_product_public( $product ) ) {
 					$products[] = $this->convert_product_to_array( $product );
 				}
 			}
@@ -239,17 +230,6 @@ class McpWooProducts {
 	 * @return array Product data with link.
 	 */
 	public function get_product( array $params ): array {
-		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
-		
-		if ( ! $jwt_required ) {
-			// JWT disabled - allow public read access to products
-			// Continue with function execution
-		} elseif ( ! current_user_can( 'manage_woocommerce' ) ) {
-			// JWT enabled - require admin privileges
-			return array( 'error' => 'Insufficient permissions' );
-		}
-		
 		// Safety check for WooCommerce functions
 		if ( ! function_exists( 'wc_get_product' ) ) {
 			return array( 'error' => 'WooCommerce functions not available' );
@@ -261,7 +241,7 @@ class McpWooProducts {
 			}
 
 			$product = wc_get_product( (int) $params['id'] );
-			if ( ! $product ) {
+			if ( ! StorefrontVisibility::is_product_public( $product ) ) {
 				return array( 'error' => 'Product not found' );
 			}
 
@@ -283,17 +263,6 @@ class McpWooProducts {
 	 * @return array Variations data with links.
 	 */
 	public function get_product_variations( array $params ): array {
-		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
-		
-		if ( ! $jwt_required ) {
-			// JWT disabled - allow public read access to product variations
-			// Continue with function execution
-		} elseif ( ! current_user_can( 'manage_woocommerce' ) ) {
-			// JWT enabled - require admin privileges
-			return array( 'error' => 'Insufficient permissions' );
-		}
-		
 		// Safety check for WooCommerce functions
 		if ( ! function_exists( 'wc_get_product' ) ) {
 			return array( 'error' => 'WooCommerce functions not available' );
@@ -305,14 +274,14 @@ class McpWooProducts {
 			}
 
 			$product = wc_get_product( (int) $params['product_id'] );
-			if ( ! $product || ! $product->is_type( 'variable' ) ) {
+			if ( ! StorefrontVisibility::is_product_public( $product ) || ! $product->is_type( 'variable' ) ) {
 				return array( 'error' => 'Variable product not found' );
 			}
 
 			$variations = array();
 			foreach ( $product->get_children() as $child_id ) {
 				$variation = wc_get_product( $child_id );
-				if ( $variation ) {
+				if ( StorefrontVisibility::is_product_public( $variation ) ) {
 					$variations[] = $this->convert_product_to_array( $variation );
 				}
 			}
@@ -336,17 +305,6 @@ class McpWooProducts {
 	 * @return array Variation data with link.
 	 */
 	public function get_product_variation( array $params ): array {
-		// Check JWT authentication setting - allow access when JWT is disabled (read-only mode)
-		$jwt_required = function_exists( 'get_option' ) ? (bool) get_option( 'mcpfowo_jwt_required', true ) : true;
-		
-		if ( ! $jwt_required ) {
-			// JWT disabled - allow public read access to product variations
-			// Continue with function execution
-		} elseif ( ! current_user_can( 'manage_woocommerce' ) ) {
-			// JWT enabled - require admin privileges
-			return array( 'error' => 'Insufficient permissions' );
-		}
-		
 		// Safety check for WooCommerce functions
 		if ( ! function_exists( 'wc_get_product' ) ) {
 			return array( 'error' => 'WooCommerce functions not available' );
@@ -358,7 +316,7 @@ class McpWooProducts {
 			}
 
 			$variation = wc_get_product( (int) $params['id'] );
-			if ( ! $variation || $variation->get_parent_id() !== (int) $params['product_id'] ) {
+			if ( ! StorefrontVisibility::is_product_public( $variation ) || $variation->get_parent_id() !== (int) $params['product_id'] ) {
 				return array( 'error' => 'Variation not found' );
 			}
 
@@ -389,9 +347,7 @@ class McpWooProducts {
 				'date_created'      => $product->get_date_created() ? $product->get_date_created()->date( 'c' ) : '',
 				'date_modified'     => $product->get_date_modified() ? $product->get_date_modified()->date( 'c' ) : '',
 				'type'              => $product->get_type(),
-				'status'            => $product->get_status(),
 				'featured'          => $product->get_featured(),
-				'catalog_visibility' => $product->get_catalog_visibility(),
 				'description'       => $product->get_description(),
 				'short_description' => $product->get_short_description(),
 				'sku'               => $product->get_sku(),
@@ -404,7 +360,6 @@ class McpWooProducts {
 				'currency_symbol'   => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '',
 				'stock_status'      => $product->get_stock_status(),
 				'stock_quantity'    => $product->get_stock_quantity(),
-				'manage_stock'      => $product->get_manage_stock(),
 				'weight'            => $product->get_weight(),
 				'dimensions'        => array(
 					'length' => $product->get_length(),

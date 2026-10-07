@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin name:       MCP for WooCommerce
- * Description:       Community-developed AI integration plugin that connects WooCommerce & WordPress with Model Context Protocol (MCP). Not affiliated with Automattic. Provides comprehensive AI-accessible interfaces to WooCommerce products, orders, categories, shipping, payments, and WordPress posts/pages through standardized tools, resources, and prompts. Enables AI assistants to seamlessly interact with your e-commerce data and content. Acts as a WooCommerce MCP Server for MCP clients; pair with Webtalkbot to add a WooCommerce AI Chatbot/Agent to your site.
- * Version:           1.2.5
+ * Description:       Community-developed AI integration plugin that connects WooCommerce & WordPress with Model Context Protocol (MCP). Not affiliated with Automattic. Gives AI assistants read-only access to your public storefront: products, categories, reviews, shipping, payment methods, and published posts and pages. Acts as a WooCommerce MCP Server for MCP clients; pair with Webtalkbot to add a WooCommerce AI Chatbot/Agent to your site.
+ * Version:           1.3.0
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Requires Plugins:  woocommerce
@@ -25,10 +25,9 @@ use McpForWoo\Core\McpStreamableTransport;
 use McpForWoo\Core\WpMcp;
 use McpForWoo\Core\McpStdioTransport;
 use McpForWoo\Admin\Settings;
-use McpForWoo\Auth\JwtAuth;
 use McpForWoo\CLI\ValidateToolsCommand;
 
-define( 'MCPFOWO_VERSION', '1.2.5' );
+define( 'MCPFOWO_VERSION', '1.3.0' );
 define( 'MCPFOWO_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MCPFOWO_URL', plugin_dir_url( __FILE__ ) );
 define( 'MCPFOWO_PLUGIN_FILE', __FILE__ );
@@ -50,7 +49,7 @@ require_once MCPFOWO_PATH . 'vendor/autoload.php';
  *
  * @return WpMcp
  */
-function WPMCP() { // phpcs:ignore
+function mcpfowo_instance() {
 	return WpMcp::instance();
 }
 
@@ -58,7 +57,7 @@ function WPMCP() { // phpcs:ignore
  * Initialize the plugin.
  */
 function mcpfowo_init_plugin() {
-	$mcp = WPMCP();
+	$mcp = mcpfowo_instance();
 
 	// Initialize the STDIO transport.
 	new McpStdioTransport( $mcp );
@@ -68,9 +67,6 @@ function mcpfowo_init_plugin() {
 
 	// Initialize the settings page.
 	new Settings();
-
-	// Initialize the JWT authentication.
-	new JwtAuth();
 
 	// Text domain is automatically loaded by WordPress for WordPress.org hosted plugins
 }
@@ -90,15 +86,7 @@ function mcpfowo_register_cli_commands() {
  * Plugin activation hook.
  */
 function mcpfowo_activate() {
-	// The OAuth discovery document at /.well-known/oauth-authorization-server is
-	// served dynamically by JwtAuth::handle_oauth_discovery(). Earlier versions
-	// wrote a static copy into the web root; that is unnecessary, goes stale when
-	// the site URL changes, and writing outside wp-content is bad practice.
-	// Remove any stale copy left by an earlier version, which would otherwise be
-	// served by the web server in preference to the dynamic handler.
-	mcpfowo_remove_legacy_discovery_file();
-
-	flush_rewrite_rules();
+	mcpfowo_maybe_upgrade();
 }
 
 /**
@@ -112,6 +100,36 @@ function mcpfowo_remove_legacy_discovery_file() {
 }
 
 /**
+ * Remove data left behind by versions before 1.3.0.
+ *
+ * Earlier versions issued JWT access tokens and, when authentication was turned
+ * off, wrote a generated mcp-proxy.js into the uploads directory. Both features
+ * were removed; this deletes what they stored so nothing stale stays on the site.
+ * It runs once per site, after the stored version falls behind the plugin version.
+ */
+function mcpfowo_maybe_upgrade() {
+	if ( version_compare( (string) get_option( 'mcpfowo_db_version', '0' ), '1.3.0', '>=' ) ) {
+		return;
+	}
+
+	foreach ( array( 'mcpfowo_jwt_required', 'mcpfowo_jwt_secret_key', 'mcpfowo_jwt_token_registry', 'mcpfowo_oauth_auth_codes', 'mcpfowo_oauth_clients' ) as $legacy_option ) {
+		delete_option( $legacy_option );
+	}
+
+	$upload_dir = wp_upload_dir( null, false );
+	if ( ! empty( $upload_dir['basedir'] ) ) {
+		$legacy_proxy_file = trailingslashit( $upload_dir['basedir'] ) . 'mcp-for-woocommerce/mcp-proxy.js';
+		if ( file_exists( $legacy_proxy_file ) ) {
+			wp_delete_file( $legacy_proxy_file );
+		}
+	}
+
+	mcpfowo_remove_legacy_discovery_file();
+
+	update_option( 'mcpfowo_db_version', MCPFOWO_VERSION );
+}
+
+/**
  * Plugin deactivation hook.
  */
 function mcpfowo_deactivate() {
@@ -122,6 +140,9 @@ function mcpfowo_deactivate() {
 // Register activation and deactivation hooks
 register_activation_hook( __FILE__, 'mcpfowo_activate' );
 register_deactivation_hook( __FILE__, 'mcpfowo_deactivate' );
+
+// Clean up data left by earlier versions once, after an update.
+add_action( 'admin_init', 'mcpfowo_maybe_upgrade' );
 
 // Initialize the plugin on plugins_loaded to ensure all dependencies are available.
 add_action( 'plugins_loaded', 'mcpfowo_init_plugin' );

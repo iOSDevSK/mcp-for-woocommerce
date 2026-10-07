@@ -141,8 +141,7 @@ class ToolValidator {
 
 		foreach ( $requiredFields as $field ) {
 			if ( ! isset( $tool[ $field ] ) ) {
-				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-				throw new InvalidArgumentException( "Missing required field: {$field}" );
+				throw new InvalidArgumentException( esc_html( "Missing required field: {$field}" ) );
 			}
 		}
 	}
@@ -163,8 +162,7 @@ class ToolValidator {
 		}
 
 		if ( ! preg_match( '/^[a-zA-Z0-9_-]{1,64}$/', $name ) ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-			throw new InvalidArgumentException( "Tool name should match pattern '^[a-zA-Z0-9_-]{1,64}$'. Received: '{$name}'." );
+			throw new InvalidArgumentException( esc_html( "Tool name should match pattern '^[a-zA-Z0-9_-]{1,64}$'. Received: '{$name}'." ) );
 		}
 	}
 
@@ -189,14 +187,12 @@ class ToolValidator {
 			foreach ( $inputSchema['properties'] as $property => $schema ) {
 				// Validate property key format.
 				if ( ! preg_match( '/^[a-zA-Z0-9_-]{1,64}$/', $property ) ) {
-					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-					throw new InvalidArgumentException( "Property keys should match pattern '^[a-zA-Z0-9_-]{1,64}$'. Received: '{$property}'." );
+					throw new InvalidArgumentException( esc_html( "Property keys should match pattern '^[a-zA-Z0-9_-]{1,64}$'. Received: '{$property}'." ) );
 				}
 
 				// Validate property schema.
 				if ( ! is_array( $schema ) ) {
-					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-					throw new InvalidArgumentException( "Property schema for '{$property}' must be an array." );
+					throw new InvalidArgumentException( esc_html( "Property schema for '{$property}' must be an array." ) );
 				}
 			}
 		}
@@ -232,16 +228,14 @@ class ToolValidator {
 
 		foreach ( $annotations as $key => $value ) {
 			if ( ! isset( $validAnnotations[ $key ] ) ) {
-				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-				throw new InvalidArgumentException( "Invalid annotation key: {$key}." );
+				throw new InvalidArgumentException( esc_html( "Invalid annotation key: {$key}." ) );
 			}
 
 			$expectedType = $validAnnotations[ $key ];
 			$actualType   = gettype( $value );
 
 			if ( $actualType !== $expectedType ) {
-				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-				throw new InvalidArgumentException( "Annotation '{$key}' must be of type {$expectedType}, got {$actualType}." );
+				throw new InvalidArgumentException( esc_html( "Annotation '{$key}' must be of type {$expectedType}, got {$actualType}." ) );
 			}
 		}
 	}

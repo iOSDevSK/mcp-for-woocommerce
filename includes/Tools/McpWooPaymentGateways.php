@@ -80,8 +80,6 @@ class McpWooPaymentGateways {
                 'description' => $gateway->get_description(),
                 'order' => $gateway->get_order(),
                 'enabled' => $gateway->is_enabled(),
-                'method_title' => $gateway->get_method_title(),
-                'method_description' => $gateway->get_method_description(),
                 'has_fields' => $gateway->has_fields(),
                 'countries' => $gateway->countries ?? [],
                 'availability' => $gateway->availability ?? 'all',
@@ -96,7 +94,7 @@ class McpWooPaymentGateways {
      * Get single payment gateway
      */
     public function get_payment_gateway($params): array {
-        $gateway_id = $params['id'];
+        $gateway_id = sanitize_key($params['id'] ?? '');
         $gateways = WC()->payment_gateways()->get_available_payment_gateways();
         
         if (!isset($gateways[$gateway_id])) {
@@ -112,13 +110,10 @@ class McpWooPaymentGateways {
                 'description' => $gateway->get_description(),
                 'order' => $gateway->get_order(),
                 'enabled' => $gateway->is_enabled(),
-                'method_title' => $gateway->get_method_title(),
-                'method_description' => $gateway->get_method_description(),
                 'has_fields' => $gateway->has_fields(),
                 'countries' => $gateway->countries ?? [],
                 'availability' => $gateway->availability ?? 'all',
-                'icon' => $gateway->get_icon(),
-                'settings' => $gateway->get_form_fields()
+                'icon' => $gateway->get_icon()
             ]
         ];
     }

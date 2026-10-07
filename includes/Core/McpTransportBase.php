@@ -108,7 +108,6 @@ abstract class McpTransportBase {
 				'ping' => $this->system_handler->ping(),
 				'tools/list' => $this->tools_handler->list_tools(),
 				'tools/list/all' => $this->tools_handler->list_all_tools( $params ),
-				'tools/debug' => $this->tools_handler->debug_tools_state(),
 				'tools/call' => $this->tools_handler->call_tool( $params ),
 				'resources/list' => $this->add_cursor_compatibility( $this->resources_handler->list_resources() ),
 				'resources/templates/list' => $this->add_cursor_compatibility( $this->resources_handler->list_resource_templates( $params ) ),
@@ -207,10 +206,4 @@ abstract class McpTransportBase {
 	 */
 	abstract protected function format_error_response( array $error, int $request_id = 0 ): mixed;
 
-	/**
-	 * Check if the user has permission to access the MCP API
-	 *
-	 * @return bool|WP_Error
-	 */
-	abstract public function check_permission(): WP_Error|bool;
 } 

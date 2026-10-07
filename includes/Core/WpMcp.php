@@ -6,9 +6,7 @@ namespace McpForWoo\Core;
 use McpForWoo\Tools\McpWordPressPosts;
 use McpForWoo\Tools\McpWordPressPages;
 
-use McpForWoo\Tools\McpRestApiCrud;
 use McpForWoo\Tools\McpWooProducts;
-// use McpForWoo\Prompts\McpAnalyzeSales; // Disabled - not used in MCP for WooCommerce
 use McpForWoo\Resources\McpWooSearchGuide;
 
 use InvalidArgumentException;
@@ -21,7 +19,6 @@ use McpForWoo\Tools\McpWooAttributes;
 use McpForWoo\Tools\McpWooShipping;
 use McpForWoo\Tools\McpWooTaxes;
 use McpForWoo\Tools\McpWooPaymentGateways;
-use McpForWoo\Tools\McpWooSystemStatus;
 use McpForWoo\Tools\McpWooIntelligentSearch;
 
 /**
@@ -136,7 +133,6 @@ class WpMcp {
 				$this->init_default_resources();
 				$this->init_default_tools();
 				$this->init_default_prompts();
-				$this->init_features_as_tools();
 				// Register the MCP assets earlier in the rest_api_init hook to prevent timeouts with Claude.ai web app.
 				// Reduced priority from 20000 to 10 for faster initialization
 				add_action( 'rest_api_init', array( $this, 'mcpfowo_init_action' ), 10 );
@@ -193,34 +189,17 @@ class WpMcp {
 		new McpWooShipping();
 		new McpWooTaxes();
 		new McpWooPaymentGateways();
-		new McpWooSystemStatus();
 
-		// WordPress Core tools - READ ONLY
-    	new McpWordPressPosts();
-    	new McpWordPressPages();
-		
-		// Keep REST API CRUD for experimental access
-		new McpRestApiCrud();
+		// Published WordPress posts and pages.
+		new McpWordPressPosts();
+		new McpWordPressPages();
 	}
 
 	/**
 	 * Initialize the default prompts (WooCommerce only).
 	 */
 	private function init_default_prompts(): void {
-		// new McpAnalyzeSales(); // Disabled - sales analysis prompt not used in MCP for WooCommerce
-		
-		// Add future prompts here when needed
-	}
-
-	/**
-	 * Initialize the features as tools.
-	 */
-	private function init_features_as_tools(): void {
-		$features_enabled = isset( $this->mcp_settings['features_adapter_enabled'] ) && $this->mcp_settings['features_adapter_enabled'];
-
-		if ( $features_enabled ) {
-			new WpFeaturesAdapter();
-		}
+		// No prompts are registered by default.
 	}
 
 	/**
@@ -236,74 +215,28 @@ class WpMcp {
 	}
 
 	/**
-	 * Check if a tool type is enabled.
-	 *
-	 * @param string $type The tool type to check.
-	 * @return bool Whether the tool type is enabled.
-	 */
-	private function is_tool_type_enabled( string $type ): bool {
-
-		// Read operations and action operations are always allowed if MCP is enabled.
-		if ( 'read' === $type || 'action' === $type ) {
-			return true;
-		}
-
-		// Check specific tool type settings.
-		$type_settings_map = array(
-			'create' => 'enable_create_tools',
-			'update' => 'enable_update_tools',
-			'delete' => 'enable_delete_tools',
-		);
-
-		// Check if the type exists in our mapping and is enabled.
-		if ( isset( $type_settings_map[ $type ] ) ) {
-			return isset( $this->mcp_settings[ $type_settings_map[ $type ] ] ) && $this->mcp_settings[ $type_settings_map[ $type ] ];
-		}
-
-		return false;
-	}
-
-	/**
 	 * Register a tool.
 	 *
 	 * @param array $args The arguments.
-	 * @throws InvalidArgumentException If the tool name is not unique or if the tool type is disabled.
+	 * Only read-only tools are accepted: this plugin never creates, changes or
+	 * deletes site data, so a tool of any other type is rejected outright.
+	 *
+	 * @param array $args The arguments.
+	 * @throws InvalidArgumentException If the tool is not a read-only tool.
 	 */
 	public function register_tool( array $args ): void {
-		$is_tool_type_enabled = $this->is_tool_type_enabled( $args['type'] );
+		if ( 'read' !== ( $args['type'] ?? '' ) ) {
+			throw new InvalidArgumentException( 'Only read-only tools can be registered.' );
+		}
+
 		$is_tool_enabled      = $this->is_tool_enabled( $args['name'] );
-
-		// Check if REST API CRUD tools are enabled and this tool should be disabled
-		$is_rest_api_crud_enabled = ! empty( $this->mcp_settings['enable_rest_api_crud_tools'] );
-		$has_rest_alias = ! empty( $args['rest_alias'] );
-		$has_disabled_flag = ! empty( $args['disabled_by_rest_crud'] );
-		$is_disabled_by_rest_crud = $is_rest_api_crud_enabled && ( $has_rest_alias || $has_disabled_flag );
-
-		$args['tool_type_enabled'] = $is_tool_type_enabled;
-		$args['tool_enabled']      = $is_tool_enabled;
-		$args['disabled_by_rest_crud'] = $is_disabled_by_rest_crud;
+		$args['tool_enabled'] = $is_tool_enabled;
 
 		$this->all_tools[] = $args;
 
-		// Skip actual registration if disabled by REST CRUD setting
-		if ( $is_disabled_by_rest_crud ) {
-			// Log reason for skip to aid debugging why tools are missing
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			}
+		// Skip registration if the site owner switched the tool off.
+		if ( ! $is_tool_enabled ) {
 			return;
-		}
-		// Check if the tool is enabled.
-		if ( ! $is_tool_enabled || ! $is_tool_type_enabled ) {
-			$error_bits = array();
-			if ( ! $is_tool_enabled ) {
-				$error_bits[] = 'user-disabled';
-			}
-			if ( ! $is_tool_type_enabled ) {
-				$error_bits[] = 'type-disabled';
-			}
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			}
-			return; // Skip registration if tool is disabled.
 		}
 
 		// The name should be unique.
@@ -322,18 +255,11 @@ class WpMcp {
 		$this->tools_callbacks[ $args['name'] ] = array(
 			'callback'            => $args['callback'],
 			'permission_callback' => $args['permission_callback'],
-			'rest_alias'          => $args['rest_alias'] ?? null,
 		);
 
 		unset( $args['callback'] );
 		unset( $args['permission_callback'] );
-		unset( $args['rest_alias'] );
-		unset( $args['disabled_by_rest_crud'] );
 		$this->tools[] = $args;
-
-		// Confirm registration with flags for easier remote debugging
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-		}
 	}
 
 	/**

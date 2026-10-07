@@ -7,93 +7,55 @@ namespace Composer\Autoload;
 class ComposerStaticInitd9af409213085c7d90bd269508594646
 {
     public static $prefixLengthsPsr4 = array (
-        'M' => 
+        'M' =>
         array (
             'McpForWoo\\' => 10,
-        ),
-        'F' => 
-        array (
-            'Firebase\\JWT\\' => 13,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'McpForWoo\\' => 
+        'McpForWoo\\' =>
         array (
             0 => __DIR__ . '/../..' . '/includes',
-        ),
-        'Firebase\\JWT\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
     );
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Firebase\\JWT\\BeforeValidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/BeforeValidException.php',
-        'Firebase\\JWT\\CachedKeySet' => __DIR__ . '/..' . '/firebase/php-jwt/src/CachedKeySet.php',
-        'Firebase\\JWT\\ExpiredException' => __DIR__ . '/..' . '/firebase/php-jwt/src/ExpiredException.php',
-        'Firebase\\JWT\\JWK' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWK.php',
-        'Firebase\\JWT\\JWT' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWT.php',
-        'Firebase\\JWT\\JWTExceptionWithPayloadInterface' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWTExceptionWithPayloadInterface.php',
-        'Firebase\\JWT\\Key' => __DIR__ . '/..' . '/firebase/php-jwt/src/Key.php',
-        'Firebase\\JWT\\SignatureInvalidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/SignatureInvalidException.php',
         'McpForWoo\\Admin\\Settings' => __DIR__ . '/../..' . '/includes/Admin/Settings.php',
-        'McpForWoo\\Auth\\JwtAuth' => __DIR__ . '/../..' . '/includes/Auth/JwtAuth.php',
         'McpForWoo\\CLI\\ValidateToolsCommand' => __DIR__ . '/../..' . '/includes/CLI/ValidateToolsCommand.php',
         'McpForWoo\\Core\\McpErrorHandler' => __DIR__ . '/../..' . '/includes/Core/McpErrorHandler.php',
-        'McpForWoo\\Core\\McpPhpProxy' => __DIR__ . '/../..' . '/includes/Core/McpPhpProxy.php',
-        'McpForWoo\\Core\\McpProxyGenerator' => __DIR__ . '/../..' . '/includes/Core/McpProxyGenerator.php',
         'McpForWoo\\Core\\McpStdioTransport' => __DIR__ . '/../..' . '/includes/Core/McpStdioTransport.php',
         'McpForWoo\\Core\\McpStreamableTransport' => __DIR__ . '/../..' . '/includes/Core/McpStreamableTransport.php',
         'McpForWoo\\Core\\McpTransportBase' => __DIR__ . '/../..' . '/includes/Core/McpTransportBase.php',
         'McpForWoo\\Core\\RegisterMcpPrompt' => __DIR__ . '/../..' . '/includes/Core/RegisterMcpPrompt.php',
         'McpForWoo\\Core\\RegisterMcpResource' => __DIR__ . '/../..' . '/includes/Core/RegisterMcpResource.php',
         'McpForWoo\\Core\\RegisterMcpTool' => __DIR__ . '/../..' . '/includes/Core/RegisterMcpTool.php',
-        'McpForWoo\\Core\\WpFeaturesAdapter' => __DIR__ . '/../..' . '/includes/Core/WpFeaturesAdapter.php',
         'McpForWoo\\Core\\WpMcp' => __DIR__ . '/../..' . '/includes/Core/WpMcp.php',
-        'McpForWoo\\Prompts\\McpAnalyzeSales' => __DIR__ . '/../..' . '/includes/Prompts/McpAnalyzeSales.php',
-        'McpForWoo\\Prompts\\McpGetSiteInfo' => __DIR__ . '/../..' . '/includes/Prompts/McpGetSiteInfo.php',
         'McpForWoo\\RequestMethodHandlers\\InitializeHandler' => __DIR__ . '/../..' . '/includes/RequestMethodHandlers/InitializeHandler.php',
         'McpForWoo\\RequestMethodHandlers\\PromptsHandler' => __DIR__ . '/../..' . '/includes/RequestMethodHandlers/PromptsHandler.php',
         'McpForWoo\\RequestMethodHandlers\\ResourcesHandler' => __DIR__ . '/../..' . '/includes/RequestMethodHandlers/ResourcesHandler.php',
         'McpForWoo\\RequestMethodHandlers\\SystemHandler' => __DIR__ . '/../..' . '/includes/RequestMethodHandlers/SystemHandler.php',
         'McpForWoo\\RequestMethodHandlers\\ToolsHandler' => __DIR__ . '/../..' . '/includes/RequestMethodHandlers/ToolsHandler.php',
-        'McpForWoo\\Resources\\McpGeneralSiteInfo' => __DIR__ . '/../..' . '/includes/Resources/McpGeneralSiteInfo.php',
-        'McpForWoo\\Resources\\McpPluginInfoResource' => __DIR__ . '/../..' . '/includes/Resources/McpPluginInfoResource.php',
-        'McpForWoo\\Resources\\McpSiteSettingsResource' => __DIR__ . '/../..' . '/includes/Resources/McpSiteSettingsResource.php',
-        'McpForWoo\\Resources\\McpThemeInfoResource' => __DIR__ . '/../..' . '/includes/Resources/McpThemeInfoResource.php',
-        'McpForWoo\\Resources\\McpUserInfoResource' => __DIR__ . '/../..' . '/includes/Resources/McpUserInfoResource.php',
         'McpForWoo\\Resources\\McpWooSearchGuide' => __DIR__ . '/../..' . '/includes/Resources/McpWooSearchGuide.php',
-        'McpForWoo\\Tools\\McpCustomPostTypesTools' => __DIR__ . '/../..' . '/includes/Tools/McpCustomPostTypesTools.php',
-        'McpForWoo\\Tools\\McpMediaTools' => __DIR__ . '/../..' . '/includes/Tools/McpMediaTools.php',
-        'McpForWoo\\Tools\\McpPagesTools' => __DIR__ . '/../..' . '/includes/Tools/McpPagesTools.php',
-        'McpForWoo\\Tools\\McpPostsTools' => __DIR__ . '/../..' . '/includes/Tools/McpPostsTools.php',
-        'McpForWoo\\Tools\\McpRestApiCrud' => __DIR__ . '/../..' . '/includes/Tools/McpRestApiCrud.php',
-        'McpForWoo\\Tools\\McpSettingsTools' => __DIR__ . '/../..' . '/includes/Tools/McpSettingsTools.php',
-        'McpForWoo\\Tools\\McpSiteInfo' => __DIR__ . '/../..' . '/includes/Tools/McpSiteInfo.php',
-        'McpForWoo\\Tools\\McpUsersTools' => __DIR__ . '/../..' . '/includes/Tools/McpUsersTools.php',
         'McpForWoo\\Tools\\McpWooAttributes' => __DIR__ . '/../..' . '/includes/Tools/McpWooAttributes.php',
         'McpForWoo\\Tools\\McpWooCategories' => __DIR__ . '/../..' . '/includes/Tools/McpWooCategories.php',
         'McpForWoo\\Tools\\McpWooIntelligentSearch' => __DIR__ . '/../..' . '/includes/Tools/McpWooIntelligentSearch.php',
         'McpForWoo\\Tools\\McpWooIntentAnalyzer' => __DIR__ . '/../..' . '/includes/Tools/McpWooIntentAnalyzer.php',
-        'McpForWoo\\Tools\\McpWooOrders' => __DIR__ . '/../..' . '/includes/Tools/McpWooOrders.php',
         'McpForWoo\\Tools\\McpWooPaymentGateways' => __DIR__ . '/../..' . '/includes/Tools/McpWooPaymentGateways.php',
         'McpForWoo\\Tools\\McpWooProducts' => __DIR__ . '/../..' . '/includes/Tools/McpWooProducts.php',
         'McpForWoo\\Tools\\McpWooReviews' => __DIR__ . '/../..' . '/includes/Tools/McpWooReviews.php',
         'McpForWoo\\Tools\\McpWooShipping' => __DIR__ . '/../..' . '/includes/Tools/McpWooShipping.php',
-        'McpForWoo\\Tools\\McpWooSystemStatus' => __DIR__ . '/../..' . '/includes/Tools/McpWooSystemStatus.php',
         'McpForWoo\\Tools\\McpWooTags' => __DIR__ . '/../..' . '/includes/Tools/McpWooTags.php',
         'McpForWoo\\Tools\\McpWooTaxes' => __DIR__ . '/../..' . '/includes/Tools/McpWooTaxes.php',
         'McpForWoo\\Tools\\McpWordPressPages' => __DIR__ . '/../..' . '/includes/Tools/McpWordPressPages.php',
         'McpForWoo\\Tools\\McpWordPressPosts' => __DIR__ . '/../..' . '/includes/Tools/McpWordPressPosts.php',
-        'McpForWoo\\Utils\\ActiveThemeInfo' => __DIR__ . '/../..' . '/includes/Utils/ActiveThemeInfo.php',
         'McpForWoo\\Utils\\HandlePromptGet' => __DIR__ . '/../..' . '/includes/Utils/HandlePromptGet.php',
         'McpForWoo\\Utils\\HandleToolsCall' => __DIR__ . '/../..' . '/includes/Utils/HandleToolsCall.php',
         'McpForWoo\\Utils\\InputSchema' => __DIR__ . '/../..' . '/includes/Utils/InputSchema.php',
-        'McpForWoo\\Utils\\PluginsInfo' => __DIR__ . '/../..' . '/includes/Utils/PluginsInfo.php',
         'McpForWoo\\Utils\\SchemaValidator' => __DIR__ . '/../..' . '/includes/Utils/SchemaValidator.php',
-        'McpForWoo\\Utils\\UsersInfo' => __DIR__ . '/../..' . '/includes/Utils/UsersInfo.php',
+        'McpForWoo\\Utils\\StorefrontVisibility' => __DIR__ . '/../..' . '/includes/Utils/StorefrontVisibility.php',
+        'McpForWoo\\Utils\\ToolValidator' => __DIR__ . '/../..' . '/includes/Utils/ToolValidator.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

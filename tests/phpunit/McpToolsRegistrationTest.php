@@ -55,7 +55,7 @@ class McpToolsRegistrationTest extends WP_UnitTestCase {
 		);
 
 		// Get the MCP instance.
-		$this->mcp = WPMCP();
+		$this->mcp = mcpfowo_instance();
 
 		// Initialize the REST API and MCP.
 		do_action( 'rest_api_init' );

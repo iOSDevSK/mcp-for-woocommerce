@@ -55,7 +55,7 @@ final class McpWooShippingTest extends WP_UnitTestCase {
 		wp_set_current_user( $this->admin_user->ID );
 
 		// Get the MCP instance.
-		$this->mcp = WPMCP();
+		$this->mcp = mcpfowo_instance();
 
 		// Activate WooCommerce if not already active.
 		if ( ! class_exists( 'WooCommerce' ) ) {

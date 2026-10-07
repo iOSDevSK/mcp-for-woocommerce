@@ -86,7 +86,7 @@ class McpWooTaxes {
      * Get all tax classes
      */
     public function get_tax_classes($params): array {
-        $tax_classes = WC_Tax::get_tax_classes();
+        $tax_classes = \WC_Tax::get_tax_classes();
         $results = [];
         
         // Add standard class (empty slug)

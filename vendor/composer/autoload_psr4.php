@@ -7,5 +7,4 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'McpForWoo\\' => array($baseDir . '/includes'),
-    'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
 );

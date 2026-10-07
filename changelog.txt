@@ -1,5 +1,28 @@
 === MCP for WooCommerce Plugin Changelog ===
 
+= Version 1.3.0 - Release #000021 - October 7, 2026 @ CET =
+
+**PUBLIC READ-ONLY ENDPOINT — WORDPRESS.ORG REVIEW**
+
+* #000036 - Remove authentication and user impersonation
+  Date: October 7, 2026
+  - REMOVED: JWT and OAuth authentication (`/mcpfowo/v1/auth/*`, `/.well-known/oauth-authorization-server`, the Authentication Tokens tab, the "Require JWT Authentication" switch, and the firebase/php-jwt dependency). The plugin no longer calls `wp_set_current_user()` for remote callers.
+  - CHANGED: Both MCP endpoints are public while MCP is enabled. Every tool, resource and prompt returns only storefront information, so no caller needs a WordPress identity.
+  - CHANGED: Existing tokens stop working. Clients that still send an `Authorization` header keep working; the header is ignored.
+
+* #000037 - SECURITY: Return only what an anonymous shop visitor can see
+  Date: October 7, 2026
+  - FIXED: `wordpress_posts_list` and `wordpress_pages_list` accepted a `status` filter (`draft`, `private`, `pending`, `future`, `any`), and the single-item tools returned any post by ID. Both now return published, non-password-protected content only.
+  - FIXED: Reviews returned the reviewer's e-mail address; posts and pages returned the author's login and e-mail address. Removed.
+  - FIXED: Product tools returned unpublished products and products hidden from the catalogue when asked by ID. New `StorefrontVisibility` check applies to every product, variation and review lookup.
+  - CHANGED: Payment gateway and shipping method tools no longer return settings form definitions, only what checkout shows.
+  - REMOVED: `wc_get_system_status` / `wc_get_system_tools` (server and plugin inventory) and the public OpenAPI document, which included the admin e-mail address.
+
+* #000038 - Remove locked and unused code
+  Date: October 7, 2026
+  - REMOVED: Tool classes that were implemented but never registered (custom post types, media, users, settings, site info, orders and reports, generic REST CRUD, WordPress Features adapter), with their resources and prompts, and the create/update/delete tool-type switches. The tool registry now accepts `read` tools only.
+  - REMOVED: The generated `mcp-proxy.js` in the uploads directory. An existing copy, and the options left by JWT/OAuth, are deleted once on update.
+
 = Version 1.2.5 - Release #000020 - September 20, 2026 @ CET =
 
 **WORDPRESS 7.1 COMPATIBILITY**

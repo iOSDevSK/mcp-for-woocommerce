@@ -165,23 +165,16 @@ const ToolsTab = () => {
 									<td>{ tool.type }</td>
 									<td>
 										<ToggleControl
-											checked={
-												tool.tool_enabled &&
-												tool.tool_type_enabled
-											}
+											checked={ tool.tool_enabled }
 											onChange={ ( value ) =>
 												handleToggleChange(
 													tool.name,
 													value
 												)
 											}
-											disabled={
-												saving ||
-												! tool.tool_type_enabled
-											}
+											disabled={ saving }
 											label={
-												tool.tool_enabled &&
-												tool.tool_type_enabled
+												tool.tool_enabled
 													? __(
 															'Enabled',
 															'mcp-for-woocommerce'

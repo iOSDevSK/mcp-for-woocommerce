@@ -107,9 +107,6 @@ class InitializeHandler {
 		// WORKAROUND: Add tools directly to initialize response for Claude.ai compatibility
         if ( $tools_response ) {
             $response['tools'] = $tools_response;
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            }
-            // Note: additional counts are available via tools/debug
         }
 
 		return $response;

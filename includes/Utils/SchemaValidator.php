@@ -442,9 +442,6 @@ class SchemaValidator {
 				'enabled'    => array(
 					'type' => 'boolean',
 				),
-				'rest_alias' => array(
-					'type' => 'string',
-				),
 				'capability' => array(
 					'type' => 'string',
 				),

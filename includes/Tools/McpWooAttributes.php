@@ -118,7 +118,7 @@ class McpWooAttributes {
         $attributes = wc_get_attribute_taxonomies();
         
         foreach ($attributes as $attribute) {
-            if ($attribute->attribute_id == $params['id']) {
+            if ($attribute->attribute_id == absint($params['id'] ?? 0)) {
                 return [
                     'attribute' => [
                         'id' => $attribute->attribute_id,
@@ -139,7 +139,7 @@ class McpWooAttributes {
      * Get attribute terms
      */
     public function get_attribute_terms($params): array {
-        $attribute_id = $params['attribute_id'];
+        $attribute_id = absint($params['attribute_id'] ?? 0);
         $attribute_taxonomy = wc_attribute_taxonomy_name_by_id($attribute_id);
         
         if (!$attribute_taxonomy) {

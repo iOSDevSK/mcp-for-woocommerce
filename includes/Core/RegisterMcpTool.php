@@ -48,139 +48,8 @@ class RegisterMcpTool {
 	 * @return void
 	 */
 	private function register_tool(): void {
-		if ( ! empty( $this->args['rest_alias'] ) ) {
-			$this->get_args_from_rest_api();
-		} else {
-			// Clean the input schema before registration
-			if ( isset( $this->args['inputSchema'] ) ) {
-				$this->args['inputSchema'] = InputSchema::clean( $this->args['inputSchema'] );
-			}
-			WPMCP()->register_tool( $this->args );
-		}
-	}
-
-	/**
-	 * Get the arguments from the rest api.
-	 *
-	 * @return void
-	 * @throws InvalidArgumentException When the REST API route or method is invalid.
-	 */
-	private function get_args_from_rest_api(): void {
-		$method = $this->args['rest_alias']['method'];
-		$route  = $this->args['rest_alias']['route'];
-
-		// get a list of all registered rest routes.
-		$routes     = rest_get_server()->get_routes();
-		$rest_route = $routes[ $route ] ?? null;
-		if ( ! $rest_route ) {
-			McpErrorHandler::log_error( 'The route does not exist: ' . $route . ' ' . $method . ' Skipping registration.' );
-			// Skip registration if the route doesn't exist.
-			return;
-		}
-
-		$rest_api = null;
-
-		// the subarray should contain the method.
-		foreach ( $rest_route as $endpoint ) {
-			if ( isset( $endpoint['methods'][ $method ] ) && true === $endpoint['methods'][ $method ] ) {
-				$rest_api = $endpoint;
-				break;
-			}
-		}
-		if ( ! $rest_api ) {
-			McpErrorHandler::log_error( 'The method does not exist: ' . $method . ' in ' . $route . ' Skipping registration.' );
-			return;
-		}
-
-		// Convert REST API args to MCP input schema.
-		$input_schema = array(
-			'type'       => 'object',
-			'properties' => array(),
-			'required'   => array(),
-		);
-
-		foreach ( $rest_api['args'] as $arg_name => $arg_schema ) {
-
-			if ( ! preg_match( '/^[a-zA-Z0-9_-]{1,64}$/', $arg_name ) ) {
-				// log the invalid parameter name.
-				McpErrorHandler::log_error( 'Invalid parameter name: ' . $arg_name . ' in ' . $route . ' ' . $method . '. The parameter was skipped.' );
-				continue; // Skip invalid parameter names.
-			}
-
-			$type = $arg_schema['type'];
-			if ( is_array( $type ) ) {
-				$type = reset( $type );
-			}
-			$input_schema['properties'][ $arg_name ] = array(
-				'type'        => $type,
-				'description' => $arg_schema['description'],
-			);
-
-			// Handle array items if present.
-			if ( isset( $arg_schema['items'] ) ) {
-				$input_schema['properties'][ $arg_name ]['items'] = $arg_schema['items'];
-			}
-
-			// Handle enums if present and remove duplicates.
-			if ( isset( $arg_schema['enum'] ) ) {
-				$input_schema['properties'][ $arg_name ]['enum'] = array_values( array_unique( $arg_schema['enum'], SORT_REGULAR ) );
-			}
-
-			// Handle default values if present.
-			if ( isset( $arg_schema['default'] ) && ! empty( $arg_schema['default'] ) ) {
-				$input_schema['properties'][ $arg_name ]['default'] = $arg_schema['default'];
-			}
-
-			// Handle format if present.
-			if ( isset( $arg_schema['format'] ) ) {
-				$input_schema['properties'][ $arg_name ]['format'] = $arg_schema['format'];
-			}
-
-			// Handle minimum/maximum if present.
-			if ( isset( $arg_schema['minimum'] ) ) {
-				$input_schema['properties'][ $arg_name ]['minimum'] = $arg_schema['minimum'];
-			}
-			if ( isset( $arg_schema['maximum'] ) ) {
-				$input_schema['properties'][ $arg_name ]['maximum'] = $arg_schema['maximum'];
-			}
-
-			// If the parameter has no default value and is not explicitly optional, mark it as required.
-			if ( isset( $arg_schema['required'] ) && true === $arg_schema['required'] ) {
-				$input_schema['required'][] = $arg_name;
-			}
-		}
-
-		// Convert required array to object.
-		if ( empty( $input_schema['properties'] ) ) {
-			unset( $input_schema['properties'] );
-		}
-		if ( empty( $input_schema['required'] ) ) {
-			unset( $input_schema['required'] );
-		}
-
-		// Apply modifications if provided in rest_alias['modifications'] .
-		if ( isset( $this->args['rest_alias']['inputSchemaReplacements'] ) ) {
-			$modifications = $this->args['rest_alias']['inputSchemaReplacements'];
-			$input_schema  = $this->apply_modifications( $input_schema, $modifications );
-
-			// Ensure required field is always an array if it exists.
-			if ( isset( $input_schema['required'] ) && ! is_array( $input_schema['required'] ) ) {
-				// Convert to array if it's not already.
-				if ( is_object( $input_schema['required'] ) ) {
-					$input_schema['required'] = array_values( (array) $input_schema['required'] );
-				} else {
-					$input_schema['required'] = array();
-				}
-			}
-		}
-
-		// Update the args with the converted schema.
-		$this->args['inputSchema']         = InputSchema::clean( $input_schema );
-		$this->args['callback']            = $rest_api['callback'];
-		$this->args['permission_callback'] = $rest_api['permission_callback'];
-
-		// Register the tool with the converted schema.
-		WPMCP()->register_tool( $this->args );
+		$this->args['inputSchema'] = InputSchema::clean( $this->args['inputSchema'] );
+		mcpfowo_instance()->register_tool( $this->args );
 	}
 
 	/**
@@ -210,16 +79,9 @@ class RegisterMcpTool {
 			throw new InvalidArgumentException( 'The functionality type is required.' );
 		}
 
-		// validate functionality type: must be one of 'create', 'read', 'update', 'delete', 'action'.
-		$valid_types = array( 'create', 'read', 'update', 'delete', 'action' );
-		if ( ! in_array( $this->args['type'], $valid_types, true ) ) {
-			throw new InvalidArgumentException( 'The functionality type must be one of: ' . esc_html( implode( ', ', $valid_types ) ) );
-		}
-
-		// if rest_alias is provided, the rest of the arguments are not required.
-		if ( isset( $this->args['rest_alias'] ) ) {
-			$this->validate_rest_alias();
-			return;
+		// Every tool in this plugin is read-only.
+		if ( 'read' !== $this->args['type'] ) {
+			throw new InvalidArgumentException( 'The functionality type must be read.' );
 		}
 
 		// callback is required.
@@ -244,29 +106,6 @@ class RegisterMcpTool {
 
 		// validate the input schema.
 		$this->validate_input_schema();
-	}
-
-	/**
-	 * Validate the rest api alias.
-	 *
-	 * @return void
-	 * @throws InvalidArgumentException When the rest api alias is invalid.
-	 */
-	private function validate_rest_alias(): void {
-		// route is required.
-		if ( ! isset( $this->args['rest_alias']['route'] ) ) {
-			throw new InvalidArgumentException( 'The route is required.' );
-		}
-
-		// method is required.
-		if ( ! isset( $this->args['rest_alias']['method'] ) ) {
-			throw new InvalidArgumentException( 'The method is required.' );
-		}
-
-		// validate the method: must be one of the following: GET, POST, PUT, PATCH, DELETE.
-		if ( ! in_array( $this->args['rest_alias']['method'], array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ), true ) ) {
-			throw new InvalidArgumentException( 'The method must be one of the following: GET, POST, PUT, PATCH, DELETE.' );
-		}
 	}
 
 	/**
@@ -327,37 +166,5 @@ class RegisterMcpTool {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Recursively remove all null values from an array.
-	 *
-	 * @param array $array The array to clean.
-	 * @return array The cleaned array.
-	 */
-	private function remove_null_recursive( array $array ): array {
-		foreach ( $array as $key => &$value ) {
-			if ( is_array( $value ) ) {
-				$value = $this->remove_null_recursive( $value );
-			} elseif ( is_null( $value ) ) {
-				unset( $array[ $key ] );
-			}
-		}
-		unset( $value ); // break reference.
-		return $array;
-	}
-
-	/**
-	 * Apply modifications to the input schema.
-	 *
-	 * @param array $input_schema The input schema.
-	 * @param array $modifications The modifications to apply.
-	 * @return array The modified input schema.
-	 */
-	private function apply_modifications( array $input_schema, array $modifications ): array {
-
-		$modifications = array_replace_recursive( $input_schema, $modifications );
-
-		return $this->remove_null_recursive( $modifications );
 	}
 }

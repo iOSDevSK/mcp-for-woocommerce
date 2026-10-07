@@ -1,261 +1,114 @@
 ## Overview
 
-MCP for WooCommerce provides a secure, read-only interface to your WooCommerce store data through the Model Context Protocol (MCP). This enables AI assistants to access and understand your store information including:
+MCP for WooCommerce turns your store into a read-only Model Context Protocol (MCP) server. AI assistants connected to it can answer questions about what a shop visitor can already see on your storefront:
 
-- **Products** - Access product catalog, descriptions, pricing, and inventory
-- **Categories** - Browse product categories and hierarchies  
-- **Orders** - View order information and customer data
-- **Reviews** - Access customer reviews and ratings
-- **Store Settings** - Retrieve basic store configuration
+- **Products** – published products, prices, stock status, variations and permalinks
+- **Categories, tags and attributes** – the product catalogue structure
+- **Reviews** – approved product reviews (reviewer names only, never e-mail addresses)
+- **Shipping, taxes and payment methods** – shipping zones and costs, tax rates and the payment methods offered at checkout
+- **Posts and pages** – published, non-password-protected WordPress content
 
-## Features
+## How access works
 
-- ✅ **Read-only access** - No data modification capabilities for security
-- ✅ **JWT Authentication** - Secure token-based authentication
-- ✅ **Multiple protocols** - STDIO and HTTP transport support
-- ✅ **WordPress integration** - Full WordPress + WooCommerce compatibility
+- The MCP endpoint is **public** while MCP is enabled, like the WooCommerce Store API.
+- It is **read-only**: no tool creates, changes or deletes anything on your site.
+- It **does not sign in** as a WordPress user. Callers have no WordPress account, role or capability, so nothing they send can perform an administrative action.
+- Draft, private, pending, scheduled and password-protected content is never returned, and neither are orders, customers, users, e-mail addresses or settings.
+- To stop all access, switch off **Enable MCP functionality** on the Settings tab. You can also switch individual tools off on the Tools tab.
 
-## Transport Protocols
+## Endpoint
 
-MCP for WooCommerce supports two transport protocols:
+```
+{{your-website.com}}/wp-json/wp/v2/wpmcp/streamable
+```
 
--   **STDIO Transport**: Traditional transport via `mcp-wordpress-remote` proxy
--   **Streamable Transport**: Direct HTTP-based transport with JSON-RPC 2.0
+The endpoint speaks Streamable HTTP with JSON-RPC 2.0 messages. Requests must send `Content-Type: application/json` and `Accept: application/json, text/event-stream`.
 
-## Authentication Methods
-
-### JWT Tokens (Recommended)
-
--   Generate tokens from `Settings > MCP > Authentication Tokens`
--   Tokens expire in 1-24 hours (configurable) or never
--   More secure than application passwords
--   Required for Streamable transport
-
-
-## Client Configurations
+## Client configurations
 
 ### Claude Code
 
-#### Using HTTP Transport with JWT Token (Recommended)
-
-Add your MCP for WooCommerce server directly to Claude Code using the HTTP transport:
-
 ```bash
-claude mcp add --transport http mcp-for-woocommerce {{your-website.com}}/wp-json/wp/v2/wpmcp/streamable --header "Authorization: Bearer your-jwt-token-here"
+claude mcp add --transport http mcp-for-woocommerce {{your-website.com}}/wp-json/wp/v2/wpmcp/streamable
 ```
 
-For more information about Claude Code MCP configuration, see the [Claude Code MCP documentation](https://docs.anthropic.com/en/docs/claude-code/mcp).
+See the [Claude Code MCP documentation](https://docs.anthropic.com/en/docs/claude-code/mcp) for details.
 
 ### Claude Desktop
 
-#### Using JWT Token with mcp-wordpress-remote (Recommended)
-
-Add to your Claude Desktop `claude_desktop_config.json`:
+Claude Desktop connects to remote MCP servers through the `mcp-remote` bridge. Add this to `claude_desktop_config.json`:
 
 ```json
 {
 	"mcpServers": {
 		"mcp-for-woocommerce": {
 			"command": "npx",
-			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
-			"env": {
-				"WP_API_URL": "{{your-website.com}}",
-				"JWT_TOKEN": "your-jwt-token-here"
-			}
+			"args": [ "-y", "mcp-remote", "{{your-website.com}}/wp-json/wp/v2/wpmcp/streamable" ]
 		}
 	}
 }
 ```
 
-
-#### Local Development Configuration
-
-For local development there is a standalone PHP STDIO proxy in the project's GitHub
-repository — it is not bundled with the released plugin, because it is a command-line
-script rather than plugin code. Download
-[`mcp-proxy.php`](https://github.com/iOSDevSK/mcp-for-woocommerce/blob/main/mcp-proxy.php)
-and pass it your endpoint:
-
-```json
-{
-	"mcpServers": {
-		"woocommerce": {
-			"command": "php",
-			"args": [
-				"/path/to/mcp-proxy.php",
-				"https://your-site.com/wp-json/wp/v2/wpmcp/streamable"
-			]
-		}
-	}
-}
-```
-
-### Cursor IDE
-
-#### Using mcp-wordpress-remote proxy
-
-Add to your Cursor MCP configuration file:
+### Cursor
 
 ```json
 {
 	"mcpServers": {
 		"mcp-for-woocommerce": {
-			"command": "npx",
-			"args": [ "-y", "@automattic/mcp-wordpress-remote@latest" ],
-			"env": {
-				"WP_API_URL": "{{your-website.com}}",
-				"JWT_TOKEN": "your-jwt-token-here"
-			}
+			"url": "{{your-website.com}}/wp-json/wp/v2/wpmcp/streamable"
 		}
 	}
 }
 ```
 
-### VS Code MCP Extension
-
-#### Direct Streamable Transport (JWT Only)
-
-Add to your VS Code MCP settings:
+### VS Code
 
 ```json
 {
 	"servers": {
 		"mcp-for-woocommerce": {
 			"type": "http",
-			"url": "{{your-website.com}}/wp-json/wp/v2/wpmcp/streamable",
-			"headers": {
-				"Authorization": "Bearer your-jwt-token-here"
-			}
+			"url": "{{your-website.com}}/wp-json/wp/v2/wpmcp/streamable"
 		}
 	}
 }
 ```
 
-### MCP Inspector (Development/Testing)
-
-#### Using JWT Token with proxy
+### MCP Inspector
 
 ```bash
-npx @modelcontextprotocol/inspector \
-  -e WP_API_URL={{your-website.com}} \
-  -e JWT_TOKEN=your-jwt-token-here \
-  -e WOO_CUSTOMER_KEY=optional-woo-customer-key \
-  -e WOO_CUSTOMER_SECRET=optional-woo-customer-secret \
-  npx @automattic/mcp-wordpress-remote@latest
+npx @modelcontextprotocol/inspector
 ```
 
-## Transport Protocol Details
+Choose the **Streamable HTTP** transport and enter `{{your-website.com}}/wp-json/wp/v2/wpmcp/streamable`.
 
-### STDIO Transport
+## Available methods
 
--   **Endpoint**: `/wp-json/wp/v2/wpmcp`
--   **Format**: WordPress-style REST API
--   **Authentication**: JWT tokens only
--   **Use Case**: Legacy compatibility, works with most MCP clients
--   **Proxy Required**: Yes (`mcp-wordpress-remote`)
+- `initialize` – start a session
+- `tools/list` – list the enabled tools
+- `tools/call` – run a tool
+- `resources/list` and `resources/read` – read the product search guide
+- `prompts/list` – list prompts
 
-#### Advantages:
-
--   Compatible with all MCP clients
--   Secure JWT authentication
--   Enhanced features via proxy (WooCommerce, logging)
-
-#### Example Tools Available:
-
--   `wc_products_search` - Universal product search for ANY store type
--   `wc_get_product_variations` - Get all variations (colors, sizes, etc.) for a variable WooCommerce product
--   `wc_get_categories` - Get a specific product variation by ID
--   `wordpress_posts_get` - Get a single WordPress post by ID
--   `wordpress_pages_get` - Get a single WordPress page by ID
--   And many more...
-
-### Streamable Transport
-
--   **Endpoint**: `/wp-json/wp/v2/wpmcp/streamable`
--   **Format**: JSON-RPC 2.0 compliant
--   **Authentication**: JWT tokens only
--   **Use Case**: Modern AI clients, direct integration
--   **Proxy Required**: No
-
-#### Advantages:
-
--   Direct connection (no proxy needed)
--   Standard JSON-RPC 2.0 protocol
--   Lower latency
--   Modern implementation
-
-#### Example Methods:
-
--   `tools/list` - List available tools
--   `tools/call` - Execute a tool
--   `resources/list` - List available resources
--   `resources/read` - Read resource content
--   `prompts/list` - List available prompts
--   `prompts/get` - Get prompt template
-
-## Local Development Setup
-
-### WordPress Local Environment
-
-```json
-{
-	"mcpServers": {
-		"wordpress-local": {
-			"command": "node",
-			"args": [ "/path/to/mcp-wordpress-remote/dist/proxy.js" ],
-			"env": {
-				"WP_API_URL": "http://localhost:8080/",
-				"JWT_TOKEN": "your-local-jwt-token"
-			}
-		}
-	}
-}
-```
+Example tools: `wc_products_search`, `wc_get_product`, `wc_get_product_variations`, `wc_intelligent_search`, `wc_get_categories`, `wc_get_product_reviews`, `wc_get_shipping_zones`, `wc_get_payment_gateways`, `wordpress_posts_list`, `wordpress_pages_get`.
 
 ## Troubleshooting
 
-### Common Issues
+#### The endpoint returns 404
 
-#### JWT Token Expired
+- Make sure **Enable MCP functionality** is switched on.
+- Make sure the WordPress REST API is reachable at `{{your-website.com}}/wp-json/`.
 
--   Generate a new token from WordPress admin
--   Check token expiration time in settings
--   Ensure system clock is synchronized
+#### Products have no links or broken links
 
-#### Authentication Failed
+- Set **Settings → Permalinks** to **Post name**.
 
--   Verify JWT token is correctly copied
--   Ensure user has appropriate permissions
--   Check token expiration time
+#### The client cannot connect
 
-#### Connection Timeout
-
--   Verify WordPress site is accessible
--   Check firewall settings
--   Ensure proper SSL certificate if using HTTPS
-
-#### Proxy Issues
-
--   Update mcp-wordpress-remote to latest version:
-    ```bash
-    npm install -g @automattic/mcp-wordpress-remote@latest
-    ```
--   Check proxy logs for error details
--   Verify environment variables are set correctly
-
-## Security Best Practices
-
-1. **Use JWT tokens** instead of application passwords when possible
-2. **Set appropriate expiration time** for your use case (1-24 hours or never)
-3. **Revoke unused tokens** promptly from the admin interface
-4. **Never commit tokens** to version control systems
-5. **Use HTTPS** for production environments
-6. **Regularly rotate tokens**
+- Use HTTPS in production.
+- Check that a firewall or security plugin does not block `/wp-json/`.
 
 ## Support
 
-For additional help:
-
--   Check the <a href="https://github.com/iOSDevSK/mcp-for-woocommerce" target="_blank">Github repository</a>
--   Visit the <a href="https://github.com/Automattic/mcp-wordpress-remote" target="_blank">mcp-wordpress-remote repository</a>
--   Report issues on <a href="https://github.com/iOSDevSK/mcp-for-woocommerce/issues" target="_blank">GitHub Issues</a>
+- [GitHub repository](https://github.com/iOSDevSK/mcp-for-woocommerce)
+- [GitHub issues](https://github.com/iOSDevSK/mcp-for-woocommerce/issues)

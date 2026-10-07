@@ -60,8 +60,8 @@ class RegisterMcpResource {
 	 * @return void
 	 */
 	private function register_resource(): void {
-		WPMCP()->register_resource( $this->args );
-		WPMCP()->register_resource_callback( $this->args['uri'], $this->resource_content_callback );
+		mcpfowo_instance()->register_resource( $this->args );
+		mcpfowo_instance()->register_resource_callback( $this->args['uri'], $this->resource_content_callback );
 	}
 
 	/**

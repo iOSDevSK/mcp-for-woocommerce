@@ -6,11 +6,10 @@ import { Notice, TabPanel } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 // Import the extracted components
-import SettingsTab, { AuthenticationCard } from './SettingsTab.js';
+import SettingsTab, { AccessCard } from './SettingsTab.js';
 import ToolsTab from './ToolsTab.js';
 import ResourcesTab from './ResourcesTab.js';
 import PromptsTab from './PromptsTab.js';
-import AuthenticationTokensTab from './AuthenticationTokensTab.js';
 import DocumentationTab from './DocumentationTab.js';
 
 /**
@@ -28,9 +27,6 @@ export const SettingsApp = () => {
 		enabled: false,
 	} );
 
-	// State for JWT authentication
-	const [ jwtRequired, setJwtRequired ] = useState( true );
-
 	// State for UI
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ notice, setNotice ] = useState( null );
@@ -46,12 +42,6 @@ export const SettingsApp = () => {
 				name: 'settings',
 				title: __( 'Settings', 'mcp-for-woocommerce' ),
 				className: 'mcpfowo-settings-tab',
-			},
-			{
-				name: 'authentication-tokens',
-				title: __( 'Authentication Tokens', 'mcp-for-woocommerce' ),
-				className: 'authentication-tokens-tab',
-				disabled: ! jwtRequired,
 			},
 			{
 				name: 'documentation',
@@ -77,7 +67,7 @@ export const SettingsApp = () => {
 				disabled: ! settings.enabled,
 			},
 		],
-		[ settings.enabled, jwtRequired ]
+		[ settings.enabled ]
 	);
 
 	// Load settings
@@ -92,14 +82,6 @@ export const SettingsApp = () => {
 				enabled: loaded.enabled || false,
 			} ) );
 		}
-
-		// Load JWT required setting
-		if (
-			window.mcpfowoSettings &&
-			typeof window.mcpfowoSettings.jwtRequired !== 'undefined'
-		) {
-			setJwtRequired( window.mcpfowoSettings.jwtRequired );
-		}
 	}, [] );
 
 	// Handle tab selection
@@ -109,12 +91,6 @@ export const SettingsApp = () => {
 			setActiveTab( tabName );
 			window.location.hash = tabName;
 			return tabName;
-		}
-		// If trying to access disabled Authentication Tokens tab, switch to settings
-		if ( tabName === 'authentication-tokens' && ! jwtRequired ) {
-			setActiveTab( 'settings' );
-			window.location.hash = 'settings';
-			return 'settings';
 		}
 		return activeTab;
 	};
@@ -160,68 +136,6 @@ export const SettingsApp = () => {
 		} );
 	};
 
-	// Handle JWT required toggle
-	const handleJwtRequiredToggle = () => {
-		const newValue = ! jwtRequired;
-		setJwtRequired( newValue );
-
-		// If disabling JWT and currently on Authentication Tokens tab, switch to settings
-		if ( ! newValue && activeTab === 'authentication-tokens' ) {
-			setActiveTab( 'settings' );
-			window.location.hash = 'settings';
-		}
-
-		// Save JWT setting
-		handleSaveJwtSetting( newValue );
-	};
-
-	// Save JWT setting
-	const handleSaveJwtSetting = ( jwtValue ) => {
-		setIsSaving( true );
-		setNotice( null );
-
-		// Create form data for AJAX request
-		const formData = new FormData();
-		formData.append( 'action', 'mcpfowo_save_settings' );
-		formData.append( 'nonce', window.mcpfowoSettings.nonce );
-		formData.append( 'settings', JSON.stringify( settings ) );
-		formData.append( 'jwt_required', jwtValue );
-
-		// Send AJAX request
-		fetch( ajaxurl, {
-			method: 'POST',
-			body: formData,
-			credentials: 'same-origin',
-		} )
-			.then( ( response ) => response.json() )
-			.then( ( data ) => {
-				setIsSaving( false );
-				if ( data.success ) {
-					setNotice( {
-						status: 'success',
-						message:
-							data.data.message ||
-							window.mcpfowoSettings.strings.settingsSaved,
-					} );
-				} else {
-					setNotice( {
-						status: 'error',
-						message:
-							data.data.message ||
-							window.mcpfowoSettings.strings.settingsError,
-					} );
-				}
-			} )
-			.catch( ( error ) => {
-				setIsSaving( false );
-				setNotice( {
-					status: 'error',
-					message: window.mcpfowoSettings.strings.settingsError,
-				} );
-				console.error( 'Error saving JWT setting:', error );
-			} );
-	};
-
 	// Save settings with specific data
 	const handleSaveSettingsWithData = ( settingsData ) => {
 		setIsSaving( true );
@@ -232,7 +146,6 @@ export const SettingsApp = () => {
 		formData.append( 'action', 'mcpfowo_save_settings' );
 		formData.append( 'nonce', window.mcpfowoSettings.nonce );
 		formData.append( 'settings', JSON.stringify( settingsData ) );
-		formData.append( 'jwt_required', jwtRequired );
 
 		// Send AJAX request
 		fetch( ajaxurl, {
@@ -306,29 +219,14 @@ export const SettingsApp = () => {
 			>
 				{ ( tab ) => {
 					if ( tab.disabled ) {
-						// Different messages for different disabled tabs
-						let disabledMessage = '';
-						let enableMessage = '';
-						
-						if ( tab.name === 'authentication-tokens' ) {
-							disabledMessage = __(
-								'Authentication tokens are only available when JWT authentication is enabled.',
-								'mcp-for-woocommerce'
-							);
-							enableMessage = __(
-								'Please enable "Require JWT Authentication" in the Settings tab first.',
-								'mcp-for-woocommerce'
-							);
-						} else {
-							disabledMessage = __(
-								'This feature is only available when MCP functionality is enabled.',
-								'mcp-for-woocommerce'
-							);
-							enableMessage = __(
-								'Please enable MCP in the Settings tab first.',
-								'mcp-for-woocommerce'
-							);
-						}
+						const disabledMessage = __(
+							'This feature is only available when MCP functionality is enabled.',
+							'mcp-for-woocommerce'
+						);
+						const enableMessage = __(
+							'Please enable MCP in the Settings tab first.',
+							'mcp-for-woocommerce'
+						);
 
 						return (
 							<div className="mcpfowo-disabled-tab-notice">
@@ -350,16 +248,9 @@ export const SettingsApp = () => {
 										systemStatus={ systemStatus }
 									/>
 									<br />
-									<AuthenticationCard
-										jwtRequired={ jwtRequired }
-										onJwtRequiredToggle={ handleJwtRequiredToggle }
-										isSaving={ isSaving }
-										strings={ strings }
-									/>
+									<AccessCard strings={ strings } />
 								</>
 							);
-						case 'authentication-tokens':
-							return <AuthenticationTokensTab />;
 						case 'documentation':
 							return <DocumentationTab />;
 						case 'tools':

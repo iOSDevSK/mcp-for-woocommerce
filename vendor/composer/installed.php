@@ -1,30 +1,21 @@
 <?php return array(
     'root' => array(
-        'name' => 'automattic/wordpress-mcp',
+        'name' => 'filipdvoran/mcp-for-woocommerce',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '5b4a7072b297b7116de7ecd7b8eb6b9c7e70b554',
+        'reference' => '668848230000b8e42d83be739223989668bff14a',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => false,
     ),
     'versions' => array(
-        'automattic/wordpress-mcp' => array(
+        'filipdvoran/mcp-for-woocommerce' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '5b4a7072b297b7116de7ecd7b8eb6b9c7e70b554',
+            'reference' => '668848230000b8e42d83be739223989668bff14a',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'firebase/php-jwt' => array(
-            'pretty_version' => 'v6.11.1',
-            'version' => '6.11.1.0',
-            'reference' => 'd1e91ecf8c598d073d0995afa8cd5c75c6e19e66',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../firebase/php-jwt',
             'aliases' => array(),
             'dev_requirement' => false,
         ),

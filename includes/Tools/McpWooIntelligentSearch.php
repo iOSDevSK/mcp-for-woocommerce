@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace McpForWoo\Tools;
 
 use McpForWoo\Core\RegisterMcpTool;
+use McpForWoo\Utils\StorefrontVisibility;
 use WP_Error;
 use Exception;
 
@@ -781,7 +782,7 @@ class McpWooIntelligentSearch {
 
             $products_array = array();
             foreach ( $products as $product ) {
-                if ( $product instanceof \WC_Product ) {
+                if ( StorefrontVisibility::is_product_public( $product ) ) {
                     $product_data = $this->convert_product_to_array( $product );
                     if ( $product_data ) {
                         $products_array[] = $product_data;
@@ -818,9 +819,7 @@ class McpWooIntelligentSearch {
                 'date_created' => $product->get_date_created() ? $product->get_date_created()->date( 'c' ) : '',
                 'date_modified' => $product->get_date_modified() ? $product->get_date_modified()->date( 'c' ) : '',
                 'type' => $product->get_type(),
-                'status' => $product->get_status(),
                 'featured' => $product->get_featured(),
-                'catalog_visibility' => $product->get_catalog_visibility(),
                 'description' => $product->get_description(),
                 'short_description' => $product->get_short_description(),
                 'sku' => $product->get_sku(),
@@ -837,7 +836,6 @@ class McpWooIntelligentSearch {
                 'images' => $this->get_product_images( $product ),
                 'stock_status' => $product->get_stock_status(),
                 'stock_quantity' => $product->get_stock_quantity(),
-                'manage_stock' => $product->get_manage_stock(),
             );
 
             // Add variations if variable product
@@ -845,7 +843,7 @@ class McpWooIntelligentSearch {
                 $data['variations'] = array();
                 foreach ( $product->get_children() as $child_id ) {
                     $variation = wc_get_product( $child_id );
-                    if ( $variation ) {
+                    if ( StorefrontVisibility::is_product_public( $variation ) ) {
                         $data['variations'][] = $this->convert_product_to_array( $variation );
                     }
                 }
@@ -1324,7 +1322,7 @@ class McpWooIntelligentSearch {
         }
 
         $product = wc_get_product( $product_id );
-        if ( ! $product ) {
+        if ( ! StorefrontVisibility::is_product_public( $product ) ) {
             return array( 
                 'error' => array(
                     'code' => -32002, // RESOURCE_NOT_FOUND

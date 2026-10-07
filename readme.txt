@@ -4,7 +4,7 @@ Tags: ai, mcp, woocommerce, chatbot, ecommerce
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.5
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,75 +12,92 @@ AI integration plugin connecting WooCommerce & WordPress with Model Context Prot
 
 == Description ==
 
-MCP for WooCommerce is a comprehensive WordPress plugin that bridges your WooCommerce store and WordPress site with AI assistants through the Model Context Protocol (MCP). This plugin provides a standardized interface for AI assistants to access and interact with your e-commerce data in a secure, read-only manner. This is a community-developed plugin and is not an official WooCommerce or WordPress plugin. This plugin is not affiliated with Automattic.
+MCP for WooCommerce turns your store into a read-only Model Context Protocol (MCP) server. AI assistants such as Claude, ChatGPT, Cursor or VS Code can connect to it and answer questions about your catalogue, using the same information a shop visitor already sees on your storefront.
 
-**Key Features:**
+This is a community-developed plugin. It is not an official WooCommerce or WordPress plugin and is not affiliated with Automattic.
 
-* **MCP Server Implementation** - Full Model Context Protocol server with tools, resources, and prompts
-* **WooCommerce Integration** - Access products, orders, categories, reviews, shipping, and payment data
-* **WordPress Content Access** - Retrieve posts, pages, media, and site information
-* **Secure Authentication** - JWT-based authentication with configurable access controls
-* **Multiple Transport Methods** - STDIO and HTTP streamable transports
-* **AI-Ready Interface** - Optimized for Claude, ChatGPT, and other AI assistants
-* **Read-Only Safety** - All operations are read-only to ensure data security
-* **Intelligent Search** - Advanced search capabilities for products and content
-* **Comprehensive Documentation** - Built-in guides and examples
+**What AI assistants can read**
+
+* **Products** – published products, prices, sale prices, stock status, variations, images and product links
+* **Catalogue structure** – categories, tags, brands and attributes
+* **Reviews** – approved product reviews (the reviewer's name, never their e-mail address)
+* **Shipping and taxes** – shipping zones, enabled shipping methods and their costs, tax classes and rates
+* **Payment methods** – the payment methods offered at checkout
+* **Posts and pages** – published WordPress posts and pages
+* **Smart product search** – natural-language search that understands price ranges, brands, categories and attributes
+
+**What it never does**
+
+* It never creates, changes or deletes anything. Every tool is read-only.
+* It never signs in as a WordPress user and has no administrator access.
+* It never returns orders, customers, users, e-mail addresses, settings, or draft, private or password-protected content.
+
+**How access works**
+
+The MCP endpoint is public while MCP is enabled, the same way the WooCommerce Store API and the public WordPress REST API are. Because it only returns storefront information, no account or token is needed. You can switch the whole endpoint off, or turn individual tools off, from the settings page.
 
 **What is MCP?**
 
-Model Context Protocol (MCP) is an open standard that enables AI assistants to securely access external data sources and tools. This plugin acts as an MCP server, allowing AI assistants to understand and interact with your WordPress/WooCommerce site through standardized interfaces.
+The Model Context Protocol is an open standard that lets AI assistants call tools and read data from external systems. This plugin is an MCP server: it describes your store's read-only tools so an AI assistant can use them.
 
-**Use Cases:**
+**Use cases**
 
-* Customer service automation with AI chatbots
-* Product recommendation engines
-* Content management assistance
-* Sales analytics and reporting
-* Inventory management support
-* Site administration helpers
+* A shopping assistant or AI chatbot that recommends products and links straight to them
+* Answering customer questions about products, shipping and payment options
+* Exploring your catalogue in Claude, ChatGPT, Cursor or VS Code
 
-**Requirements:**
+**Requirements**
 
 * WordPress 6.4 or higher
 * PHP 8.0 or higher
-* WooCommerce plugin (for e-commerce features)
+* WooCommerce
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/mcp-for-woocommerce` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the 'Plugins' screen in WordPress.
-3. Ensure WooCommerce is installed and activated for e-commerce features.
-4. Navigate to Settings → MCP for WooCommerce to configure the plugin.
-5. Generate JWT tokens for secure access or configure public access as needed.
-6. Follow the connection examples provided in the settings page to connect your AI assistant.
+1. Install the plugin from the Plugins screen, or upload it to `/wp-content/plugins/mcp-for-woocommerce`.
+2. Make sure WooCommerce is installed and active, then activate the plugin.
+3. Go to Settings → MCP for WooCommerce and switch on **Enable MCP functionality**.
+4. Set Settings → Permalinks to **Post name** so product links work.
+5. Copy your MCP endpoint (`https://your-site.com/wp-json/wp/v2/wpmcp/streamable`) into your AI assistant. The Documentation tab has ready-made configuration for Claude Code, Claude Desktop, Cursor and VS Code.
 
 == Frequently Asked Questions ==
 
 = Is this plugin safe to use? =
 
-Yes, all MCP tools and resources are read-only. The plugin cannot modify, create, or delete any data on your site. It only provides access to existing public information.
+Yes. Every tool is read-only, and the plugin only returns information that is already public on your storefront. It cannot create, change or delete anything on your site, and it never signs in as a WordPress user.
+
+= Why does the endpoint not need a password or token? =
+
+It only serves public storefront information, the same as your shop pages and the WooCommerce Store API. Orders, customers, users, settings and unpublished content are never exposed, so there is nothing to protect with a login.
+
+= Can I turn access off? =
+
+Yes. Switch off **Enable MCP functionality** to disable the endpoint completely, or turn individual tools off on the Tools tab.
 
 = Which AI assistants work with this plugin? =
 
-Any AI assistant that supports the Model Context Protocol (MCP) can work with this plugin, including Claude Desktop, VS Code with MCP extensions, and custom MCP clients.
+Any client that supports the Model Context Protocol over Streamable HTTP, including Claude Code, Claude Desktop (through `mcp-remote`), Cursor, VS Code and the MCP Inspector.
 
-= Do I need technical knowledge to use this plugin? =
+= Does the plugin contact external services? =
 
-Basic WordPress administration knowledge is sufficient. The plugin provides clear documentation and examples for connecting AI assistants.
-
-= What data can AI assistants access? =
-
-AI assistants can access the same public data that would be available through your site's REST API, including products, posts, pages, categories, and basic site information. No private or sensitive data is exposed.
-
-= Can I control what data is accessible? =
-
-Yes, the plugin includes various settings to control access levels and configure authentication requirements.
+No. The plugin does not send any data to external services. AI assistants connect to your site; your site does not connect to them.
 
 = Does this plugin slow down my website? =
 
-No, the plugin only activates when specifically called by an MCP client. It has no impact on your regular website performance.
+No. It only runs when an MCP client calls the endpoint.
 
 == Changelog ==
+
+= 1.3.0 =
+* The MCP endpoint is now public and strictly read-only, and it only returns storefront information: published products, catalogue structure, approved reviews, shipping, tax and payment options, and published posts and pages
+* Removed JWT and OAuth authentication. The plugin no longer issues tokens or signs in as a WordPress user
+* SECURITY: Posts and pages tools no longer accept a status filter, so draft, private and password-protected content can no longer be requested
+* SECURITY: Reviews no longer include the reviewer's e-mail address, and posts and pages no longer include the author's login or e-mail address
+* SECURITY: Products that are not published or are hidden from the catalogue are no longer returned
+* Payment and shipping tools return only what checkout shows, not gateway or shipping method settings
+* Removed the system status tool, the OpenAPI document, and unused code for tools that were never registered
+* The plugin no longer generates a proxy script in the uploads directory; an existing one is deleted on update
+* Removed the firebase/php-jwt dependency
 
 = 1.2.5 =
 * Confirm compatibility with WordPress 7.1
@@ -176,6 +193,9 @@ No, the plugin only activates when specifically called by an MCP client. It has 
 
 == Upgrade Notice ==
 
+= 1.3.0 =
+Authentication was removed: the MCP endpoint is now public and read-only and serves storefront information only. Existing tokens stop working; reconnect clients with the endpoint URL alone.
+
 = 1.1.7 =
 Community plugin release with rebranding and updated author information. All functionality remains the same.
 
@@ -190,4 +210,4 @@ Latest stable release with enhanced search capabilities and improved documentati
 
 **Contributing:** This plugin is open source. Contributions are welcome through our GitHub repository.
 
-**Privacy:** This plugin does not collect or transmit any personal data. All interactions are between your site and your configured AI assistants.
+**Privacy:** This plugin does not collect, store or transmit personal data. It never returns customer, order or user information, and it sends nothing to external services.

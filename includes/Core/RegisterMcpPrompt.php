@@ -50,7 +50,7 @@ class RegisterMcpPrompt {
 	 * @return void
 	 */
 	private function register_prompt(): void {
-		WPMCP()->register_prompt( $this->prompt, $this->messages );
+		mcpfowo_instance()->register_prompt( $this->prompt, $this->messages );
 	}
 
 	/**

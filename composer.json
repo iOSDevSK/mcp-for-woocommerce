@@ -1,6 +1,6 @@
 {
     "name": "filipdvoran/mcp-for-woocommerce",
-    "description": "Advanced AI integration plugin that connects WooCommerce & WordPress with Model Context Protocol (MCP). Provides comprehensive AI-accessible interfaces to WooCommerce products, orders, categories, shipping, payments, and WordPress posts/pages through standardized tools, resources, and prompts. Enables AI assistants to seamlessly interact with your e-commerce data and content.",
+    "description": "Advanced AI integration plugin that connects WooCommerce & WordPress with Model Context Protocol (MCP). Gives AI assistants read-only access to the public storefront: products, categories, reviews, shipping, payment methods, and published posts and pages.",
     "type": "wordpress-plugin",
     "homepage": "https://github.com/iOSDevSK/mcp-for-woocommerce",
     "license": "GPL-2.0-or-later",
@@ -14,9 +14,7 @@
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
-    "require": {
-        "firebase/php-jwt": "^6.11"
-    },
+    "require": {},
     "autoload": {
         "psr-4": {
             "McpForWoo\\": "includes/"
